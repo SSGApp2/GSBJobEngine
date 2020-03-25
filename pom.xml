@@ -11,6 +11,7 @@
 	<groupId>com.app2</groupId>
 	<artifactId>engine</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<name>engine</name>
 	<description>Demo project for Spring Boot</description>
 
