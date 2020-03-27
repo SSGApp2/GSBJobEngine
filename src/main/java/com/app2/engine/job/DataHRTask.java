@@ -30,7 +30,6 @@ public class DataHRTask {
     public void hrDataTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start hrDataTask");
         BatchTransaction batchTransaction = null;
         ///////////////////////////////////////////////////////////////////////////////////
         try {
