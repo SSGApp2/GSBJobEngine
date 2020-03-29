@@ -14,9 +14,17 @@ public class DocumentTaskServiceImpl extends AbstractEngineService implements Do
     @Value("${Api.AssignedDocAuto}")
     private String APIAssignedDocAuto;
 
+    @Value("${Api.RejectDocNotReceive}")
+    private String APIRejectDocNotReceive;
+
     @Override
     public ResponseEntity<String> assignedDocAuto() {
         return getResultByExchange(APIAssignedDocAuto);
+    }
+
+    @Override
+    public ResponseEntity<String> rejectDocNotReceive() {
+        return getResultByExchange(APIRejectDocNotReceive);
     }
 
 
