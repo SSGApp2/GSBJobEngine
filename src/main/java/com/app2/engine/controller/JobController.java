@@ -36,6 +36,37 @@ public class JobController {
         hrDataService.position();
     }
 
+    @GetMapping("/HrBranch")
+    public void HrBranch() {
+        hrDataService.branch();
+    }
+
+    @GetMapping("/HrLineBusiness")
+    public void HrLineBusiness() {
+        hrDataService.lineBusiness();
+    }
+
+    @GetMapping("/HrUnit")
+    public void HrUnit() {
+        hrDataService.unit();
+    }
+
+    @GetMapping("/HrOrgGroup")
+    public void HrOrgGroup() {
+        hrDataService.orgGroup();
+    }
+
+    @GetMapping("/HrCompany")
+    public void HrCompany() {
+        hrDataService.company();
+    }
+
+    @GetMapping("/HrInterface")
+    public void HrInterface() {
+        hrDataService.hrInterface();
+    }
+
+
     @GetMapping("/assignedDocAuto")
     public ResponseEntity<String> assignedDocAuto() {
         return documentTaskService.assignedDocAuto();

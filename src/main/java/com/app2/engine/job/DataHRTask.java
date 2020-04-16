@@ -80,6 +80,102 @@ public class DataHRTask {
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
         ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("branch");
+            batchTransaction.setStatus("S");
+            hrDataService.branch();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("lineBusiness");
+            batchTransaction.setStatus("S");
+            hrDataService.lineBusiness();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("unit");
+            batchTransaction.setStatus("S");
+            hrDataService.unit();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("orgGroup");
+            batchTransaction.setStatus("S");
+            hrDataService.orgGroup();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("company");
+            batchTransaction.setStatus("S");
+            hrDataService.company();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("hrInterface");
+            batchTransaction.setStatus("S");
+            hrDataService.hrInterface();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        ///////////////////////////////////////////////////////////////////////////////////
         LOGGER.info("***************************************");
     }
 }
