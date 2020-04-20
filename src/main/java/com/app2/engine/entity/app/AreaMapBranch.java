@@ -3,6 +3,7 @@ package com.app2.engine.entity.app;
 import com.app2.engine.entity.base.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -14,12 +15,11 @@ import javax.persistence.ManyToOne;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Unit extends BaseEntity {
-    private String code;
-    private String name;
-    private String status;
-
-    private Long unitParent;
+@EqualsAndHashCode(of = {"id"})
+public class AreaMapBranch extends BaseEntity{
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area")
+    private Area area;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch")

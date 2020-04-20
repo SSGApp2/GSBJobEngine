@@ -21,4 +21,7 @@ public class Zone extends BaseEntity {
     private String zoneType;
     private String status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lineBusiness")
+    private LineBusiness lineBusiness;
 }

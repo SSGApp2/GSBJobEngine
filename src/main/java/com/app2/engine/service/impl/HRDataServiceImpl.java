@@ -2,8 +2,11 @@ package com.app2.engine.service.impl;
 
 import com.app2.engine.entity.app.*;
 import com.app2.engine.repository.*;
+import com.app2.engine.repository.custom.AreaMapBranchRepositoryCustom;
+import com.app2.engine.repository.custom.ZoneMapAreaRepositoryCustom;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.SmbFileService;
+import com.app2.engine.util.AppUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,18 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Autowired
     SmbFileService smbFileService;
+
+    @Autowired
+    ZoneMapAreaRepository zoneMapAreaRepository;
+
+    @Autowired
+    ZoneMapAreaRepositoryCustom zoneMapAreaRepositoryCustom;
+
+    @Autowired
+    AreaMapBranchRepository areaMapBranchRepository;
+
+    @Autowired
+    AreaMapBranchRepositoryCustom areaMapBranchRepositoryCustom;
 
     @Override
     @Transactional
@@ -626,6 +641,108 @@ public class HRDataServiceImpl implements HRDataService {
                         }
                     }
                     LOGGER.debug(line);
+
+                    // get LineBusiness
+                    LineBusiness lineBusiness1 = null;
+                    if (AppUtil.isNotEmpty(lineBusiness)){
+                        List<LineBusiness> lineBusinesses = lineBusinessRepository.findByCode(lineBusiness);
+                        if (lineBusinesses.size() > 0){
+                            lineBusiness1 = lineBusinesses.get(0);
+                        }
+                    }
+
+                    // get Zone
+                    Zone zone1 = null;
+                    if (AppUtil.isNotEmpty(zone)){
+                        List<Zone> zones = zoneRepository.findByCode(zone);
+                        if (zones.size() > 0){
+                            zone1 = zones.get(0);
+                        }
+                    }
+
+                    // get Arae
+                    Area area1 = null;
+                    if (AppUtil.isNotEmpty(area)){
+                        List<Area> areas = areaRepository.findByCode(area);
+                        if (areas.size() > 0){
+                            area1 = areas.get(0);
+                        }
+                    }
+
+                    // get Branch
+                    Branch branch1 = null;
+                    if (AppUtil.isNotEmpty(branch)){
+                        List<Branch> branches = branchRepository.findByCode(branch);
+                        if (branches.size() > 0){
+                            branch1 = branches.get(0);
+                        }
+                    }
+
+                    // get Unit
+                    Unit unit1 = null;
+                    if (AppUtil.isNotEmpty(unit)){
+                        List<Unit> units = unitRepository.findByCode(unit);
+                        if (units.size() > 0){
+                            unit1 = units.get(0);
+                        }
+                    }
+
+                    // get Sub Unit
+                    Unit subUnit1 = null;
+                    if (AppUtil.isNotEmpty(subUnit)){
+                        List<Unit> subUnits = unitRepository.findByCode(subUnit);
+                        if (subUnits.size() > 0){
+                            subUnit1 = subUnits.get(0);
+                        }
+                    }
+
+                    // set LineBusiness of zone
+                    if (AppUtil.isNotNull(zone1)){
+                        zone1.setLineBusiness(lineBusiness1);
+                        zoneRepository.save(zone1);
+                    }
+
+                    // set zone map area
+                    if (AppUtil.isNotEmpty(zone1) && AppUtil.isNotEmpty(area1)) {
+                        List<ZoneMapArea> zoneMapAreas = zoneMapAreaRepositoryCustom.findByZoneCodeAndAreaCode(zone, area);
+                        if (zoneMapAreas.size() == 0) {
+                            ZoneMapArea zoneMapArea = new ZoneMapArea();
+                            zoneMapArea.setZone(zone1);
+                            zoneMapArea.setArea(area1);
+                            zoneMapAreaRepository.save(zoneMapArea);
+                        }
+                    }
+
+                    // set area map branch
+                    if (AppUtil.isNotEmpty(area1) && AppUtil.isNotEmpty(branch1)) {
+                        List<AreaMapBranch> areaMapBranches = areaMapBranchRepositoryCustom.fineByAreaCodeAndBranchCode(area, branch);
+                        if (areaMapBranches.size() == 0) {
+                            AreaMapBranch areaMapBranch = new AreaMapBranch();
+                            areaMapBranch.setArea(area1);
+                            areaMapBranch.setBranch(branch1);
+                        }
+                    }
+
+                    // set phone number of branch
+                    if (AppUtil.isNotEmpty(branch1)){
+                        branch1.setPhoneNumber(telephoneNumber);
+                        branchRepository.save(branch1);
+                    }
+
+                    // set branch of unit
+                    if (AppUtil.isNotEmpty(unit1)){
+                        unit1.setBranch(branch1);
+                        unitRepository.save(unit1);
+                    }
+
+                    // set parent of unit
+                    if (AppUtil.isNotEmpty(subUnit1)){
+                        if (AppUtil.isNotNull(unit1)){
+                            subUnit1.setUnitParent(unit1.getId());
+                            unitRepository.save(subUnit1);
+                        }
+
+                    }
                 }
             }
             LOGGER.info("Total Record : {}",count);
