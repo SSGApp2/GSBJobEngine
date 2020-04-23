@@ -508,79 +508,81 @@ public class HRDataServiceImpl implements HRDataService {
 
                 if (lineArr.length > 1) {
                     for (int i = 0; i < lineArr.length; i++) {
-                        switch (i) {
-                            case 0:
-                                code = lineArr[i];
-                                break;
-                            case 1:
-                                company = lineArr[i];
-                                break;
-                            case 2:
-                                orgGroup = lineArr[i];
-                                break;
-                            case 3:
-                                lineBusiness = lineArr[i];
-                                break;
-                            case 4:
-                                zone = lineArr[i];
-                                break;
-                            case 5:
-                                area = lineArr[i];
-                                break;
-                            case 6:
-                                branch = lineArr[i];
-                                break;
-                            case 7:
-                                unit = lineArr[i];
-                                break;
-                            case 8:
-                                subUnit = lineArr[i];
-                                break;
-                            case 9:
-                                costCenter = lineArr[i];
-                                break;
-                            case 10:
-                                description3level = lineArr[i];
-                                break;
-                            case 11:
-                                description1level = lineArr[i];
-                                break;
-                            case 12:
-                                affiliation = lineArr[i];
-                                break;
-                            case 13:
-                                rank = lineArr[i];
-                                break;
-                            case 14:
-                                subRank = lineArr[i];
-                                break;
-                            case 15:
-                                address1 = lineArr[i];
-                                break;
-                            case 16:
-                                address2 = lineArr[i];
-                                break;
-                            case 17:
-                                district = lineArr[i];
-                                break;
-                            case 18:
-                                province = lineArr[i];
-                                break;
-                            case 19:
-                                postcode = lineArr[i];
-                                break;
-                            case 20:
-                                telephoneNumber = lineArr[i];
-                                break;
-                            case 21:
-                                boundary = lineArr[i];
-                                break;
-                            case 22:
-                                subBoundary = lineArr[i];
-                                break;
-                            case 23:
-                                oldDept = lineArr[i];
-                                break;
+                        if (!lineArr[i].equals("00000000")){
+                            switch (i) {
+                                case 0:
+                                    code = lineArr[i];
+                                    break;
+                                case 1:
+                                    company = lineArr[i];
+                                    break;
+                                case 2:
+                                    orgGroup = lineArr[i];
+                                    break;
+                                case 3:
+                                    lineBusiness = lineArr[i];
+                                    break;
+                                case 4:
+                                    zone = lineArr[i];
+                                    break;
+                                case 5:
+                                    area = lineArr[i];
+                                    break;
+                                case 6:
+                                    branch = lineArr[i];
+                                    break;
+                                case 7:
+                                    unit = lineArr[i];
+                                    break;
+                                case 8:
+                                    subUnit = lineArr[i];
+                                    break;
+                                case 9:
+                                    costCenter = lineArr[i];
+                                    break;
+                                case 10:
+                                    description3level = lineArr[i];
+                                    break;
+                                case 11:
+                                    description1level = lineArr[i];
+                                    break;
+                                case 12:
+                                    affiliation = lineArr[i];
+                                    break;
+                                case 13:
+                                    rank = lineArr[i];
+                                    break;
+                                case 14:
+                                    subRank = lineArr[i];
+                                    break;
+                                case 15:
+                                    address1 = lineArr[i];
+                                    break;
+                                case 16:
+                                    address2 = lineArr[i];
+                                    break;
+                                case 17:
+                                    district = lineArr[i];
+                                    break;
+                                case 18:
+                                    province = lineArr[i];
+                                    break;
+                                case 19:
+                                    postcode = lineArr[i];
+                                    break;
+                                case 20:
+                                    telephoneNumber = lineArr[i];
+                                    break;
+                                case 21:
+                                    boundary = lineArr[i];
+                                    break;
+                                case 22:
+                                    subBoundary = lineArr[i];
+                                    break;
+                                case 23:
+                                    oldDept = lineArr[i];
+                                    break;
+                            }
                         }
                     }
 
@@ -594,8 +596,17 @@ public class HRDataServiceImpl implements HRDataService {
                         hrInterface.setZone(zone);
                         hrInterface.setArea(area);
                         hrInterface.setBranch(branch);
-                        hrInterface.setUnit(unit);
-                        hrInterface.setSubUnit(subUnit);
+                        if (AppUtil.isNotNull(unit)){
+                            hrInterface.setUnit(unit);
+                        } else {
+                            hrInterface.setUnit(costCenter);
+                        }
+
+                        if (AppUtil.isNotNull(subUnit)){
+                            hrInterface.setSubUnit(subUnit);
+                        } else {
+                            hrInterface.setSubUnit(costCenter);
+                        }
                         hrInterface.setCostCenter(costCenter);
                         hrInterface.setDescription3level(description3level);
                         hrInterface.setDescription1level(description1level);
@@ -620,8 +631,17 @@ public class HRDataServiceImpl implements HRDataService {
                             hrInterface.setZone(zone);
                             hrInterface.setArea(area);
                             hrInterface.setBranch(branch);
-                            hrInterface.setUnit(unit);
-                            hrInterface.setSubUnit(subUnit);
+                            if (AppUtil.isNotNull(unit)){
+                                hrInterface.setUnit(unit);
+                            } else {
+                                hrInterface.setUnit(costCenter);
+                            }
+
+                            if (AppUtil.isNotNull(subUnit)){
+                                hrInterface.setSubUnit(subUnit);
+                            } else {
+                                hrInterface.setSubUnit(costCenter);
+                            }
                             hrInterface.setCostCenter(costCenter);
                             hrInterface.setDescription3level(description3level);
                             hrInterface.setDescription1level(description1level);
@@ -726,6 +746,7 @@ public class HRDataServiceImpl implements HRDataService {
                     // set phone number of branch
                     if (AppUtil.isNotEmpty(branch1)){
                         branch1.setPhoneNumber(telephoneNumber);
+                        branch1.setCenterCost(costCenter);
                         branchRepository.save(branch1);
                     }
 
