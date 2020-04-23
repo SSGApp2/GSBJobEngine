@@ -30,4 +30,6 @@ public class Branch extends BaseEntity{
 
     private String docAutoType;
 
+    private String centerCost;
+
 }
