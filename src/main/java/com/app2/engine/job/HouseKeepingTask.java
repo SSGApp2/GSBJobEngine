@@ -42,7 +42,7 @@ public class HouseKeepingTask {
             batchTransaction=new BatchTransaction();
             batchTransaction.setControllerMethod("HouseKeepingTask.deleteAppuserHistoryTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("position");
+            batchTransaction.setName("houseKeeping");
             batchTransaction.setStatus("S");
             houseKeepingService.deleteDataByDay();
         } catch (Exception e) {

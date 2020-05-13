@@ -80,7 +80,7 @@ public class JobController {
     }
 
     @GetMapping("/houseKeeping")
-    public List<Map> deleteDataByDay() {
-        return houseKeepingService.deleteDataByDay();
+    public void deleteDataByDay() {
+         houseKeepingService.deleteDataByDay();
     }
 }

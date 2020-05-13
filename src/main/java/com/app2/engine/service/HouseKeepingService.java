@@ -8,5 +8,5 @@ import java.util.Map;
 
 
 public interface HouseKeepingService {
-    public List<Map> deleteDataByDay();
+    public  void deleteDataByDay();
 }
