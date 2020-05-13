@@ -34,9 +34,12 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         ApplicationConstant.GSBJobEngine = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "23");
         ApplicationConstant.GSBMailEngine = pDetail.getVariable1();
+        pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "24");
+        ApplicationConstant.GSBEngineLocal = pDetail.getVariable1();
 
         LOGGER.info("GSBAPPServer   :{}", ApplicationConstant.GSBAPPServer);
         LOGGER.info("GSBEngine   :{}", ApplicationConstant.GSBEngine);
+        LOGGER.info("GSBEngineLocal   :{}", ApplicationConstant.GSBEngineLocal);
         LOGGER.info("GSBJobEngine   :{}", ApplicationConstant.GSBJobEngine);
         LOGGER.info("GSBMailEngine   :{}", ApplicationConstant.GSBMailEngine);
 
