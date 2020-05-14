@@ -23,6 +23,7 @@ public abstract class AbstractEngineService {
         headers.add("Content-Type", "application/json; charset=utf-8");
         HttpEntity<String> entity = new HttpEntity<String>("", headers);
         String url = ApplicationConstant.GSBEngine + urlParam;
+//        String url = ApplicationConstant.GSBEngineLocal + urlParam;
         LOGGER.info(" request :{}", url);
         return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
     }
