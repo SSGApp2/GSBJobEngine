@@ -3,13 +3,12 @@ package com.app2.engine.controller;
 import com.app2.engine.service.DocumentTaskService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
+import com.app2.engine.service.NotificationTaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,9 @@ public class JobController {
 
     @Autowired
     HouseKeepingService houseKeepingService;
+
+    @Autowired
+    NotificationTaskService notificationTaskService;
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -82,5 +84,10 @@ public class JobController {
     @GetMapping("/houseKeeping")
     public void deleteDataByDay() {
          houseKeepingService.deleteDataByDay();
+    }
+
+    @GetMapping("/notification")
+    public void notification(@RequestParam("processType")String processType) {
+        notificationTaskService.notification(processType);
     }
 }
