@@ -64,7 +64,7 @@ public class NotificationTask {
     }
 
     @Transactional
-//    @Scheduled(cron = "* * * * * ?")
+    @Scheduled(cron = "0 1 0 * * ?")
     public void setNotiTimeFromDatabase() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -88,30 +88,30 @@ public class NotificationTask {
     @Scheduled(fixedDelay = 60000) // 60 second
     public void notificationTask() {
 
-//        if(this.equalTime(notiTimeGSB02)){
-//            this.batchTransactionNotification("2","NotificationTask.notiGSB02Task");
-//        }
+        if(this.equalTime(notiTimeGSB02)){
+            this.batchTransactionNotification("2","NotificationTask.notiGSB02Task");
+        }
         this.setNotiTimeFromDatabase();
 
         if(this.equalTime(notiTimeGSB03)){
             this.batchTransactionNotification("3","NotificationTask.notiGSB03Task");
         }
 
-//        if(this.equalTime(notiTimeGSB04)){
-//            this.batchTransactionNotification("4","NotificationTask.notiGSB04Task");
-//        }
-//
-//        if(this.equalTime(notiTimeGSB06)){
-//            this.batchTransactionNotification("6","NotificationTask.notiGSB06Task");
-//        }
-//
-//        if(this.equalTime(notiTimeGSB07)){
-//            this.batchTransactionNotification("7","NotificationTask.notiGSB07Task");
-//        }
-//
-//        if(this.equalTime(notiTimeGSB08)){
-//            this.batchTransactionNotification("8","NotificationTask.notiGSB08Task");
-//        }
+        if(this.equalTime(notiTimeGSB04)){
+            this.batchTransactionNotification("4","NotificationTask.notiGSB04Task");
+        }
+
+        if(this.equalTime(notiTimeGSB06)){
+            this.batchTransactionNotification("6","NotificationTask.notiGSB06Task");
+        }
+
+        if(this.equalTime(notiTimeGSB07)){
+            this.batchTransactionNotification("7","NotificationTask.notiGSB07Task");
+        }
+
+        if(this.equalTime(notiTimeGSB08)){
+            this.batchTransactionNotification("8","NotificationTask.notiGSB08Task");
+        }
 
     }
 
