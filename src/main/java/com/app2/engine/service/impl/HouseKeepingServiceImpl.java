@@ -52,10 +52,13 @@ public class HouseKeepingServiceImpl extends AbstractEngineService implements Ho
         String variable2 = parameterDetail.get(i).getVariable2();
         String variable3 = parameterDetail.get(i).getVariable3();
         String variable4 = parameterDetail.get(i).getVariable4();
+        String variable5 = parameterDetail.get(i).getVariable5();
         variable2 = variable2.replaceAll("expirationDate",variable1);
+        variable2 = variable2.replaceAll("documentStatus",variable5);
         LOGGER.debug("variable1    {}", parameterDetail.get(i).getVariable1());
         LOGGER.debug("variable3    {}", variable3);
         LOGGER.debug("variable4    {}", variable4);
+        LOGGER.debug("variable5    {}", variable5);
 //        LOGGER.debug("parameterDetail.size()    {}", parameterDetail.size());
 //        LOGGER.debug("i    {}", i);
 
