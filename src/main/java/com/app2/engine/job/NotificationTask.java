@@ -91,7 +91,6 @@ public class NotificationTask {
         if(this.equalTime(notiTimeGSB02)){
             this.batchTransactionNotification("2","NotificationTask.notiGSB02Task");
         }
-        this.setNotiTimeFromDatabase();
 
         if(this.equalTime(notiTimeGSB03)){
             this.batchTransactionNotification("3","NotificationTask.notiGSB03Task");
