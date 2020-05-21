@@ -10,5 +10,12 @@ public class ApplicationConstant {
     public static String GSBAPPServer;
     public static String GSBMailEngine;
 
+    public static String notifyTimeGSB02;
+    public static String notifyTimeGSB03;
+    public static String notifyTimeGSB04;
+    public static String notifyTimeGSB06;
+    public static String notifyTimeGSB07;
+    public static String notifyTimeGSB08;
+
 
 }
