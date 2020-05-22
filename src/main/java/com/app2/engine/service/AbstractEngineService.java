@@ -42,7 +42,7 @@ public abstract class AbstractEngineService {
 
     public ResponseEntity<String> postWithJsonCustom(String parameterMap, HttpMethod httpMethod, String urlParam) {
         RestTemplate restTemplate = new RestTemplate();
-        String url = ApplicationConstant.GSBEngineLocal + urlParam;
+        String url = ApplicationConstant.GSBEngine + urlParam;
 
         LOGGER.info("postWithJsonCustom url :{}", url);
 
