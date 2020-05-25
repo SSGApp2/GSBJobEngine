@@ -40,15 +40,15 @@ public class NotificationTask {
     private Boolean equalTime(String timeDb){
         Date date = new Date();
 
-        String hhCur = String.format("%02d",Integer.valueOf(String.valueOf(date.getHours())));
-        String mnCur = String.format("%02d",Integer.valueOf(String.valueOf(date.getMinutes())));
+        Integer hhCur = Integer.valueOf(String.valueOf(date.getHours()));
+        Integer mnCur = Integer.valueOf(String.valueOf(date.getMinutes()));
 
         if(AppUtil.isNotEmpty(timeDb)){
-            String hhNoti = String.format("%02d",Integer.valueOf(timeDb.split(":")[0]));
-            String mnNoti = String.format("%02d",Integer.valueOf(timeDb.split(":")[1]));
+            Integer hhNoti = Integer.valueOf(timeDb.split(":")[0]);
+            Integer mnNoti = Integer.valueOf(timeDb.split(":")[1]);
 
-            if(hhNoti.equals(hhCur)){
-                if(mnNoti.equals(mnCur)){
+            if(hhCur >= hhNoti){
+                if(mnCur >= mnNoti){
                     return true;
                 }
             }
@@ -149,9 +149,26 @@ public class NotificationTask {
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
+            this.clearTime(processType);
         }
 
         LOGGER.info("***************************************");
+    }
+
+    private void clearTime(String processType){
+        if(processType.equals("2")){
+            ApplicationConstant.notifyTimeGSB02 = "";
+        }else if(processType.equals("3")){
+            ApplicationConstant.notifyTimeGSB03 = "";
+        }else if(processType.equals("4")){
+            ApplicationConstant.notifyTimeGSB04 = "";
+        }else if(processType.equals("6")){
+            ApplicationConstant.notifyTimeGSB06 = "";
+        }else if(processType.equals("7")){
+            ApplicationConstant.notifyTimeGSB07 = "";
+        }else if(processType.equals("8")){
+            ApplicationConstant.notifyTimeGSB08 = "";
+        }
     }
 
 }
