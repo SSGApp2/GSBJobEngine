@@ -35,11 +35,11 @@
             <AppenderRef ref="ENGINEERROR"/>
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.spt" level="error" additivity="false">
+        <Logger name="com.app2" level="error" additivity="false">
             <AppenderRef ref="ENGINEERROR"/>
             <AppenderRef ref="Console"/>
         </Logger>
-        <Logger name="com.spt" level="debug" additivity="false">
+        <Logger name="com.app2" level="debug" additivity="false">
             <AppenderRef ref="ENGINE"/>
             <AppenderRef ref="Console"/>
         </Logger>
