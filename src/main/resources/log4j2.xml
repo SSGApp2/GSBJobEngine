@@ -1,43 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration>
+<Configuration status="error" monitorInterval="30">
+
+    <Properties>
+        <Property name="PID">????</Property>
+        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%wEx</Property>
+    </Properties>
+
     <Appenders>
-        <!-- Console Appender -->
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
-        <!-- File Appender -->
-        <File name="File" fileName="logfile.log">
-            <PatternLayout pattern="%d{yyyy-MMM-dd HH:mm:ss a} [%t] %-5level %logger{36} - %msg%n" />
-        </File>
-
+        <RollingFile name="ENGINE" fileName="${sys:java.io.tmpdir}/GSBJobEngine.log"
+                     filePattern="${sys:java.io.tmpdir}/$${date:yyyy-MM}/GSBJobEngine-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
+                <SizeBasedTriggeringPolicy size="30 MB"/> <!-- Or every 100 MB -->
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="ENGINEERROR" fileName="${sys:java.io.tmpdir}/GSBJobEngine-error.log"
+                     filePattern="${sys:java.io.tmpdir}/$${date:yyyy-MM}/GSBJobEngine-error-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
+                <SizeBasedTriggeringPolicy size="30 MB"/> <!-- Or every 100 MB -->
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
     </Appenders>
-
     <Loggers>
 
-        <!-- Log everything in custom package -->
-        <Logger name="com.app2.engine" level="debug" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
+        <Logger name="org.springframework" level="error" additivity="false">
+            <AppenderRef ref="ENGINEERROR"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.spt" level="error" additivity="false">
+            <AppenderRef ref="ENGINEERROR"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="com.spt" level="debug" additivity="false">
+            <AppenderRef ref="ENGINE"/>
+            <AppenderRef ref="Console"/>
         </Logger>
 
-
-        <!-- Log SQL statements -->
-        <Logger name="org.hibernate.SQL" level="off" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
-        </Logger>
-
-        <!-- Log JDBC bind parameters -->
-        <Logger name="org.hibernate.type.descriptor.sql" level="off" additivity="false">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
-        </Logger>
-
-
-        <Root level="error">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="File" />
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
         </Root>
-
     </Loggers>
 </Configuration>

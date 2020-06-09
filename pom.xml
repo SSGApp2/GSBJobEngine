@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.app2</groupId>
-	<artifactId>engine</artifactId>
+	<artifactId>GSBJobEngine</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>engine</name>
+	<name>GSBJobEngine</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
