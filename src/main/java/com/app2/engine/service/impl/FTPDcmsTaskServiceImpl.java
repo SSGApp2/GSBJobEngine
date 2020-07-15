@@ -12,11 +12,19 @@ import org.springframework.stereotype.Service;
 public class FTPDcmsTaskServiceImpl extends AbstractEngineService implements FTPDcmsTaskService {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    @Value("${Api.movementsCollection}")
+    @Value("${Api.MovementsCollection}")
     private String APIMovementsCollection;
+
+    @Value("${Api.AccountEndLegalUpdate}")
+    private String APIAccountEndLegalUpdate;
 
     @Override
     public ResponseEntity<String> movementsCollectionTask() {
         return getResultByExchange(APIMovementsCollection);
+    }
+
+    @Override
+    public ResponseEntity<String> accountEndLegalUpdateTask() {
+        return getResultByExchange(APIAccountEndLegalUpdate);
     }
 }
