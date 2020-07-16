@@ -51,6 +51,9 @@ public class FTPDcmsTask {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
+            }else {
+                String fileName = response.getBody();
+                smbFileService.copyRemoteFileToLocalFile(fileName);
             }
         }catch (Exception e){
             batchTransaction.setStatus("E");
