@@ -1,6 +1,7 @@
 package com.app2.engine.controller;
 
 import com.app2.engine.service.DocumentTaskService;
+import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import org.slf4j.Logger;
@@ -27,6 +28,9 @@ public class JobController {
 
     @Autowired
     HouseKeepingService houseKeepingService;
+
+    @Autowired
+    EmployeeADService employeeADService;
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -81,6 +85,11 @@ public class JobController {
 
     @GetMapping("/houseKeeping")
     public void deleteDataByDay() {
-         houseKeepingService.deleteDataByDay();
+        houseKeepingService.deleteDataByDay();
+    }
+
+    @GetMapping("/InsertOrUpdateEmp")
+    public void InsertOrUpdateEmp() {
+        employeeADService.InsertOrUpdateEmp();
     }
 }
