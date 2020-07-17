@@ -71,7 +71,7 @@ public class HRDataServiceImpl implements HRDataService {
         //update รหัสภาค/ฝ่าย
         try {
             String fileName = "HRREGION.TXT";
-            smbFileService.copyRemoteFileToLocalFile(fileName);
+//            smbFileService.copyRemoteFileToLocalFile(fileName);
 //            String pathName = "/home/thongchai/Documents/GSB/HRDATA/HRREGION.TXT";
             String pathName = smbFileService.copyRemoteFileToLocalFile(fileName);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");

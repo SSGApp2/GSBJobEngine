@@ -1,10 +1,12 @@
 package com.app2.engine.controller;
 
+
 import com.app2.engine.service.DocumentTaskService;
 import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.service.NotificationTaskService;
+import com.app2.engine.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,13 @@ public class JobController {
     HouseKeepingService houseKeepingService;
 
     @Autowired
-<<<<<<< HEAD
     NotificationTaskService notificationTaskService;
-=======
+
     EmployeeADService employeeADService;
->>>>>>> devth
+
+
+    @Autowired
+    private WRNService wrnService;
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -99,5 +103,15 @@ public class JobController {
     @GetMapping("/notification")
     public void notification(@RequestParam("processType")String processType) {
         notificationTaskService.notification(processType);
+    }
+
+    @GetMapping("/wrnConsent")
+    public void wrnConsent(){
+        wrnService.wrnConsent();
+    }
+
+    @GetMapping("/wrnTDR")
+    public void wrnTDR(){
+        wrnService.wrnTDR();
     }
 }
