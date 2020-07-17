@@ -33,8 +33,8 @@ public class JobController {
     @Autowired
     NotificationTaskService notificationTaskService;
 
+    @Autowired
     EmployeeADService employeeADService;
-
 
     @Autowired
     private WRNService wrnService;

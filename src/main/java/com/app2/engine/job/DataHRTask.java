@@ -2,6 +2,7 @@ package com.app2.engine.job;
 
 import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
+import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
@@ -22,6 +23,9 @@ public class DataHRTask {
 
     @Autowired
     BatchTransactionRepository batchTransactionRepository;
+
+    @Autowired
+    EmployeeADService employeeADService;
 
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -177,5 +181,20 @@ public class DataHRTask {
         }
         ///////////////////////////////////////////////////////////////////////////////////
         LOGGER.info("***************************************");
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("EmployeeADService.InsertOrUpdateEmp");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("InsertOrUpdateEmp");
+            batchTransaction.setStatus("S");
+            employeeADService.InsertOrUpdateEmp();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
     }
 }
