@@ -1,6 +1,7 @@
 package com.app2.engine.controller;
 
 import com.app2.engine.service.DocumentTaskService;
+import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.service.NotificationTaskService;
@@ -28,7 +29,11 @@ public class JobController {
     HouseKeepingService houseKeepingService;
 
     @Autowired
+<<<<<<< HEAD
     NotificationTaskService notificationTaskService;
+=======
+    EmployeeADService employeeADService;
+>>>>>>> devth
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -83,7 +88,12 @@ public class JobController {
 
     @GetMapping("/houseKeeping")
     public void deleteDataByDay() {
-         houseKeepingService.deleteDataByDay();
+        houseKeepingService.deleteDataByDay();
+    }
+
+    @GetMapping("/InsertOrUpdateEmp")
+    public void InsertOrUpdateEmp() {
+        employeeADService.InsertOrUpdateEmp();
     }
 
     @GetMapping("/notification")
