@@ -1,7 +1,9 @@
 package com.app2.engine.job;
 
 import com.app2.engine.entity.app.BatchTransaction;
+import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.BatchTransactionRepository;
+import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.FTPDcmsTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.DateUtil;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
@@ -34,6 +37,9 @@ public class FTPDcmsTask {
     @Autowired
     SmbFileService smbFileService;
 
+    @Autowired
+    ParameterDetailRepository parameterDetailRepository;
+
     @Transactional
 //    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
     public void movementsCollectionTask() {
@@ -51,15 +57,15 @@ public class FTPDcmsTask {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
-            }else {
+            } else {
                 String fileName = response.getBody();
-                smbFileService.copyRemoteFileToLocalFile(fileName);
+                smbFileService.copyLocalFileToRemoteFile(fileName);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage());
-        }finally {
+        } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
@@ -83,17 +89,37 @@ public class FTPDcmsTask {
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
-            }else{
+            } else {
                 String pathFile = response.getBody();
                 smbFileService.copyLocalFileToRemoteFile(pathFile);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage());
-        }finally {
+        } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+//    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
+    public void masterData() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Copy File MasterData");
+
+        try {
+            String parameterCode = "MASTERDATA_FILE";
+            smbFileService.copyRemoteFolderToLocalFolder(parameterCode);
+
+            ftpDcmsTaskService.masterData();
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            throw new RuntimeException(e);
         }
         LOGGER.info("***************************************");
     }

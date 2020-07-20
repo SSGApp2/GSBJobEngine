@@ -1,7 +1,9 @@
 package com.app2.engine.service.impl;
 
+import com.app2.engine.entity.app.Parameter;
 import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.ParameterDetailRepository;
+import com.app2.engine.repository.ParameterRepository;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
 import jcifs.smb.NtlmPasswordAuthentication;
@@ -17,6 +19,9 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class SmbFileServiceImpl implements SmbFileService {
@@ -24,6 +29,9 @@ public class SmbFileServiceImpl implements SmbFileService {
 
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
+
+    @Autowired
+    ParameterRepository parameterRepository;
 
     @Override
     public String copyRemoteFileToLocalFile(String fileName) {
@@ -122,7 +130,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             } else {
                 File dest = new File(pDetail.getVariable9() + "/" + fileName);
                 File source = new File(backup + "/" + fileName);
-                FileUtils.copyFile(source,dest);
+            FileUtils.copyFile(source,dest);
                 pathFileLocal = source.getPath();
             }
         } catch (Exception e) {
@@ -133,6 +141,89 @@ public class SmbFileServiceImpl implements SmbFileService {
         return pathFileLocal;
     }
 
+    @Override
+    public String copyRemoteFolderToLocalFolder(String parameterCode) {
+        LOGGER.info("====> copyRemoteFolderToLocalFolder");
+        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+        String today = timeLog + ".txt";
+
+        ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "10");
+        String path = pDetail.getVariable1();
+        String username = pDetail.getVariable2();
+        String password = pDetail.getVariable3();
+        String backup = pDetail.getVariable4();
+        LOGGER.debug("smbPath    {}", path);
+        LOGGER.debug("username      {}", username);
+        LOGGER.debug("password      {}", password);
+        LOGGER.debug("localPath    {}", backup);
+        String pathFileLocal = null;
+
+        Parameter parameter = parameterRepository.findByCode(parameterCode);
+        List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+        try {
+            if (AppUtil.isNull(pDetail.getVariable9())) {
+                //From SMTP
+                NtlmPasswordAuthentication authentication = new NtlmPasswordAuthentication("", username, password);
+
+                File pathFile = new File(path);
+                File filesList[] = pathFile.listFiles();
+                for (File file : filesList) {
+                    String fileName = file.getName();
+
+                    for (ParameterDetail detail : parameterDetails) {
+                        String fileNameToDay = detail.getVariable1() + today;
+
+                        if (fileName.equals(fileNameToDay)) {
+                            SmbFile remoteFile = new SmbFile(path + "/" + fileName, authentication);
+                            remoteFile.connect(); //Try to connect
+                            SmbFileInputStream in = new SmbFileInputStream(remoteFile);
+
+                            File localFile = new File(backup + "/" + fileName);
+                            if (!localFile.exists()) {
+                                localFile.getParentFile().mkdirs();
+                                localFile.createNewFile();
+                            }
+                            FileOutputStream out = new FileOutputStream(localFile, false);
+
+
+                            byte[] buffer = new byte[16904];
+                            int read = 0;
+                            while ((read = in.read(buffer)) > 0)
+                                out.write(buffer, 0, read);
+
+                            in.close();
+                            out.close();
+                            pathFileLocal = localFile.getPath();
+                        }
+                    }
+                }
+
+            } else {
+                File pathFile = new File(path);
+                File filesList[] = pathFile.listFiles();
+                for (File file : filesList) {
+                    String source = file.getPath();
+                    String fileName = file.getName();
+
+                    for (ParameterDetail detail : parameterDetails) {
+                        String fileNameToDay = detail.getVariable1() + today;
+
+                        if (fileName.equals(fileNameToDay)) {
+                            File dest = new File(backup + "/" + fileName);
+                            FileUtils.copyFile(new File(source), dest);
+                            pathFileLocal = dest.getPath();                        }
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        LOGGER.debug("pathFileLocal {}", pathFileLocal);
+        return pathFileLocal;
+    }
 
     private void deleteFileERP(String fileName) {
 
