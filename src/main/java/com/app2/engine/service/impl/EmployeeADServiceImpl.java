@@ -1,7 +1,7 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.EmployeeInternal;
-import com.app2.engine.repository.EmployeeInternalRepository;
+import com.app2.engine.entity.app.*;
+import com.app2.engine.repository.*;
 import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
@@ -13,11 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class EmployeeADServiceImpl implements EmployeeADService {
@@ -28,6 +27,20 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     @Autowired
     SmbFileService smbFileService;
 
+    @Autowired
+    BranchRepository branchRepository;
+
+    @Autowired
+    OrgGroupRepository orgGroupRepository;
+
+    @Autowired
+    LineBusinessRepository lineBusinessRepository;
+
+    @Autowired
+    ZoneRepository zoneRepository;
+
+    @Autowired
+    UnitRepository unitRepository;
 
     enum ADEmployee {
         employeeID, givenName, sn, displayName, description, title, employeeNumber, employeeType, postOfficeBox, mail, department, l, st, postalCode, division, otherPager, otherhomephone, otherIpPhone, streetAddress, userAccountControl, sAMAccountName, otherTelephone
@@ -42,6 +55,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     public void InsertOrUpdateEmp() {
         LOGGER.debug("Start InsertOrUpdateEmp {}", DateUtil.getCurrentDate());
         try {
+//            String fileName = "AD_20200525-Edit.csv";
             String fileName = "AD_20200525.csv";
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
             String pathName = smbFileService.copyRemoteFileToLocalFile(fileName);
@@ -57,23 +71,66 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 
                     String empId = record.get(ADEmployee.employeeID);
                     String nameDesc = record.get(ADEmployee.description);
-                    String fName = null, lName = null;
-                    String fullName = null;
+                    String fName = null, lName = null, OU = null, orgGroupCode = null, lineBusinessCode = null, zoneCode = null, areaCode = null, branchCode = null, unitCode = null, subUnit = null;
+                    String fullName = null, departmentForLead = null;
                     String empType = record.get(ADEmployee.employeeType);
                     String username = record.get(ADEmployee.sAMAccountName);
+                    ///////////////////////////////////////////
+                    OrgGroup orgGroup = null;
+                    LineBusiness lineBusiness = null;
+                    Zone zone = null;
+                    Branch branch = null;
+                    Unit unit = null;
+                    ///////////////////////////////////////////
+
                     if (AppUtil.isNotEmpty(nameDesc)) {
                         fName = nameDesc.split(" ")[0];
                         lName = nameDesc.split(" ")[1];
                         fullName = fName + " " + lName;
                     }
+                    String division = record.get(ADEmployee.division);
+                    if (AppUtil.isNotEmpty(division)) {
+                        List<String> array = new ArrayList<>();
+                        String value = "";
+                        for (int i = 1; i <= division.length(); i++) {
+                            value += division.charAt(i - 1);
+                            if (i % 8 == 0) {
+                                array.add(value);
+                                value = "";
+                            }
+                        }
+                        LOGGER.debug("ARRAY 64 {}", array);
+                        if (array.size() == 8) {
+                            OU = array.get(0);
+                            orgGroup = orgGroupRepository.findOneByCode(array.get(1));
+                            lineBusiness = lineBusinessRepository.findOneByCode(array.get(2));
+                            zoneCode = array.get(3);
+                            zone = zoneRepository.findOneByCode(zoneCode);
+                            areaCode = array.get(4);
+                            branchCode = array.get(5);
+                            if (branchCode.equals("00000000")) {
+                                departmentForLead = zoneCode;
+                            } else {
+                                branch = branchRepository.findOneByCode(branchCode);
+                                departmentForLead = branchCode;
+                            }
+
+                            unit = unitRepository.findOneByCode(array.get(6));
+                            subUnit = array.get(7);
+                        }
+                    }
                     String email = record.get(ADEmployee.mail);
-                    LOGGER.debug(empId);
-                    LOGGER.debug(fName);
-                    LOGGER.debug(lName);
-                    LOGGER.debug(email);
-                    LOGGER.debug(empType);
-                    LOGGER.debug(username);
+                    LOGGER.debug("empId :{}", empId);
+                    LOGGER.debug("fName :{}", fName);
+                    LOGGER.debug("lName :{}", lName);
+                    LOGGER.debug("email :{}", email);
+                    LOGGER.debug("empType :{}", empType);
+                    LOGGER.debug("username :{}", username);
+                    LOGGER.debug("division :{}", division);
+
+
                     if (AppUtil.isNotEmpty(username)) {
+
                         EmployeeInternal empInternal = empRepo.findByUsername(username);
                         if (AppUtil.isNull(empInternal)) {
                             empInternal = new EmployeeInternal();
@@ -85,6 +142,14 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                         empInternal.setFirstName(fName);
                         empInternal.setLastName(lName);
                         empInternal.setEmpType(empType);
+
+                        empInternal.setOrgGroup(orgGroup);
+                        empInternal.setLineBusiness(lineBusiness);
+                        empInternal.setZone(zone);
+                        empInternal.setUnit(unit);
+                        empInternal.setBranch(branch);
+                        empInternal.setDepartmentForLead(departmentForLead);
+
                         empRepo.save(empInternal);
                     }
                     LOGGER.debug("===========================================================");
@@ -97,3 +162,4 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 
     }
 }
+

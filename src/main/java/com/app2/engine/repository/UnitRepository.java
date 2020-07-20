@@ -10,6 +10,9 @@ import java.util.List;
 public interface UnitRepository extends JpaRepository<Unit, Long> {
     List<Unit> findByCode(@Param("code") String code);
 
+    Unit findOneByCode(@Param("code") String code);
+
+
     @Query("select o  from Unit o where o.code not in :codeList or o.code is null")
     List<Unit> findByCodeNotIn(@Param("codeList") List<String> codeList);
 }

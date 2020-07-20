@@ -11,6 +11,8 @@ public interface LineBusinessRepository extends JpaRepository<LineBusiness, Long
 
     List<LineBusiness> findByCode(@Param("code") String code);
 
+    LineBusiness findOneByCode(@Param("code") String code);
+
     @Query("select o  from LineBusiness o where o.code not in :codeList or o.code is null")
     List<LineBusiness> findByCodeNotIn(@Param("codeList") List<String> codeList);
 }

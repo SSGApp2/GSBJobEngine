@@ -39,4 +39,25 @@ public class EmployeeInternal extends BaseEntity {
     private String empType;
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "unit")
+    private Unit unit; //ศูนย์ควบคุมและบริหารหนี้
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "zone")
+    private Zone zone; // (ภาค/ฝ่าย)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch")
+    private Branch branch; //Branch (สาขา/ศูนย์)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "orgGroup")
+    private OrgGroup orgGroup;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lineBusiness")
+    private LineBusiness lineBusiness;
+
 }

@@ -12,6 +12,8 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     List<Branch> findByCode(@Param("code") String code);
 
+    Branch findOneByCode(@Param("code") String code);
+
     @Query("select o  from Branch o where o.code not in :codeList or o.code is null")
     List<Branch> findByCodeNotIn(@Param("codeList") List<String> codeList);
 }

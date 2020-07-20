@@ -10,6 +10,9 @@ import java.util.List;
 public interface ZoneRepository extends JpaRepository<Zone, Long> {
     List<Zone> findByCode(@Param("code")String code);
 
+    Zone findOneByCode(@Param("code")String code);
+
     @Query("select o  from Zone o where o.code not in :codeList or o.code is null")
     List<Zone> findByCodeNotIn(@Param("codeList") List<String> codeList);
 }
+
