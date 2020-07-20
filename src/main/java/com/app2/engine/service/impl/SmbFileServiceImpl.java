@@ -148,12 +148,10 @@ public class SmbFileServiceImpl implements SmbFileService {
         String today = timeLog + ".txt";
 
         ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "10");
-//        String path = pDetail.getVariable1();
-        String path = "C:/Users/SOFT-SQUARE/Desktop/GSB/RemoteFolder";
+        String path = pDetail.getVariable1();
         String username = pDetail.getVariable2();
         String password = pDetail.getVariable3();
-//        String backup = pDetail.getVariable4();
-        String backup = "C:/Users/SOFT-SQUARE/Desktop/GSB/backup";
+        String backup = pDetail.getVariable4();
         LOGGER.debug("smbPath    {}", path);
         LOGGER.debug("username      {}", username);
         LOGGER.debug("password      {}", password);
