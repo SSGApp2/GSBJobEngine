@@ -32,7 +32,7 @@ public class FTPDcmsTaskServiceImpl extends AbstractEngineService implements FTP
     }
 
     @Override
-    public ResponseEntity<String> masterData() {
+    public ResponseEntity<String> masterDataTask() {
         return getResultByExchange(APIMasterData);
     }
 }
