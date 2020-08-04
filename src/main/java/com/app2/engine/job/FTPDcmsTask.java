@@ -1,26 +1,20 @@
 package com.app2.engine.job;
 
 import com.app2.engine.entity.app.BatchTransaction;
-import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.FTPDcmsTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.DateUtil;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Component
 public class FTPDcmsTask {
@@ -106,16 +100,16 @@ public class FTPDcmsTask {
 
     @Transactional
 //    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
-    public void masterData() {
+    public void masterDataTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterData");
+        LOGGER.info("Start Copy File MasterDataTask");
 
         try {
             String parameterCode = "MASTERDATA_FILE";
             smbFileService.copyRemoteFolderToLocalFolder(parameterCode);
 
-            ftpDcmsTaskService.masterData();
+            ftpDcmsTaskService.masterDataTask();
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage());
