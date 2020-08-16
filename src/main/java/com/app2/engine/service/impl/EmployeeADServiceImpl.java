@@ -42,6 +42,9 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     @Autowired
     UnitRepository unitRepository;
 
+    @Autowired
+    PositionRepository positionRepository;
+
     enum ADEmployee {
         employeeID, givenName, sn, displayName, description, title, employeeNumber, employeeType, postOfficeBox, mail, department, l, st, postalCode, division, otherPager, otherhomephone, otherIpPhone, streetAddress, userAccountControl, sAMAccountName, otherTelephone
     }
@@ -75,12 +78,14 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                     String fullName = null, departmentForLead = null;
                     String empType = record.get(ADEmployee.employeeType);
                     String username = record.get(ADEmployee.sAMAccountName);
+                    String posName = record.get(ADEmployee.title);
                     ///////////////////////////////////////////
                     OrgGroup orgGroup = null;
                     LineBusiness lineBusiness = null;
                     Zone zone = null;
                     Branch branch = null;
                     Unit unit = null;
+                    Position position = null;
                     ///////////////////////////////////////////
 
                     if (AppUtil.isNotEmpty(nameDesc)) {
@@ -119,6 +124,13 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                             subUnit = array.get(7);
                         }
                     }
+                    if (AppUtil.isNotEmpty(posName)) {
+                        Position posQuery = positionRepository.findByName(posName.trim());
+                        if (AppUtil.isNotNull(posQuery)) {
+                            position = posQuery;
+                        }
+                    }
+
                     String email = record.get(ADEmployee.mail);
                     LOGGER.debug("empId :{}", empId);
                     LOGGER.debug("fName :{}", fName);
@@ -127,6 +139,8 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                     LOGGER.debug("empType :{}", empType);
                     LOGGER.debug("username :{}", username);
                     LOGGER.debug("division :{}", division);
+                    LOGGER.debug("posName :{}", posName);
+
 
 
                     if (AppUtil.isNotEmpty(username)) {
@@ -137,6 +151,8 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                             empInternal.setUsername(username);
 
                         }
+
+                        empInternal.setPosition(position);
                         empInternal.setEmail(email);
                         empInternal.setFullName(fullName);
                         empInternal.setFirstName(fName);

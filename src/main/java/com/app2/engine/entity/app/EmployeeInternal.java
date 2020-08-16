@@ -38,6 +38,10 @@ public class EmployeeInternal extends BaseEntity {
 
     private String empType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position")
+    private Position position; //ตำแหน่ง
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "unit")

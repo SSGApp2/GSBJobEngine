@@ -9,4 +9,6 @@ import java.util.List;
 public interface PositionRepository extends JpaRepository<Position, Long> {
 
     List<Position> findByCodeAndSubCode(@Param("code") String code, @Param("subCode") String subCode);
+
+    Position findByName(@Param("name") String name);
 }
