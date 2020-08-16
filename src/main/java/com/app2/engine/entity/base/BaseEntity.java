@@ -15,10 +15,13 @@ import java.util.Date;
 @EntityListeners(EntityListener.class)
 public abstract class BaseEntity implements Serializable {
 
+
+//    @GenericGenerator(name = "auto", strategy = "increment")
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+//    @Column(unique = true, nullable = false, scale = 0)
     @Id
-    @GenericGenerator(name = "auto", strategy = "increment")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, nullable = false, scale = 0)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
 
     @Version
