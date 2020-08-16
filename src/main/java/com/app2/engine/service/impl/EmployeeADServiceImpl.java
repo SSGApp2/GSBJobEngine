@@ -77,7 +77,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                     String fName = null, lName = null, OU = null, orgGroupCode = null, lineBusinessCode = null, zoneCode = null, areaCode = null, branchCode = null, unitCode = null, subUnit = null;
                     String fullName = null, departmentForLead = null;
                     String empType = record.get(ADEmployee.employeeType);
-                    String username = record.get(ADEmployee.sAMAccountName);
+                    String username = record.get(ADEmployee.sAMAccountName).toLowerCase();
                     String posName = record.get(ADEmployee.title);
                     ///////////////////////////////////////////
                     OrgGroup orgGroup = null;
