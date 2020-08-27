@@ -53,7 +53,7 @@ public class FTPDcmsTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String fileName = response.getBody();
-                smbFileService.copyLocalFileToRemoteFile(fileName);
+                smbFileService.localFileToRemoteFile(fileName,"DCMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -85,7 +85,7 @@ public class FTPDcmsTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String pathFile = response.getBody();
-                smbFileService.copyLocalFileToRemoteFile(pathFile);
+                smbFileService.localFileToRemoteFile(pathFile,"DCMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");

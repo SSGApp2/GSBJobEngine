@@ -61,7 +61,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 //            String fileName = "AD_20200525-Edit.csv";
             String fileName = "AD_20200525.csv";
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
-            String pathName = smbFileService.copyRemoteFileToLocalFile(fileName);
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"AD");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
