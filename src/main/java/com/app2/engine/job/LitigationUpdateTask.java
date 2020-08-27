@@ -25,7 +25,7 @@ public class LitigationUpdateTask {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+//    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
     public void litigationUpdateTask() {
         LOGGER.info("***************** WRN *********************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
