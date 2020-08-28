@@ -10,7 +10,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
 
     @Override
     public ResponseEntity<String> ACNStartLegal() {
-        String url = "/jobs/createDocumentAutoByCifDebtor";
+        String url = "/jobs/ACNStartLegal";
         return getResultByExchange(url);
     }
 }
