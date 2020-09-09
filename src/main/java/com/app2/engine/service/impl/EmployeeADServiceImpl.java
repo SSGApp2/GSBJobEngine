@@ -2,6 +2,7 @@ package com.app2.engine.service.impl;
 
 import com.app2.engine.entity.app.*;
 import com.app2.engine.repository.*;
+import com.app2.engine.repository.custom.AppUserRepositoryCustom;
 import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
@@ -45,6 +46,12 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     @Autowired
     PositionRepository positionRepository;
 
+    @Autowired
+    AppUserRepository appUserRepository;
+
+    @Autowired
+    AppUserRepositoryCustom appUserRepositoryCustom;
+
     enum ADEmployee {
         employeeID, givenName, sn, displayName, description, title, employeeNumber, employeeType, postOfficeBox, mail, department, l, st, postalCode, division, otherPager, otherhomephone, otherIpPhone, streetAddress, userAccountControl, sAMAccountName, otherTelephone
     }
@@ -67,7 +74,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withHeader(ADEmployee.class).parse(streamReader);
             LOGGER.debug("Path File {}", pathName);
-
+            List<String> usernameActive = new ArrayList<>();
             for (CSVRecord record : records) {
                 Long row = record.getRecordNumber();
                 if (row > 1) {
@@ -142,15 +149,22 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                     LOGGER.debug("posName :{}", posName);
 
 
-
                     if (AppUtil.isNotEmpty(username)) {
-
+                        usernameActive.add(username);
                         EmployeeInternal empInternal = empRepo.findByUsername(username);
                         if (AppUtil.isNull(empInternal)) {
                             empInternal = new EmployeeInternal();
                             empInternal.setUsername(username);
-
                         }
+                        AppUser appUser = appUserRepository.findByUsernameInternal(username);
+                        if (AppUtil.isNull(appUser)) { //add appuser when new employee
+                            appUser = new AppUser();
+                            appUser.setUsername(username);
+                            appUser.setUserType("I"); //internal
+                            appUser.setStatus("A"); //Active
+                            appUserRepository.save(appUser);
+                        }
+
 
                         empInternal.setPosition(position);
                         empInternal.setEmail(email);
@@ -171,6 +185,17 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                     LOGGER.debug("===========================================================");
                 }
             }
+            if (!usernameActive.isEmpty()) {
+                //Set Appuser to Status R
+                LOGGER.debug("usernameActive Size {}", usernameActive.size());
+                List<AppUser> userNotActive = appUserRepositoryCustom.updateStatusRetire(usernameActive);
+                LOGGER.debug("userNotActive Size {}", userNotActive);
+                for (AppUser appUser : userNotActive) {
+                    appUser.setStatus("R"); //set Retire
+                    appUserRepository.save(appUser);
+                }
+            }
+            LOGGER.debug("Success update Employee !!");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
