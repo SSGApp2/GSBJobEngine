@@ -18,9 +18,6 @@ public class FTPDcmsTaskServiceImpl extends AbstractEngineService implements FTP
     @Value("${Api.AccountEndLegalUpdate}")
     private String APIAccountEndLegalUpdate;
 
-    @Value("${Api.MasterData}")
-    private String APIMasterData;
-
     @Override
     public ResponseEntity<String> movementsCollectionTask() {
         return getResultByExchange(APIMovementsCollection);
@@ -29,10 +26,5 @@ public class FTPDcmsTaskServiceImpl extends AbstractEngineService implements FTP
     @Override
     public ResponseEntity<String> accountEndLegalUpdateTask() {
         return getResultByExchange(APIAccountEndLegalUpdate);
-    }
-
-    @Override
-    public ResponseEntity<String> masterDataTask() {
-        return getResultByExchange(APIMasterData);
     }
 }
