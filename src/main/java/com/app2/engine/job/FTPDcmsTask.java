@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
@@ -94,26 +95,6 @@ public class FTPDcmsTask {
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
-
-    @Transactional
-//    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
-    public void masterDataTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataTask");
-
-        try {
-            String parameterCode = "MASTERDATA_FILE";
-            smbFileService.copyRemoteFolderToLocalFolder(parameterCode);
-
-            ftpDcmsTaskService.masterDataTask();
-
-        } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
-            throw new RuntimeException(e);
         }
         LOGGER.info("***************************************");
     }
