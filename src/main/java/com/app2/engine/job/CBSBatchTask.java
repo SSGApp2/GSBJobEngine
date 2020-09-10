@@ -96,7 +96,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "01");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataCountryTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -138,7 +138,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "02");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProvinceTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -180,7 +180,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "03");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataDistrictTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -222,7 +222,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "04");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataSubDistrictTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -265,7 +265,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -307,7 +307,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -349,7 +349,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -391,7 +391,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -433,7 +433,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -475,7 +475,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "10");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataMarketCodeTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -517,7 +517,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "11");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductGroupTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -559,7 +559,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "12");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductSubtypeTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -601,7 +601,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "13");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductTypeTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -643,7 +643,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "14");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataCourtTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -685,7 +685,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "15");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataLEOITask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -727,7 +727,7 @@ public class CBSBatchTask {
             String today = timeLog + ".txt";
             ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "16");
             fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataTitleTask(fileName);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");

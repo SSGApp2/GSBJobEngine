@@ -53,87 +53,127 @@ public class SmbFileServiceImpl implements SmbFileService {
 
     @Override
     public String remoteFileToLocalFile(String fileName, String topic) {
-        //ToLEAD
+        //folder ToLEAD --> folder Download
         String remoteDir  = null;
         String localDir = null;
         Session session = null;
         ChannelSftp channelSftp = null;
-//        try {
-//
-//            localDir =  pathLocalDir(topic,"download");
-//            remoteDir =  pathRemoteDir(topic,"download");
-//
-//            JSch jsch = new JSch();
-//            session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
-//            session.setPassword(LEAD_PASSWORD);
-//
-//            java.util.Properties config = new java.util.Properties();
-//            config.put("StrictHostKeyChecking", "no");
-//
-//            session.setConfig(config);
-//            session.connect();
-//            channelSftp = (ChannelSftp) session.openChannel("sftp");
-//            channelSftp.connect();
-//
-//            channelSftp.get(remoteDir+"/"+fileName,localDir);
-//
-//            channelSftp.disconnect();
-//            session.disconnect();
-//        } finally {
-//            if (channelSftp != null && channelSftp.isConnected()) {
-//                channelSftp.disconnect();
-//            }
-//
-//            if (session != null && session.isConnected()) {
-//                session.disconnect();
-//            }
-//            return localDir+"/"+fileName;
-//        }
-        return null;
+        try {
+
+            localDir =  pathLocalDir(topic,"download");
+            remoteDir =  pathRemoteDir(topic,"download");
+
+            LOGGER.debug("localDir {}", localDir);
+            LOGGER.debug("remoteDir {}", remoteDir);
+
+            JSch jsch = new JSch();
+            session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
+            session.setPassword(LEAD_PASSWORD);
+            LOGGER.debug("LEAD_USERNAME {}", LEAD_USERNAME);
+            LOGGER.debug("LEAD_SERVER_ADDRESS {}", LEAD_SERVER_ADDRESS);
+            LOGGER.debug("LEAD_SERVER_PORT {}", LEAD_SERVER_PORT);
+            LOGGER.debug("LEAD_PASSWORD {}", LEAD_PASSWORD);
+
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+
+            session.setConfig(config);
+            session.connect();
+            LOGGER.debug("session.connect  !!");
+
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
+            LOGGER.debug("channelSftp.connect  !!");
+
+            String src =remoteDir+"/"+fileName;
+            LOGGER.debug("src  {}",src);
+            channelSftp.get(src,localDir);
+
+            channelSftp.disconnect();
+            LOGGER.debug("channelSftp.disconnect  !!");
+
+            session.disconnect();
+            LOGGER.debug("session.disconnect  !!");
+
+        }catch (Exception e){
+            LOGGER.error("Error {}", e.getMessage(),e);
+        }finally {
+            if (channelSftp != null && channelSftp.isConnected()) {
+                channelSftp.disconnect();
+            }
+
+            if (session != null && session.isConnected()) {
+                session.disconnect();
+            }
+
+            String result = localDir+"/"+fileName;
+            LOGGER.debug("result  {}",result);
+
+            return result;
+
+        }
+//        return null;
     }
 
     @Override
     public String localFileToRemoteFile(String fileName, String topic) {
-        //FormLEAD
+        //folder upload --> folder FormLEAD
         String remoteDir = null;
         String localDir = null;
         Session session = null;
-//        ChannelSftp channelSftp = null;
-//        try {
-//
-//            localDir =  pathLocalDir(topic,"upload");
-//            remoteDir =  pathRemoteDir(topic,"upload");
-//
-//            JSch jsch = new JSch();
-//            session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
-//            session.setPassword(LEAD_PASSWORD);
-//
-//            java.util.Properties config = new java.util.Properties();
-//            config.put("StrictHostKeyChecking", "no");
-//
-//            session.setConfig(config);
-//            session.connect();
-//            channelSftp = (ChannelSftp) session.openChannel("sftp");
-//            channelSftp.connect();
-//            channelSftp.cd(remoteDir);
-//
-//            File initialFile = new File(localDir+"/"+fileName);
-//            InputStream targetStream = new FileInputStream(initialFile);
-//
-//            channelSftp.put(targetStream, initialFile.getName(), ChannelSftp.OVERWRITE);
-//            channelSftp.disconnect();
-//            session.disconnect();
-//        } finally {
-//            if (channelSftp != null && channelSftp.isConnected()) {
-//                channelSftp.disconnect();
-//            }
-//
-//            if (session != null && session.isConnected()) {
-//                session.disconnect();
-//            }
-//            return localDir;
-//        }
-        return null;
+        ChannelSftp channelSftp = null;
+        try {
+
+            localDir =  pathLocalDir(topic,"upload");
+            remoteDir =  pathRemoteDir(topic,"upload");
+            LOGGER.debug("localDir {}", localDir);
+            LOGGER.debug("remoteDir {}", remoteDir);
+
+            JSch jsch = new JSch();
+            session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
+            session.setPassword(LEAD_PASSWORD);
+            LOGGER.debug("LEAD_USERNAME {}", LEAD_USERNAME);
+            LOGGER.debug("LEAD_SERVER_ADDRESS {}", LEAD_SERVER_ADDRESS);
+            LOGGER.debug("LEAD_SERVER_PORT {}", LEAD_SERVER_PORT);
+            LOGGER.debug("LEAD_PASSWORD {}", LEAD_PASSWORD);
+
+            java.util.Properties config = new java.util.Properties();
+            config.put("StrictHostKeyChecking", "no");
+
+            session.setConfig(config);
+            session.connect();
+            LOGGER.debug("session.connect  !!");
+
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
+            LOGGER.debug("channelSftp.connect  !!");
+            channelSftp.cd(remoteDir);
+
+            String src = localDir+"/"+fileName;
+            LOGGER.debug("src  {}",src);
+            File initialFile = new File(src);
+            InputStream targetStream = new FileInputStream(initialFile);
+
+            channelSftp.put(targetStream, initialFile.getName(), ChannelSftp.OVERWRITE);
+            channelSftp.disconnect();
+            LOGGER.debug("channelSftp.disconnect  !!");
+
+            session.disconnect();
+            LOGGER.debug("session.disconnect  !!");
+
+        }catch (Exception e){
+            LOGGER.error("Error {}", e.getMessage(),e);
+        } finally {
+            if (channelSftp != null && channelSftp.isConnected()) {
+                channelSftp.disconnect();
+            }
+
+            if (session != null && session.isConnected()) {
+                session.disconnect();
+            }
+            return localDir;
+        }
+//        return null;
     }
 
     @Override
@@ -259,15 +299,15 @@ public class SmbFileServiceImpl implements SmbFileService {
 
         if(topic.equals("DCMS")){
             parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","01");
-        }else if(topic.equals("CBS")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","02");
         }else if(topic.equals("CMS")){
+            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","02");
+        }else if(topic.equals("CBS")){
             parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","03");
         }else if(topic.equals("AD")){
             parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","04");
-        }else if(topic.equals("WRN")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","05");
         }else if(topic.equals("HR")){
+            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","05");
+        }else if(topic.equals("WRN")){
             parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","06");
         }
 
