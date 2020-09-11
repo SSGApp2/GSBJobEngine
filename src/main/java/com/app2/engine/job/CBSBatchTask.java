@@ -749,4 +749,36 @@ public class CBSBatchTask {
         }
         LOGGER.info("***************************************");
     }
+
+    @Transactional
+    @Scheduled(cron = "0 30 03 * * *") //ss mm hh every day
+    public void batchZLETask() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File batchZLETask");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.batchZLETask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("batchZLETask");
+            batchTransaction.setStatus("S");
+            ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String fileName = response.getBody();
+                smbFileService.localFileToRemoteFile(fileName,"CBS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
 }
