@@ -109,4 +109,10 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         String url = "/jobs/masterDataTitle?fileName=";
         return getResultByExchange(url+fileName);
     }
+
+    @Override
+    public ResponseEntity<String> batchZLETask() {
+        String url = "/jobs/batchZLE";
+        return getResultByExchange(url);
+    }
 }
