@@ -21,7 +21,7 @@ public abstract class BaseEntity implements Serializable {
 
 //    @Column(unique = true, nullable = false, scale = 0)
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Version

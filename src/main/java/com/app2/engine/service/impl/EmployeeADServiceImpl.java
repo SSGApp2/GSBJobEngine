@@ -178,8 +178,13 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                         empInternal.setZone(zone);
                         empInternal.setUnit(unit);
                         empInternal.setBranch(branch);
-                        empInternal.setDepartmentForLead(departmentForLead);
-
+                        if(String.valueOf(empInternal.getTempBranch()).equals("Y")){
+                            //Y:สาขาชั่วคราว
+                            LOGGER.debug("Config สาขาชั่วคราว");
+                        }else{
+                            empInternal.setTempBranch("N");
+                            empInternal.setDepartmentForLead(departmentForLead);
+                        }
                         empRepo.save(empInternal);
                     }
                     LOGGER.debug("===========================================================");
