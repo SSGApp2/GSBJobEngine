@@ -46,7 +46,7 @@ public class CMSBatchTask {
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DebtorTask.createFileTXTSeizeInfo");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("createFileTXTSeizeInfo");
+            batchTransaction.setName("seizeInfo");
             batchTransaction.setStatus("S");
             ResponseEntity<String> response = cmsBatchTaskService.createFileTXTSeizeInfo();
             if (!response.getStatusCode().is2xxSuccessful()) {
