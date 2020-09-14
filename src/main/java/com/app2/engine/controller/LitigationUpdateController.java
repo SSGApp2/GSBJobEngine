@@ -38,9 +38,26 @@ public class LitigationUpdateController {
         litigationUpdateService.bko();
     }
 
-    @GetMapping("/cva")
-    public void cva(){
-        litigationUpdateService.cva();
+
+    @GetMapping("/litigationUpdate_CVA")
+    public void litigationUpdate_CVA(){
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction=new BatchTransaction();
+            batchTransaction.setControllerMethod("LitigationUpdateTask.batchLitigationUpdate_CVA");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("LitigationUpdateCVA");
+            batchTransaction.setStatus("S");
+            litigationUpdateService.litigationUpdate_CVA();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error litigationUpdate_CVA {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
     }
 
     // --- Send To GSBEngine Type cvc Create File LitigationUpdate_CVC_YYYYMMDD.csv ---
