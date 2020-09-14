@@ -72,13 +72,13 @@ public class CMSBatchTask {
     public void createFileTXTLegalStatus() {
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info(" createFileTXTLegalStatus ");
+        LOGGER.info(" litigationStatus ");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DebtorTask.createFileTXTLegalStatus");
+            batchTransaction.setControllerMethod("DebtorTask.createFileTXTLitigationStatus");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LegalStatus");
+            batchTransaction.setName("LitigationStatus");
             batchTransaction.setStatus("S");
 
             ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
@@ -88,7 +88,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             }
             String fileName = response.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"CMS");
+//            smbFileService.localFileToRemoteFile(fileName,"CMS");
         }catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
