@@ -84,11 +84,11 @@ public class LitigationUpdateTask {
         /////////////////////////////////// CVC /////////////////////////////////////
         try {
             batchTransaction=new BatchTransaction();
-            batchTransaction.setControllerMethod("LitigationUpdateTask.litigationUpdateTask");
+            batchTransaction.setControllerMethod("LitigationUpdateTask.batchLitigationUpdate_CVA");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdateCVC");
             batchTransaction.setStatus("S");
-            litigationUpdateService.cvc();
+            litigationUpdateService.LitigationUpdate_CVC();
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());

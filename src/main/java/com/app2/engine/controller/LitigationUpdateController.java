@@ -17,6 +17,7 @@ import java.util.Date;
 @RestController
 @RequestMapping("/api/litigationUpdate")
 public class LitigationUpdateController {
+
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -59,9 +60,28 @@ public class LitigationUpdateController {
         }
     }
 
-    @GetMapping("/cvc")
+    // --- Send To GSBEngine Type cvc Create File LitigationUpdate_CVC_YYYYMMDD.csv ---
+    @GetMapping("/LitigationUpdate_CVC")
     public void cvc(){
-        litigationUpdateService.cvc();
+        LOGGER.info("------------------------- LitigationUpdate_CVC --------------------------------------");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction=new BatchTransaction();
+            batchTransaction.setControllerMethod("LitigationUpdateTask.LitigationUpdate_CVC");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("LitigationUpdate_CVC");
+            batchTransaction.setStatus("S");
+            litigationUpdateService.LitigationUpdate_CVC();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error CVC {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            LOGGER.info("-------------------------------------------------------------------------------------");
+        }
     }
 
     @GetMapping("/cvo")
