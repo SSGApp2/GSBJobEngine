@@ -172,6 +172,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                         empInternal.setFirstName(fName);
                         empInternal.setLastName(lName);
                         empInternal.setEmpType(empType);
+                        empInternal.setPrivateId(empId);
 
                         empInternal.setOrgGroup(orgGroup);
                         empInternal.setLineBusiness(lineBusiness);
