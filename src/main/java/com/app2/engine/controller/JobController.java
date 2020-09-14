@@ -118,8 +118,14 @@ public class JobController {
         wrnService.wrnTDR();
     }
 
+
     @GetMapping("/litigationStatus")
-    public void litigationStatus(){
+    public void litigationStatus() {
         ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
+    }
+
+    @GetMapping("/seizeInfo")
+    public void seizeInfo(){
+        ResponseEntity<String> response = cmsBatchTaskService.createFileTXTSeizeInfo();
     }
 }
