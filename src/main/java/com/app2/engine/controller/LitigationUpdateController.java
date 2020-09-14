@@ -26,6 +26,9 @@ public class LitigationUpdateController {
     private BatchTransactionRepository batchTransactionRepository;
 
     @Autowired
+    private BatchTransactionRepository batchTransactionRepository;
+
+    @Autowired
     private LitigationUpdateService litigationUpdateService;
 
     @GetMapping("/bkc")
@@ -84,8 +87,24 @@ public class LitigationUpdateController {
         }
     }
 
-    @GetMapping("/cvo")
-    public void cvo(){
-        litigationUpdateService.cvo();
+    @GetMapping("/LitigationUpdate_CVO")
+    public void LitigationUpdate_CVO(){
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction=new BatchTransaction();
+            batchTransaction.setControllerMethod("LitigationUpdateTask.LitigationUpdate_CVO");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("LitigationUpdate_CVO");
+            batchTransaction.setStatus("S");
+            litigationUpdateService.LitigationUpdate_CVO();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error CVO {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
     }
 }

@@ -101,11 +101,11 @@ public class LitigationUpdateTask {
         /////////////////////////////////// CVO /////////////////////////////////////
         try {
             batchTransaction=new BatchTransaction();
-            batchTransaction.setControllerMethod("LitigationUpdateTask.litigationUpdateTask");
+            batchTransaction.setControllerMethod("LitigationUpdateTask.batchLitigationUpdate_CVO");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LitigationUpdateCVO");
+            batchTransaction.setName("batchLitigationUpdateCVO");
             batchTransaction.setStatus("S");
-            litigationUpdateService.cvo();
+            litigationUpdateService.LitigationUpdate_CVO();
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
