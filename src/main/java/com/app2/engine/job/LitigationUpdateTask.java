@@ -27,9 +27,9 @@ public class LitigationUpdateTask {
 
 //    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
     public void litigationUpdateTask() {
-        LOGGER.info("***************** WRN *********************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         BatchTransaction batchTransaction = null;
+
         /////////////////////////////////// BKC /////////////////////////////////////
         try {
             batchTransaction=new BatchTransaction();
@@ -64,18 +64,18 @@ public class LitigationUpdateTask {
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
 
-        /////////////////////////////////// CVA /////////////////////////////////////
+        // litigationUpdate_CVA
         try {
             batchTransaction=new BatchTransaction();
             batchTransaction.setControllerMethod("LitigationUpdateTask.litigationUpdateTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdateCVA");
             batchTransaction.setStatus("S");
-            litigationUpdateService.cva();
+            litigationUpdateService.litigationUpdate_CVA();
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error CVA {}", e.getMessage());
+            LOGGER.error("Error litigationUpdate_CVA {}", e.getMessage());
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -84,11 +84,11 @@ public class LitigationUpdateTask {
         /////////////////////////////////// CVC /////////////////////////////////////
         try {
             batchTransaction=new BatchTransaction();
-            batchTransaction.setControllerMethod("LitigationUpdateTask.litigationUpdateTask");
+            batchTransaction.setControllerMethod("LitigationUpdateTask.batchLitigationUpdate_CVA");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdateCVC");
             batchTransaction.setStatus("S");
-            litigationUpdateService.cvc();
+            litigationUpdateService.LitigationUpdate_CVC();
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());

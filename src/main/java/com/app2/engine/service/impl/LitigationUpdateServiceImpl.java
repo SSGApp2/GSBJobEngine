@@ -54,31 +54,29 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void cva() {
+    public void litigationUpdate_CVA() {
+        LOGGER.info("------------------------- LitigationUpdate_CVA --------------------------------------");
         try {
-            // --- Send To GSBEngine Type cva Create File LitigationUpdate_CVA_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cva");
             LOGGER.info(" LitigationUpdate_CVA http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
 //            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
-
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
+        LOGGER.info("------------------------------------------------------------------------------------");
     }
 
     @Override
-    public void cvc() {
+    public void LitigationUpdate_CVC() {
         try {
-            // --- Send To GSBEngine Type cvc Create File LitigationUpdate_CVC_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cvc");
             LOGGER.info(" LitigationUpdate_CVC http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
 //            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
-
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);

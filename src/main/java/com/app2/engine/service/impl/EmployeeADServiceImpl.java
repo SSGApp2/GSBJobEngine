@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -66,15 +68,17 @@ public class EmployeeADServiceImpl implements EmployeeADService {
         LOGGER.debug("Start InsertOrUpdateEmp {}", DateUtil.getCurrentDate());
         try {
 //            String fileName = "AD_20200525-Edit.csv";
-            String fileName = "AD_20200525.csv";
+            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+            String fileName = "AD_"+timeLog+".csv";
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"AD");
+            LOGGER.debug("pathName File {}",pathName);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withHeader(ADEmployee.class).parse(streamReader);
-            LOGGER.debug("Path File {}", pathName);
             List<String> usernameActive = new ArrayList<>();
+            LOGGER.debug("Start Process !!");
             for (CSVRecord record : records) {
                 Long row = record.getRecordNumber();
                 if (row > 1) {
@@ -172,6 +176,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                         empInternal.setFirstName(fName);
                         empInternal.setLastName(lName);
                         empInternal.setEmpType(empType);
+                        empInternal.setPrivateId(empId);
 
                         empInternal.setOrgGroup(orgGroup);
                         empInternal.setLineBusiness(lineBusiness);
