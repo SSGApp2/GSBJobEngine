@@ -39,6 +39,9 @@ public class JobController {
     @Autowired
     private WRNService wrnService;
 
+    @Autowired
+    CMSBatchTaskService cmsBatchTaskService;
+
     @GetMapping("/HrRegion")
     public void HrRegion() {
         hrDataService.region();
@@ -113,5 +116,10 @@ public class JobController {
     @GetMapping("/wrnTDR")
     public void wrnTDR(){
         wrnService.wrnTDR();
+    }
+
+    @GetMapping("/litigationStatus")
+    public void litigationStatus(){
+        ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
     }
 }
