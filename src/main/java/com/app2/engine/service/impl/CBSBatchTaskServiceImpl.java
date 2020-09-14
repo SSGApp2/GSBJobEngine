@@ -93,18 +93,6 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     }
 
     @Override
-    public ResponseEntity<String> masterDataCourtTask(String fileName) {
-        String url = "/jobs/masterDataCourt?fileName=";
-        return getResultByExchange(url+fileName);
-    }
-
-    @Override
-    public ResponseEntity<String> masterDataLEOITask(String fileName) {
-        String url = "/jobs/masterDataLEOI?fileName=";
-        return getResultByExchange(url+fileName);
-    }
-
-    @Override
     public ResponseEntity<String> masterDataTitleTask(String fileName) {
         String url = "/jobs/masterDataTitle?fileName=";
         return getResultByExchange(url+fileName);
