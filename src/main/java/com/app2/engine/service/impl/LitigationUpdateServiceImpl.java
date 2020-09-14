@@ -86,7 +86,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void cvo() {
+    public void LitigationUpdate_CVO() {
         try {
             // --- Send To GSBEngine Type cvo Create File LitigationUpdate_CVO_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cvo");

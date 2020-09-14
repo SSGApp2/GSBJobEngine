@@ -5,5 +5,5 @@ public interface LitigationUpdateService {
     void bko();
     void cva();
     void cvc();
-    void cvo();
+    void LitigationUpdate_CVO();
 }
