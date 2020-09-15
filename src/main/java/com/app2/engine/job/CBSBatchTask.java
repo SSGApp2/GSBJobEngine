@@ -16,9 +16,11 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.io.File;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 @Component
 public class CBSBatchTask {
@@ -696,5 +698,52 @@ public class CBSBatchTask {
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
         LOGGER.info("***************************************");
+    }
+
+    @Transactional
+//    @Scheduled(cron = "0 30 03 * * *")
+    public void lsAcn() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File lsAcn");
+        BatchTransaction batchTransaction = null;
+        try {
+            String fileName = "LS_ACN_"+codeCurrentDate()+".txt";
+
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+
+            ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
+
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.lsAcn");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("batchLsAcn");
+            batchTransaction.setReason(response.getBody());
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("S");
+            }else {
+                batchTransaction.setStatus("E");
+            }
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    public String codeCurrentDate(){
+        String pattern = "yyyy-MM-dd";
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
+        String currentDate = dateFormat.format(date);
+        String[] currentDateAr = currentDate.split("-");
+        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
+        return codeDate;
     }
 }

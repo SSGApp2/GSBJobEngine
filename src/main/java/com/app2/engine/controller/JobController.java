@@ -1,28 +1,37 @@
 package com.app2.engine.controller;
 
 
+import com.app2.engine.entity.app.BatchTransaction;
+import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.service.DocumentTaskService;
 import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.service.NotificationTaskService;
 import com.app2.engine.service.*;
+import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
     @Autowired
     HRDataService hrDataService;
+
+    @Autowired
+    SmbFileService smbFileService;
 
     @Autowired
     DocumentTaskService documentTaskService;
@@ -35,6 +44,12 @@ public class JobController {
 
     @Autowired
     EmployeeADService employeeADService;
+
+    @Autowired
+    CBSBatchTaskService cbsBatchTaskService;
+
+    @Autowired
+    BatchTransactionRepository batchTransactionRepository;
 
     @Autowired
     private WRNService wrnService;
@@ -118,7 +133,6 @@ public class JobController {
         wrnService.wrnTDR();
     }
 
-
     @GetMapping("/litigationStatus")
     public void litigationStatus() {
         ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
@@ -127,5 +141,51 @@ public class JobController {
     @GetMapping("/seizeInfo")
     public void seizeInfo(){
         ResponseEntity<String> response = cmsBatchTaskService.createFileTXTSeizeInfo();
+    }
+
+    @GetMapping("/lsACN")
+    public void lsAcn(){
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File lsACN");
+        BatchTransaction batchTransaction = null;
+        try {
+            String fileName = "LS_ACN_"+codeCurrentDate()+".txt";
+
+//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+
+            ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
+
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.lsACN");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("batchLsACN");
+            batchTransaction.setReason(response.getBody());
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody().equals("success")) {
+                batchTransaction.setStatus("S");
+            }else {
+                batchTransaction.setStatus("E");
+            }
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    public String codeCurrentDate() {
+        String pattern = "yyyy-MM-dd";
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
+        String currentDate = dateFormat.format(date);
+        String[] currentDateAr = currentDate.split("-");
+        String codeDate = currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
+        return codeDate;
     }
 }
