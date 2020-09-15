@@ -19,4 +19,5 @@ public interface CBSBatchTaskService {
     ResponseEntity<String> masterDataProductTypeTask(String fileName);
     ResponseEntity<String> masterDataTitleTask(String fileName);
     ResponseEntity<String> batchZLETask();
+    ResponseEntity<String> lsAcn();
 }
