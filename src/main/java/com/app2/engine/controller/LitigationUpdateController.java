@@ -26,9 +26,6 @@ public class LitigationUpdateController {
     private BatchTransactionRepository batchTransactionRepository;
 
     @Autowired
-    private BatchTransactionRepository batchTransactionRepository;
-
-    @Autowired
     private LitigationUpdateService litigationUpdateService;
 
     @GetMapping("/bkc")
