@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -64,7 +65,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 
 
     @Override
-//    @Transactional
+    @Transactional
     public void InsertOrUpdateEmp() {
         Date currentDate = DateUtil.getCurrentDate();
         LOGGER.debug("Start InsertOrUpdateEmp {}", currentDate);
@@ -169,6 +170,9 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                             appUser.setUserType("I"); //internal
                             appUser.setStatus("A"); //Active
                         }
+                        if (String.valueOf(appUser.getStatus()).equals("R")) {
+                            appUser.setStatus("A"); //change reject to active
+                        }
                         appUser.setActiveDate(currentDate);
                         appUserRepository.save(appUser);
 
@@ -202,14 +206,8 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                 //Set Appuser to Status R
                 Date removeTime = DateUtil.getDateWithRemoveTime(currentDate);
                 LOGGER.debug("removeTime {}", removeTime);
-                List<AppUser> userNotActive = appUserRepository.findUserInternalToReject(removeTime);
+                Integer userNotActive = appUserRepositoryCustom.updateUserInternalToReject(removeTime);
                 LOGGER.debug("userNotActive Size {}", userNotActive);
-                for (AppUser appUser : userNotActive) {
-                    appUser.setStatus("R"); //set Retire
-                    appUserRepository.save(appUser);
-                }
-
-                LOGGER.debug("usernameActive Size {}", usernameActive.size());
             }
             LOGGER.debug("Success update Employee !!");
         } catch (Exception e) {
