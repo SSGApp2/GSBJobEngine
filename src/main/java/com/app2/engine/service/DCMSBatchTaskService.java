@@ -4,4 +4,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface DCMSBatchTaskService {
     ResponseEntity<String> ACNStartLegal();
+    ResponseEntity<String> ACNEndLegal();
 }

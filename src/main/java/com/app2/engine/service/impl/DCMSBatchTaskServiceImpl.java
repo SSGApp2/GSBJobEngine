@@ -13,4 +13,10 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
         String url = "/jobs/ACNStartLegal";
         return getResultByExchange(url);
     }
+
+    @Override
+    public ResponseEntity<String> ACNEndLegal() {
+        String url = "/jobs/ACNEndLegal";
+        return getResultByExchange(url);
+    }
 }

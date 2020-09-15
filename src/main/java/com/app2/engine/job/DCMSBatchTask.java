@@ -71,6 +71,41 @@ public class DCMSBatchTask {
         LOGGER.info("**************************************************************************");
     }
 
+    @Transactional
+//    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    public void ACNEndLegal() {
+        LOGGER.info("**************************************************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info(" ACNEndLegal ");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DCMSBatchTask.ACNEndLegal");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("getAccountUpdateAndEnd(AccountEndLegal)");
+            batchTransaction.setStatus("S");
+
+            ResponseEntity<String> response = dcmsBatchTaskService.ACNEndLegal();
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            }
+
+            String fileName = response.getBody();
+            smbFileService.localFileToRemoteFile(fileName,"CBS");
+
+        }catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("**************************************************************************");
+    }
+
     public String codeCurrentDate(){
         String pattern = "yyyy-MM-dd";
         Date date = new Date();
