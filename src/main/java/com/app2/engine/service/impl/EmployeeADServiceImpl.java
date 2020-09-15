@@ -14,11 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -63,16 +65,17 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 
 
     @Override
-//    @Transactional
+    @Transactional
     public void InsertOrUpdateEmp() {
-        LOGGER.debug("Start InsertOrUpdateEmp {}", DateUtil.getCurrentDate());
+        Date currentDate = DateUtil.getCurrentDate();
+        LOGGER.debug("Start InsertOrUpdateEmp {}", currentDate);
         try {
 //            String fileName = "AD_20200525-Edit.csv";
             String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String fileName = "AD_"+timeLog+".csv";
+            String fileName = "AD_" + timeLog + ".csv";
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"AD");
-            LOGGER.debug("pathName File {}",pathName);
+            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD");
+            LOGGER.debug("pathName File {}", pathName);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
@@ -166,8 +169,12 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                             appUser.setUsername(username);
                             appUser.setUserType("I"); //internal
                             appUser.setStatus("A"); //Active
-                            appUserRepository.save(appUser);
                         }
+                        if (String.valueOf(appUser.getStatus()).equals("R")) {
+                            appUser.setStatus("A"); //change reject to active
+                        }
+                        appUser.setActiveDate(currentDate);
+                        appUserRepository.save(appUser);
 
 
                         empInternal.setPosition(position);
@@ -183,10 +190,10 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                         empInternal.setZone(zone);
                         empInternal.setUnit(unit);
                         empInternal.setBranch(branch);
-                        if(String.valueOf(empInternal.getTempBranch()).equals("Y")){
+                        if (String.valueOf(empInternal.getTempBranch()).equals("Y")) {
                             //Y:สาขาชั่วคราว
                             LOGGER.debug("Config สาขาชั่วคราว");
-                        }else{
+                        } else {
                             empInternal.setTempBranch("N");
                             empInternal.setDepartmentForLead(departmentForLead);
                         }
@@ -197,13 +204,10 @@ public class EmployeeADServiceImpl implements EmployeeADService {
             }
             if (!usernameActive.isEmpty()) {
                 //Set Appuser to Status R
-                LOGGER.debug("usernameActive Size {}", usernameActive.size());
-                List<AppUser> userNotActive = appUserRepositoryCustom.updateStatusRetire(usernameActive);
+                Date removeTime = DateUtil.getDateWithRemoveTime(currentDate);
+                LOGGER.debug("removeTime {}", removeTime);
+                Integer userNotActive = appUserRepositoryCustom.updateUserInternalToReject(removeTime);
                 LOGGER.debug("userNotActive Size {}", userNotActive);
-                for (AppUser appUser : userNotActive) {
-                    appUser.setStatus("R"); //set Retire
-                    appUserRepository.save(appUser);
-                }
             }
             LOGGER.debug("Success update Employee !!");
         } catch (Exception e) {
