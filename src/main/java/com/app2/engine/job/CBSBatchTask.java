@@ -29,8 +29,6 @@ public class CBSBatchTask {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    private String PATHFILETEST = "C:/Users/surap/Project/GSB/toReadFile/";
-
     @Autowired
     CBSBatchTaskService cbsBatchTaskService;
 
