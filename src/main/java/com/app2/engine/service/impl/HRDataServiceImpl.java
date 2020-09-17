@@ -746,7 +746,7 @@ public class HRDataServiceImpl implements HRDataService {
                     // set phone number of branch
                     if (AppUtil.isNotEmpty(branch1)){
                         branch1.setPhoneNumber(telephoneNumber);
-                        branch1.setCenterCost(costCenter);
+                        branch1.setCenterCost(String.valueOf(Long.valueOf(costCenter)));
                         branchRepository.save(branch1);
                     }
 
