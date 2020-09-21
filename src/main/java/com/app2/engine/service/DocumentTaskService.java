@@ -5,5 +5,4 @@ import org.springframework.http.ResponseEntity;
 public interface DocumentTaskService {
 
     ResponseEntity<String> assignedDocAuto();
-    ResponseEntity<String> rejectDocNotReceive();
 }
