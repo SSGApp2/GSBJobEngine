@@ -22,10 +22,4 @@ public class DocumentTaskServiceImpl extends AbstractEngineService implements Do
         return getResultByExchange(APIAssignedDocAuto);
     }
 
-    @Override
-    public ResponseEntity<String> rejectDocNotReceive() {
-        return getResultByExchange(APIRejectDocNotReceive);
-    }
-
-
 }
