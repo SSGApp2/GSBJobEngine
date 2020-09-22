@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 public class NotificationTask {
@@ -47,8 +48,8 @@ public class NotificationTask {
             Integer hhNoti = Integer.valueOf(timeDb.split(":")[0]);
             Integer mnNoti = Integer.valueOf(timeDb.split(":")[1]);
 
-            if(hhCur >= hhNoti){
-                if(mnCur >= mnNoti){
+            if(Objects.equals(hhCur, hhNoti)){
+                if(Objects.equals(mnCur, mnNoti)){
                     return true;
                 }
             }
@@ -63,18 +64,31 @@ public class NotificationTask {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Start set noti time from db");
+
+        //ขั้นตอนอนุมัติดำเนินคดี : ส่งคืนแฟ้มคดีจากสำนักงานทนายความ
         ApplicationConstant.notifyTimeGSB02 = notificationSettingRepository.findByProcessType("2").getNotiTime();
         LOGGER.info("Noti Time GSB02 : "+ApplicationConstant.notifyTimeGSB02);
+
+        //กระบวนการดำเนินคดี : แจ้งเตือนวันที่นัดสืบพยาน
         ApplicationConstant.notifyTimeGSB03 = notificationSettingRepository.findByProcessType("3").getNotiTime();
         LOGGER.info("Noti Time GSB03 : "+ApplicationConstant.notifyTimeGSB03);
+
+        //กระบวนการดำเนินคดี : แจ้งเตือนการนัดสืบพยาน
         ApplicationConstant.notifyTimeGSB04 = notificationSettingRepository.findByProcessType("4").getNotiTime();
         LOGGER.info("Noti Time GSB04 : "+ApplicationConstant.notifyTimeGSB04);
+
+        //กระบวนการบังคับคดี : ส่งคืนแฟ้มคดียึด/อายัดจากสำนักงานทนายความ
         ApplicationConstant.notifyTimeGSB06 = notificationSettingRepository.findByProcessType("6").getNotiTime();
         LOGGER.info("Noti Time GSB06 : "+ApplicationConstant.notifyTimeGSB06);
+
+        //ขายทอดตลาด : แจ้งเตือนวันที่นัดของกระบวนการขายทอดตลาด
         ApplicationConstant.notifyTimeGSB07 = notificationSettingRepository.findByProcessType("7").getNotiTime();
         LOGGER.info("Noti Time GSB07 : "+ApplicationConstant.notifyTimeGSB07);
+
+        //ขายทอดตลาด : แจ้งเตือนการนัดขายทอดตลาด
         ApplicationConstant.notifyTimeGSB08 = notificationSettingRepository.findByProcessType("8").getNotiTime();
         LOGGER.info("Noti Time GSB08 : "+ApplicationConstant.notifyTimeGSB08);
+
         LOGGER.info("***************************************");
     }
 
