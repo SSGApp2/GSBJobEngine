@@ -1,33 +1,29 @@
-package com.app2.engine;
+package com.app2.engine.service.impl;
 
+import com.app2.engine.entity.app.Department;
+import com.app2.engine.repository.DepartmentRepository;
+import com.app2.engine.service.DepartmentService;
 import com.app2.engine.util.AppUtil;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-@RunWith(SpringRunner.class)
-public class TestCreateFileBatchName {
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+@Service
+public class DepartmentServiceImpl implements DepartmentService {
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    @Test
-    public void testFileAd() {
-        String fileName = "AD_20200525.csv";
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String fileNames = "AD_" + timeLog + ".csv";
-        LOGGER.debug("fileName  {}", fileNames);
-    }
-
-    @Test
-    public void updateControlDep() {
-
+    @Autowired
+    DepartmentRepository departmentRepository;
+    @Transactional
+    public Department saveOrUpdateDepartment(String line, Date activeDate) {
+        LOGGER.debug("Line {}",line);
         String delimeter = "\\|";
-        String line = "1000000010000001100000541000005600000000000000001000006100000000|10000000|10000001|10000054|10000056|00000000|00000000|10000061|00000000|0000009572|";
+//        String line = "1000000010000001100000541000005600000000000000001000006100000000|10000000|10000001|10000054|10000056|00000000|00000000|10000061|00000000|0000009572|";
         String lineArr[] = line.split(delimeter);
         String code = null, company = null, orgGroup = null, lineBusiness = null, zone = null, area = null, branch = null, unit = null, subUnit = null;
         Map<String, String> map = new HashMap();
@@ -65,13 +61,25 @@ public class TestCreateFileBatchName {
             Map deptHead = mapList.get(1);
             controlDept = (String) deptHead.get("code");
         }
-        String [] typeCode={"","company","orgGroup","lineBusiness","zone","area","branch","unit","subUnit"};
-        Integer numType=Integer.parseInt(type);
+        String[] typeCode = {"", "company", "orgGroup", "lineBusiness", "zone", "area", "branch", "unit", "subUnit"};
+        Integer numType = Integer.parseInt(type);
         LOGGER.debug("=================================================");
-        LOGGER.debug("Department {}",department);
-        LOGGER.debug("type {} code {}",type,typeCode[numType]);
-        LOGGER.debug("controlDept {}",controlDept);
+        LOGGER.debug("Department {}", department);
+        LOGGER.debug("type {} code {}", type, typeCode[numType]);
+        LOGGER.debug("controlDept {}", controlDept);
         LOGGER.debug("=================================================");
+
+        Department depResult = departmentRepository.findByCode(department);
+        if (AppUtil.isNull(depResult)) {
+            depResult = new Department();
+        }
+        depResult.setCode(department);
+        depResult.setControlDept(controlDept);
+        depResult.setStatus("Y"); //active
+        depResult.setType(type);
+        depResult.setActiveDate(DateUtil.getDateWithRemoveTime(activeDate));
+        departmentRepository.save(depResult);
+        return depResult;
     }
 
     private LinkedHashMap<String, String> sortMap(Map<String, String> map) { //desc
@@ -83,6 +91,5 @@ public class TestCreateFileBatchName {
         }
         return result;
     }
+
 }
-
-
