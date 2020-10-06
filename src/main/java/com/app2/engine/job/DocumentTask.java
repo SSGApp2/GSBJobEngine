@@ -58,4 +58,36 @@ public class DocumentTask {
         LOGGER.info("***************************************");
     }
 
+
+    @Transactional
+    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    public void sendDemandBook() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start sendDemandBook");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("DocumentTask.sendDemandBook");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("sendDemandBook Update DocStatus");
+            batchTransaction.setStatus("S");
+            ResponseEntity<String> response = documentTaskService.sendDemandBook();
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            }
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+
+        LOGGER.info("***************************************");
+    }
+
 }
