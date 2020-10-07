@@ -145,4 +145,39 @@ public class CMSBatchTask {
         String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
         return codeDate;
     }
+
+    @Transactional
+    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    public void batchLagelTask() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File batchLagelTask");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CMSBatchTask.batchLagelTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("batchLagelTask");
+            batchTransaction.setStatus("S");
+
+            ResponseEntity<String> response = cmsBatchTaskService.batchLagelTask();
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String fileName = response.getBody();
+                smbFileService.localFileToRemoteFile(fileName,"CMS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
 }
