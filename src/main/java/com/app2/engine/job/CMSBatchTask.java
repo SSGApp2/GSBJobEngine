@@ -161,7 +161,7 @@ public class CMSBatchTask {
             batchTransaction.setStatus("S");
 
             ResponseEntity<String> response = cmsBatchTaskService.batchLagelTask();
-
+          
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
@@ -179,5 +179,39 @@ public class CMSBatchTask {
         }
         LOGGER.info("***************************************");
     }
+  
+  
+    @Transactional
+    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    public void batchCourtTask() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File batchCourtTask");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CMSBatchTask.batchCourtTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("batchCourtTask");
+            batchTransaction.setStatus("S");
 
+            ResponseEntity<String> response = cmsBatchTaskService.batchCourtTask();
+          
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String fileName = response.getBody();
+                smbFileService.localFileToRemoteFile(fileName,"CMS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
 }

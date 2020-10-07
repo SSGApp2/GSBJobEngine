@@ -29,6 +29,12 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     @Override
     public ResponseEntity<String> batchLagelTask() {
         String url = "/jobs/batchLagel";
+          return getResultByExchange(url);
+    }
+
+    @Override
+    public ResponseEntity<String> batchCourtTask() {
+        String url = "/jobs/batchCourt";
         return getResultByExchange(url);
     }
 }

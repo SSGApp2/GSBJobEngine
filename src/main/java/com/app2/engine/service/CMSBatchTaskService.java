@@ -7,4 +7,5 @@ public interface CMSBatchTaskService {
     ResponseEntity<String> createFileTXTSeizeInfo();
     ResponseEntity<String> createFileTXTLegalStatus();
     ResponseEntity<String> batchLagelTask();
+    ResponseEntity<String> batchCourtTask();
 }
