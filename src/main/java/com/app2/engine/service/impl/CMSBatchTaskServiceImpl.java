@@ -25,4 +25,10 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
         String url = "/jobs/createFileTXTLegalStatus";
         return getResultByExchange(url);
     }
+
+    @Override
+    public ResponseEntity<String> batchCourtTask() {
+        String url = "/jobs/batchCourt";
+        return getResultByExchange(url);
+    }
 }
