@@ -167,7 +167,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String fileName = response.getBody();
-                smbFileService.localFileToRemoteFile(fileName,"CMS");
+                smbFileService.remoteFileToLocalFile(fileName,"CMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -202,7 +202,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String fileName = response.getBody();
-                smbFileService.localFileToRemoteFile(fileName,"CMS");
+                smbFileService.remoteFileToLocalFile(fileName,"CMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");
