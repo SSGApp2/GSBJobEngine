@@ -130,7 +130,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void section() {
         try {
             String fileName = "HRSECTION.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
@@ -179,7 +179,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void position() {
         try {
             String fileName = "HRPOSITION.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -220,7 +220,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void branch() {
         try {
             String fileName = "HRBRANCH.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -276,7 +276,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void lineBusiness() {
         try {
             String fileName = "HRDIV.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
@@ -330,7 +330,7 @@ public class HRDataServiceImpl implements HRDataService {
                 } else {
                     fileName = "HRUNIT.TXT"; // หน่วยย่อย
                 }
-                String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+                String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
                 InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
                 BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -377,7 +377,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void orgGroup() {
         try {
             String fileName = "HRBUSILINE.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -424,7 +424,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void company() {
         try {
             String fileName = "HRMAINSTR.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -471,7 +471,7 @@ public class HRDataServiceImpl implements HRDataService {
     public void hrInterface(){
         try {
             String fileName = "HRCOMPANYREL.TXT";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HD");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
