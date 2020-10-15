@@ -752,6 +752,7 @@ public class HRDataServiceImpl implements HRDataService {
                             AreaMapBranch areaMapBranch = new AreaMapBranch();
                             areaMapBranch.setArea(area1);
                             areaMapBranch.setBranch(branch1);
+                            areaMapBranchRepository.save(areaMapBranch);
                         }
                     }
 
