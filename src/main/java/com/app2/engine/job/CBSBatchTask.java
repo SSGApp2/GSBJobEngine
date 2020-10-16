@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.transaction.Transactional;
 import java.io.File;
@@ -42,6 +43,119 @@ public class CBSBatchTask {
     ParameterDetailRepository parameterDetailRepository;
 
     @Transactional
+    @Scheduled(cron = "0 0 22 * * *")
+    public void lsCollectionStatusTask() {
+        //รับข้อมูลสถานะการติดตามหนี้ (Collection Status) : รับจากระบบ LEAD
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start create file get information on the dunning status.");
+        LOGGER.info("File : LS_COLLECTION_STATUS_YYYYMMDD.txt");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.lsCollectionStatusTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("LS_COLLECTION_STATUS_YYYYMMDD.txt");
+            batchTransaction.setStatus("S");
+            ResponseEntity<String> response = cbsBatchTaskService.lsCollectionStatusTask();
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String fileName = response.getBody();
+                smbFileService.localFileToRemoteFile(fileName,"CBS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    public void stblcntryTask() {
+        // ประเทศ : ส่งให้ระบบ LEAD
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start receive file master data country.");
+        LOGGER.info("File : STBLCNTRY_YYYYMMDD.txt");
+        BatchTransaction batchTransaction = null;
+        String fileName = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.stblcntryTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("STBLCNTRY_YYYYMMDD.txt");
+            batchTransaction.setStatus("S");
+
+            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+            String today = timeLog + ".txt";
+            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "01");
+            fileName = file.getVariable1() + today;
+            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+            ResponseEntity<String> response = cbsBatchTaskService.stblcntryTask(fileName);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String pathFile = response.getBody();
+                smbFileService.localFileToRemoteFile(pathFile,"CBS");
+                masterDataProvinceTask();
+            }
+
+        }
+        catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(fileName +"  "+e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        }
+        finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+//    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
+    public void accountEndLegalUpdateTask() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File accountEndLegalUpdateTask");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.accountEndLegalUpdateTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("accountEndLegalUpdateTask");
+            batchTransaction.setStatus("S");
+            ResponseEntity<String> response = cbsBatchTaskService.accountEndLegalUpdateTask();
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String pathFile = response.getBody();
+                smbFileService.localFileToRemoteFile(pathFile,"DCMS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+
+
+    @Transactional
 //    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
 //    @Scheduled(fixedRate = 30000)
     public void createFileTXTRestrictionZLE() {
@@ -51,7 +165,7 @@ public class CBSBatchTask {
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DebtorTask.createFileTXTRestrictionZLE");
+            batchTransaction.setControllerMethod("CBSBatchTask.createFileTXTRestrictionZLE");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("createFileTxtRestriction");
             batchTransaction.setStatus("S");
@@ -77,48 +191,7 @@ public class CBSBatchTask {
         LOGGER.info("**************************************************************************");
     }
 
-    @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
-    public void masterDataCountryTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataCountryTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataCountryTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_STBLCNTRY");
-            batchTransaction.setStatus("S");
 
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "01");
-            fileName = file.getVariable1() + today;
-            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataCountryTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-                masterDataProvinceTask();
-            }
-
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
 
     @Transactional
     public void masterDataProvinceTask() {
@@ -668,16 +741,18 @@ public class CBSBatchTask {
 
     @Transactional
     @Scheduled(cron = "0 30 03 * * *") //ss mm hh every day
-    public void batchZLETask() {
+    public void zleTask() {
+        //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน : รับจากระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File batchZLETask");
+        LOGGER.info("Start create file receive information received from the Legal Execution Department with Restriction Group updates each day.");
+        LOGGER.info("File : ZLE_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.batchZLETask");
+            batchTransaction.setControllerMethod("CBSBatchTask.zleTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("batchZLETask");
+            batchTransaction.setName("ZLE_YYYYMMDD.txt");
             batchTransaction.setStatus("S");
             ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
             if (!response.getStatusCode().is2xxSuccessful()) {
@@ -698,27 +773,29 @@ public class CBSBatchTask {
         LOGGER.info("***************************************");
     }
 
+
     @Transactional
-//    @Scheduled(cron = "0 30 03 * * *")
-    public void lsAcn() {
+    @Scheduled(cron = "0 30 03 * * *")
+    public void lsAcnTask(){
+        //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File lsAcn");
+        LOGGER.info("Start receive file account data synchronization.");
+        LOGGER.info("File : LS_ACN_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             String fileName = "LS_ACN_"+codeCurrentDate()+".txt";
-
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
 
-            ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
+            ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
 
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.lsAcn");
+            batchTransaction.setControllerMethod("CBSBatchTask.lsAcnTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("batchLsAcn");
+            batchTransaction.setName("LS_ACN_YYYYMMDD.txt");
             batchTransaction.setReason(response.getBody());
 
-            if (response.getStatusCode().is2xxSuccessful()) {
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody().equals("success")) {
                 batchTransaction.setStatus("S");
             }else {
                 batchTransaction.setStatus("E");

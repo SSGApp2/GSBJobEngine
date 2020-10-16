@@ -45,8 +45,6 @@ public class JobController {
     @Autowired
     EmployeeADService employeeADService;
 
-    @Autowired
-    CBSBatchTaskService cbsBatchTaskService;
 
     @Autowired
     BatchTransactionRepository batchTransactionRepository;
@@ -54,8 +52,7 @@ public class JobController {
     @Autowired
     private WRNService wrnService;
 
-    @Autowired
-    CMSBatchTaskService cmsBatchTaskService;
+
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -131,52 +128,6 @@ public class JobController {
     @GetMapping("/wrnTDR")
     public void wrnTDR(){
         wrnService.wrnTDR();
-    }
-
-    @GetMapping("/litigationStatus")
-    public void litigationStatus() {
-        ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
-    }
-
-    @GetMapping("/seizeInfo")
-    public void seizeInfo(){
-        ResponseEntity<String> response = cmsBatchTaskService.createFileTXTSeizeInfo();
-    }
-
-    @GetMapping("/lsACN")
-    public void lsAcn(){
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File lsACN");
-        BatchTransaction batchTransaction = null;
-        try {
-            String fileName = "LS_ACN_"+codeCurrentDate()+".txt";
-
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-
-            ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
-
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.lsACN");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("batchLsACN");
-            batchTransaction.setReason(response.getBody());
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody().equals("success")) {
-                batchTransaction.setStatus("S");
-            }else {
-                batchTransaction.setStatus("E");
-            }
-
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
     }
 
     public String codeCurrentDate() {
