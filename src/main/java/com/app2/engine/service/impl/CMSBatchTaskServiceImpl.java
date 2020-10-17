@@ -15,26 +15,26 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     }
 
     @Override
-    public ResponseEntity<String> createFileTXTSeizeInfo() {
-        String url = "/jobs/createFileTXTSeizeInfo";
+    public ResponseEntity<String> seizeInfo() {
+        String url = "/jobs/seizeInfo";
         return getResultByExchange(url);
     }
 
     @Override
-    public ResponseEntity<String> createFileTXTLegalStatus() {
-        String url = "/jobs/createFileTXTLegalStatus";
+    public ResponseEntity<String> legalStatus() {
+        String url = "/jobs/legalStatus";
         return getResultByExchange(url);
     }
 
     @Override
-    public ResponseEntity<String> batchLagelTask() {
-        String url = "/jobs/batchLagel";
+    public ResponseEntity<String> tblMtLedTask() {
+        String url = "/jobs/tblMtLedTask";
           return getResultByExchange(url);
     }
 
     @Override
-    public ResponseEntity<String> batchCourtTask() {
-        String url = "/jobs/batchCourt";
+    public ResponseEntity<String> tblMtCourtTask() {
+        String url = "/jobs/tblMtCourtTask";
         return getResultByExchange(url);
     }
 }

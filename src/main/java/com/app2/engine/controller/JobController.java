@@ -130,13 +130,4 @@ public class JobController {
         wrnService.wrnTDR();
     }
 
-    public String codeCurrentDate() {
-        String pattern = "yyyy-MM-dd";
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        String currentDate = dateFormat.format(date);
-        String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
-        return codeDate;
-    }
 }

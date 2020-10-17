@@ -99,15 +99,7 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.stblcntryTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-                masterDataProvinceTask();
-            }
-
+            masterDataProvinceTask();
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -213,15 +205,7 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProvinceTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-                masterDataDistrictTask();
-            }
-
+            masterDataDistrictTask();
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -255,15 +239,7 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataDistrictTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-                masterDataSubDistrictTask();
-            }
-
+            masterDataSubDistrictTask();
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -297,15 +273,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataSubDistrictTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -340,14 +307,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -382,14 +341,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -424,14 +375,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -466,14 +409,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -508,14 +443,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -550,14 +477,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataMarketCodeTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -592,14 +511,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductGroupTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -634,14 +545,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductSubtypeTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -676,14 +579,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataProductTypeTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -718,14 +613,6 @@ public class CBSBatchTask {
             fileName = file.getVariable1() + today;
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
             ResponseEntity<String> response = cbsBatchTaskService.masterDataTitleTask(fileName);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"CBS");
-            }
-
         }
         catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -772,7 +659,6 @@ public class CBSBatchTask {
         }
         LOGGER.info("***************************************");
     }
-
 
     @Transactional
     @Scheduled(cron = "0 30 03 * * *")
