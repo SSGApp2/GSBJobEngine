@@ -36,19 +36,22 @@ public class CMSBatchTask {
     SmbFileService smbFileService;
 
     @Transactional
-//    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
-    public void createFileTXTSeizeInfo() {
+    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
+    public void seizeInfo() {
+        // รับข้อมูลการยึดทรัพย์ (CollSeizeDetail) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info(" createFileTXTSeizeInfo ");
+        LOGGER.info("SeizeInfo ");
+        LOGGER.info("Start create file get confiscation information. ");
+        LOGGER.info("File : SEIZEINFO_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DebtorTask.createFileTXTSeizeInfo");
+            batchTransaction.setControllerMethod("DebtorTask.SeizeInfo");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("seizeInfo");
+            batchTransaction.setName("SEIZEINFO_YYYYMMDD.txt");
             batchTransaction.setStatus("S");
-            ResponseEntity<String> response = cmsBatchTaskService.createFileTXTSeizeInfo();
+            ResponseEntity<String> response = cmsBatchTaskService.seizeInfo();
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
@@ -68,27 +71,30 @@ public class CMSBatchTask {
     }
 
     @Transactional
-//    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
-    public void createFileTXTLegalStatus() {
+    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
+    public void legalStatus() {
+        // รับข้อมูลสถานะ Litigation (LitigationStatus) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info(" litigationStatus ");
+        LOGGER.info("legalStatus ");
+        LOGGER.info("Start create file get Litigation status.");
+        LOGGER.info("File : LEGAL_STATUS_YYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DebtorTask.createFileTXTLitigationStatus");
+            batchTransaction.setControllerMethod("DebtorTask.legalStatus");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LitigationStatus");
+            batchTransaction.setName("LEGAL_STATUS_YYYMMDD.txt");
             batchTransaction.setStatus("S");
 
-            ResponseEntity<String> response = cmsBatchTaskService.createFileTXTLegalStatus();
+            ResponseEntity<String> response = cmsBatchTaskService.legalStatus();
 
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
             }
             String fileName = response.getBody();
-//            smbFileService.localFileToRemoteFile(fileName,"CMS");
+            smbFileService.localFileToRemoteFile(fileName,"CMS");
         }catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -136,31 +142,23 @@ public class CMSBatchTask {
 //        LOGGER.info("**************************************************************************");
 //    }
 
-    public String codeCurrentDate(){
-        String pattern = "yyyy-MM-dd";
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        String currentDate = dateFormat.format(date);
-        String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
-    }
-
     @Transactional
     @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
-    public void batchLagelTask() {
+    public void tblMtLedTask() {
+        // ข้อมูลสำนักงานบังคับคดี
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File batchLagelTask");
+        LOGGER.info("Start Create File get Legal Execution Office.");
+        LOGGER.info("File : TBL_MT_LED_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CMSBatchTask.batchLagelTask");
+            batchTransaction.setControllerMethod("CMSBatchTask.tblMtLedTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("batchLagelTask");
+            batchTransaction.setName("TBL_MT_LED_YYYYMMDD.txt");
             batchTransaction.setStatus("S");
 
-            ResponseEntity<String> response = cmsBatchTaskService.batchLagelTask();
+            ResponseEntity<String> response = cmsBatchTaskService.tblMtLedTask();
           
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
@@ -183,19 +181,21 @@ public class CMSBatchTask {
   
     @Transactional
     @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
-    public void batchCourtTask() {
+    public void tblMtCourtTask() {
+        // ข้อมูลศาล : รับจากระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File batchCourtTask");
+        LOGGER.info("Start Create File get court data.");
+        LOGGER.info("File : TBL_MT_COURT_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CMSBatchTask.batchCourtTask");
+            batchTransaction.setControllerMethod("CMSBatchTask.tblMtCourtTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("batchCourtTask");
+            batchTransaction.setName("TBL_MT_COURT_YYYYMMDD.txt");
             batchTransaction.setStatus("S");
 
-            ResponseEntity<String> response = cmsBatchTaskService.batchCourtTask();
+            ResponseEntity<String> response = cmsBatchTaskService.tblMtCourtTask();
           
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");

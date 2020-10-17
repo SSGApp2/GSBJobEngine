@@ -22,15 +22,14 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     private String API_LitigationUpdate;
 
     @Override
-    public void bkc() {
+    public void litigationUpdateBKC() {
         try {
             // --- Send To GSBEngine Type bkc Create File LitigationUpdate_BKC_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=bkc");
-            LOGGER.info(" LitigationUpdate_BKC http status : {}", result.getStatusCode().toString());
+            LOGGER.info(" LitigationUpdateBKC http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-//            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
-
+            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -38,15 +37,14 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void bko() {
+    public void litigationUpdateBKO() {
         try {
             // --- Send To GSBEngine Type bko Create File LitigationUpdate_BKO_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=bko");
             LOGGER.info(" LitigationUpdate_BKO http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-//            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
-
+            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -54,14 +52,14 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void litigationUpdate_CVA() {
+    public void litigationUpdateCVA() {
         LOGGER.info("------------------------- LitigationUpdate_CVA --------------------------------------");
         try {
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cva");
-            LOGGER.info(" LitigationUpdate_CVA http status : {}", result.getStatusCode().toString());
+            LOGGER.info(" LitigationUpdateCVA http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-//            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
+            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -70,13 +68,13 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void LitigationUpdate_CVC() {
+    public void litigationUpdateCVC() {
         try {
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cvc");
-            LOGGER.info(" LitigationUpdate_CVC http status : {}", result.getStatusCode().toString());
+            LOGGER.info(" LitigationUpdateCVC http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-//            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
+            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -84,15 +82,14 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
-    public void LitigationUpdate_CVO() {
+    public void litigationUpdateCVO() {
         try {
             // --- Send To GSBEngine Type cvo Create File LitigationUpdate_CVO_YYYYMMDD.csv ---
             ResponseEntity<String> result = getResultByExchange(API_LitigationUpdate + "?type=cvo");
             LOGGER.info(" LitigationUpdate_CVO http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-//            String pathName = smbFileService.localFileToRemoteFile(fileName,"DCMS");
-
+            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);

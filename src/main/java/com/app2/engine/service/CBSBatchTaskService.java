@@ -3,8 +3,10 @@ package com.app2.engine.service;
 import org.springframework.http.ResponseEntity;
 
 public interface CBSBatchTaskService {
+    ResponseEntity<String> lsCollectionStatusTask();
+    ResponseEntity<String> accountEndLegalUpdateTask();
     ResponseEntity<String> createFileTXTRestrictionZLE();
-    ResponseEntity<String> masterDataCountryTask(String fileName);
+    ResponseEntity<String> stblcntryTask(String fileName);
     ResponseEntity<String> masterDataProvinceTask(String fileName);
     ResponseEntity<String> masterDataDistrictTask(String fileName);
     ResponseEntity<String> masterDataSubDistrictTask(String fileName);

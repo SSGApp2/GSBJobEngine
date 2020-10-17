@@ -31,12 +31,10 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
             // --- Copy File WRN_CONSENT_YYYYMMDD.txt ---
             String curDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
             String fileName = "WRN_CONSENT_" + curDate + ".txt";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"WRN");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"DCMS");
             // --- Send To GSBEngine Type 1 ---
             ResponseEntity<String> result = getResultByExchange(API_WRN + "?type=1&pathFile=" + pathName);
             LOGGER.info(" WRN_CONSENT http status : {}", result.getStatusCode().toString());
-
-
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -50,7 +48,7 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
             // --- Copy File WRN_TDR_YYYYMMDD.txt ---
             String curDate = new SimpleDateFormat("yyyyMMdd").format(new Date());
             String fileName = "WRN_TDR_" + curDate + ".txt";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName,"WRN");
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"DCMS");
             // --- Send To GSBEngine Type 2 ---
             ResponseEntity<String> result = getResultByExchange(API_WRN + "?type=2&pathFile=" + pathName);
             LOGGER.info(" WRN_TDR http status : {}", result.getStatusCode().toString());

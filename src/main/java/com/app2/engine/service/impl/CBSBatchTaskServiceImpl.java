@@ -8,6 +8,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CBSBatchTaskService {
+
+    @Override
+    public ResponseEntity<String> lsCollectionStatusTask() {
+        String url = "/jobs/lsCollectionStatus";
+        return getResultByExchange(url);
+    }
+
+    @Override
+    public ResponseEntity<String> accountEndLegalUpdateTask() {
+        return getResultByExchange("");
+    }
+
     @Override
     public ResponseEntity<String> createFileTXTRestrictionZLE() {
         String url = "/jobs/createFileTXTRestrictionZLE";
@@ -15,8 +27,8 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     }
 
     @Override
-    public ResponseEntity<String> masterDataCountryTask(String fileName) {
-        String url = "/jobs/masterDataCountry?fileName=";
+    public ResponseEntity<String> stblcntryTask(String fileName) {
+        String url = "/jobs/stblcntry?fileName=";
         return getResultByExchange(url+fileName);
     }
 
