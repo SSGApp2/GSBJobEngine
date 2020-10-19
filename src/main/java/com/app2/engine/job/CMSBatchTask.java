@@ -36,7 +36,7 @@ public class CMSBatchTask {
     SmbFileService smbFileService;
 
     @Transactional
-    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
     public void seizeInfo() {
         // รับข้อมูลการยึดทรัพย์ (CollSeizeDetail) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -71,7 +71,7 @@ public class CMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
     public void legalStatus() {
         // รับข้อมูลสถานะ Litigation (LitigationStatus) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -106,44 +106,8 @@ public class CMSBatchTask {
         LOGGER.info("**************************************************************************");
     }
 
-//    @Transactional
-//    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
-//    public void createFileCSVLitigationCVA() {
-//        LOGGER.info("**************************************************************************");
-//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-//        LOGGER.info(" createFileCSVLitigationCVA ");
-//        BatchTransaction batchTransaction = null;
-//        try {
-//            batchTransaction = new BatchTransaction();
-//            batchTransaction.setControllerMethod("DebtorTask.createFileCSVLitigationCVA");
-//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-//            batchTransaction.setName("createFileCSVLitigationCVA");
-//            batchTransaction.setStatus("S");
-//
-//            ResponseEntity<String> response = cmsBatchTaskService.createFileCSVLitigationCVA();
-//            if (!response.getStatusCode().is2xxSuccessful()) {
-//                batchTransaction.setStatus("E");
-//                batchTransaction.setReason(response.getBody());
-//            }
-//            String pathName = response.getBody();
-//            String[] fileNameAr = pathName.split("/");
-//            String fileName = fileNameAr[fileNameAr.length-1];
-//
-//            smbFileService.remoteFileToLocalFile(fileName,"CMS");
-//
-//        }catch (Exception e) {
-//            batchTransaction.setStatus("E");
-//            batchTransaction.setReason(e.getMessage());
-//            LOGGER.error("Error {}", e.getMessage());
-//        } finally {
-//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-//            batchTransactionRepository.saveAndFlush(batchTransaction);
-//        }
-//        LOGGER.info("**************************************************************************");
-//    }
-
     @Transactional
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
     public void tblMtLedTask() {
         // ข้อมูลสำนักงานบังคับคดี
         LOGGER.info("***************************************");
@@ -180,7 +144,7 @@ public class CMSBatchTask {
   
   
     @Transactional
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
     public void tblMtCourtTask() {
         // ข้อมูลศาล : รับจากระบบ LEAD
         LOGGER.info("***************************************");
