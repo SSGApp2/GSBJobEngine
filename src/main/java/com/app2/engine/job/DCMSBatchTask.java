@@ -44,7 +44,7 @@ public class DCMSBatchTask {
     WRNService wrnService;
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void createDocumentAutoByCifDebtor() {
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -80,7 +80,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?") //ss mm hh every day
     public void ACNEndLegal() {
         // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -118,7 +118,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
     public void LitigationUpdateBKC() {
         // BKC ----------------------------------------------------
         // รับรายละเอียดข้อมูลแฟ้มดำเนินคดีล้มละลายที่มีการ update ในแต่ละวัน : รับจากระบบ LEAD
@@ -145,7 +145,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
     public void LitigationUpdateBKO() {
         // BKO ----------------------------------------------------
         // รับข้อมูลแฟ้มดำเนินคดีเจ้าหนี้นอกฟ้องลูกหนี้ธนาคารในคดีล้มละลายที่มีการ update : รับจากระบบ LEAD
@@ -173,7 +173,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
     public void LitigationUpdateCVC() {
         // CVA ----------------------------------------------------
         // รับข้อมูลแฟ้มดำเนินคดีแพ่งที่มีการ update : รับจากระบบ LEAD
@@ -202,7 +202,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
     public void LitigationUpdateCVA() {
         // CVA ----------------------------------------------------
         // รับข้อมูลแฟ้มดำเนินคดีลูกหนี้ผิดนัดหลังคำพิพากษาที่มีการ update : รับจากระบบ LEAD
@@ -231,7 +231,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
     public void LitigationUpdateCVO() {
         // CVO ----------------------------------------------------
         // รับข้อมูลแฟ้มดำเนินคดีเจ้าหนี้นอกยึดทรัพย์หลักประกันลูกหนี้ธนาคารที่มีการ update ให้ระบบ : รับจากระบบ LEAD
@@ -259,7 +259,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
     public void WRNConsent() {
         // ส่งข้อมูลบัญชีที่มีรายการแจ้งเตือนกรณีที่ลูกหนี้ที่ศาลมีคำพิพากษาตามยอมทั้งหมด : ส่งให้ระบบ LEAD
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -289,7 +289,7 @@ public class DCMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 22 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
     public void wrnTdr() {
         // ส่งข้อมูลรายการแจ้งเตือนบัญชีปรับปรุงโครงสร้างหนี้หลังคำพิพากษาผิดนัดชำระหนี้ทั้งหมด : ส่งให้ระบบ LEAD
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));

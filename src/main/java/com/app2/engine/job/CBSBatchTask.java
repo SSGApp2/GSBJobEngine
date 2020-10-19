@@ -43,7 +43,7 @@ public class CBSBatchTask {
     ParameterDetailRepository parameterDetailRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * *")
+    @Scheduled(cron = "0 0 21 * * ?")
     public void lsCollectionStatusTask() {
         //รับข้อมูลสถานะการติดตามหนี้ (Collection Status) : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -77,7 +77,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void stblcntryTask() {
         // ประเทศ : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
@@ -112,78 +112,6 @@ public class CBSBatchTask {
         }
         LOGGER.info("***************************************");
     }
-
-    @Transactional
-//    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
-    public void accountEndLegalUpdateTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Create File accountEndLegalUpdateTask");
-        BatchTransaction batchTransaction = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.accountEndLegalUpdateTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("accountEndLegalUpdateTask");
-            batchTransaction.setStatus("S");
-            ResponseEntity<String> response = cbsBatchTaskService.accountEndLegalUpdateTask();
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            } else {
-                String pathFile = response.getBody();
-                smbFileService.localFileToRemoteFile(pathFile,"DCMS");
-            }
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
-
-
-
-    @Transactional
-//    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
-//    @Scheduled(fixedRate = 30000)
-    public void createFileTXTRestrictionZLE() {
-        LOGGER.info("**************************************************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info(" createFileTXTRestrictionZLE ");
-        BatchTransaction batchTransaction = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.createFileTXTRestrictionZLE");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("createFileTxtRestriction");
-            batchTransaction.setStatus("S");
-
-            ResponseEntity<String> response = cbsBatchTaskService.createFileTXTRestrictionZLE();
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            }
-
-            String fileName = response.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"CBS");
-
-        }catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("**************************************************************************");
-    }
-
-
 
     @Transactional
     public void masterDataProvinceTask() {
@@ -287,7 +215,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataBranchTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -321,7 +249,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataCostCenterTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -355,7 +283,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataWorkingDaysTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -389,7 +317,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataHolidayTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -423,7 +351,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?")//ss mm hh every day
     public void masterDataOUTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -457,7 +385,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataMarketCodeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -491,7 +419,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataProductGroupTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -525,7 +453,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataProductSubtypeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -559,7 +487,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataProductTypeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -593,7 +521,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 23 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
     public void masterDataTitleTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -627,7 +555,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 03 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 2 * * ?") //ss mm hh every day
     public void zleTask() {
         //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -661,7 +589,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 03 * * *")
+    @Scheduled(cron = "0 30 0 * * ?")
     public void lsAcnTask(){
         //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
@@ -696,6 +624,74 @@ public class CBSBatchTask {
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
         LOGGER.info("***************************************");
+    }
+
+    @Transactional
+//    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
+    public void accountEndLegalUpdateTask() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start Create File accountEndLegalUpdateTask");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.accountEndLegalUpdateTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("accountEndLegalUpdateTask");
+            batchTransaction.setStatus("S");
+            ResponseEntity<String> response = cbsBatchTaskService.accountEndLegalUpdateTask();
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            } else {
+                String pathFile = response.getBody();
+                smbFileService.localFileToRemoteFile(pathFile,"DCMS");
+            }
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+//    @Scheduled(cron = "0 49 14 * * *") //ss mm hh every day
+//    @Scheduled(fixedRate = 30000)
+    public void createFileTXTRestrictionZLE() {
+        LOGGER.info("**************************************************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info(" createFileTXTRestrictionZLE ");
+        BatchTransaction batchTransaction = null;
+        try {
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("CBSBatchTask.createFileTXTRestrictionZLE");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("createFileTxtRestriction");
+            batchTransaction.setStatus("S");
+
+            ResponseEntity<String> response = cbsBatchTaskService.createFileTXTRestrictionZLE();
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                batchTransaction.setStatus("E");
+                batchTransaction.setReason(response.getBody());
+            }
+
+            String fileName = response.getBody();
+            smbFileService.localFileToRemoteFile(fileName,"CBS");
+
+        }catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("**************************************************************************");
     }
 
     public String codeCurrentDate(){

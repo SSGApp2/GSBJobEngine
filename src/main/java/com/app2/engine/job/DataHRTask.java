@@ -30,7 +30,7 @@ public class DataHRTask {
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 30 5 * * ?") //ss mm hh every day
     public void hrDataTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
