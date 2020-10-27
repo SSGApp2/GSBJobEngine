@@ -320,12 +320,10 @@ public class SmbFileServiceImpl implements SmbFileService {
             }
         }
 
-        LOGGER.debug("Path : {}",remoteDir);
-
         if(AppUtil.isNotNull(remoteDir)){
             File directory = new File(remoteDir);
             if (! directory.exists()){
-                directory.mkdir();
+                directory.mkdirs();
             }
         }
 
