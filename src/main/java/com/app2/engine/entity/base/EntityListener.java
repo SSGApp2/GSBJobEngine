@@ -67,7 +67,6 @@ public class EntityListener {
         for (Field field : cls.getDeclaredFields()) {
             Field strField = ReflectionUtils.findField(cls, field.getName());
             if (strField.getType().equals(String.class)) {
-                strField.setAccessible(true);
                 Object value = ReflectionUtils.getField(strField, target);
                 if (AppUtil.isNotNull(value) && AppUtil.isEmpty(value.toString())) {
                     ReflectionUtils.makeAccessible(strField); //set null when emptyString

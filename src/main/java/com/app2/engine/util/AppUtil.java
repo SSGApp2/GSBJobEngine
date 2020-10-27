@@ -1,10 +1,18 @@
 package com.app2.engine.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 public class AppUtil {
+	static final Logger LOGGER = LoggerFactory.getLogger(AppUtil.class);
 
 	public static Object getDefaultValueIfNull(final Object value, final Object defaultValue) {
 		Object result = defaultValue;
@@ -214,5 +222,35 @@ public class AppUtil {
 			r = obj.toString();
 		}
 		return r;
+	}
+
+	public static void safeCloseBufferedReader(BufferedReader br) {
+		if (br != null) {
+			try {
+				br.close();
+			} catch (IOException e) {
+				LOGGER.error("Error : {}", e.getMessage(),e);
+			}
+		}
+	}
+
+	public static void safeCloseInputStreamReader(InputStreamReader br) {
+		if (br != null) {
+			try {
+				br.close();
+			} catch (IOException e) {
+				LOGGER.error("Error : {}", e.getMessage(),e);
+			}
+		}
+	}
+
+	public static void safeCloseFileInputStream(FileInputStream br) {
+		if (br != null) {
+			try {
+				br.close();
+			} catch (IOException e) {
+				LOGGER.error("Error : {}", e.getMessage(),e);
+			}
+		}
 	}
 }

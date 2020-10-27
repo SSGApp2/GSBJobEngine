@@ -14,16 +14,14 @@ import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
 import jcifs.smb.SmbFileOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -58,6 +56,7 @@ public class SmbFileServiceImpl implements SmbFileService {
         String localDir = null;
         Session session = null;
         ChannelSftp channelSftp = null;
+        String result = null;
         try {
 
             localDir =  pathLocalDir(topic,"download");
@@ -106,12 +105,13 @@ public class SmbFileServiceImpl implements SmbFileService {
                 session.disconnect();
             }
 
-            String result = localDir+"/"+fileName;
+            result = localDir+"/"+fileName;
             LOGGER.debug("result  {}",result);
 
-            return result;
+
 
         }
+        return result;
     }
 
     @Override
@@ -121,6 +121,7 @@ public class SmbFileServiceImpl implements SmbFileService {
         String localDir = null;
         Session session = null;
         ChannelSftp channelSftp = null;
+        InputStream targetStream = null;
         try {
 
             localDir =  pathLocalDir(topic,"upload");
@@ -151,7 +152,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             String src = localDir+"/"+fileName;
             LOGGER.debug("src  {}",src);
             File initialFile = new File(src);
-            InputStream targetStream = new FileInputStream(initialFile);
+            targetStream = new FileInputStream(initialFile);
 
             channelSftp.put(targetStream, initialFile.getName(), ChannelSftp.OVERWRITE);
             channelSftp.disconnect();
@@ -170,9 +171,10 @@ public class SmbFileServiceImpl implements SmbFileService {
             if (session != null && session.isConnected()) {
                 session.disconnect();
             }
-            return localDir;
+
+            IOUtils.closeQuietly(targetStream);
         }
-//        return null;
+        return localDir;
     }
 
     @Override
@@ -194,7 +196,7 @@ public class SmbFileServiceImpl implements SmbFileService {
 
         Parameter parameter = parameterRepository.findByCode(parameterCode);
         List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
-
+        FileOutputStream out = null;
         try {
             if (AppUtil.isNull(pDetail.getVariable9())) {
                 //From SMTP
@@ -218,7 +220,7 @@ public class SmbFileServiceImpl implements SmbFileService {
                                 localFile.getParentFile().mkdirs();
                                 localFile.createNewFile();
                             }
-                            FileOutputStream out = new FileOutputStream(localFile, false);
+                            out = new FileOutputStream(localFile, false);
 
 
                             byte[] buffer = new byte[16904];
@@ -254,6 +256,15 @@ public class SmbFileServiceImpl implements SmbFileService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
         }
         LOGGER.debug("pathFileLocal {}", pathFileLocal);
         return pathFileLocal;

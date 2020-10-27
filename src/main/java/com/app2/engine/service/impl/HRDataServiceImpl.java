@@ -79,13 +79,17 @@ public class HRDataServiceImpl implements HRDataService {
     @Transactional
     public void region() {
         //update รหัสภาค/ฝ่าย
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRREGION.TXT";
 //            smbFileService.remoteFileToLocalFile(fileName,"HR");
 //            String pathName = "/home/thongchai/Documents/GSB/HRDATA/HRREGION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream,"UTF-8");
+            bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
             String delimeter = "\\|";
@@ -131,6 +135,10 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
 
     }
@@ -138,11 +146,15 @@ public class HRDataServiceImpl implements HRDataService {
     @Override
     @Transactional
     public void section() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRSECTION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
             String delimeter = "\\|";
@@ -179,6 +191,10 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
 
     }
@@ -187,11 +203,15 @@ public class HRDataServiceImpl implements HRDataService {
     @Override
     @Transactional
     public void position() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRPOSITION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
             int length = 3;
@@ -221,6 +241,10 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
 
     }
@@ -228,11 +252,15 @@ public class HRDataServiceImpl implements HRDataService {
     @Override
     @Transactional
     public void branch() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRBRANCH.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
             int length = 2;
@@ -278,17 +306,25 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 
     @Override
     @Transactional
     public void lineBusiness() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRDIV.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
             String delimeter = "\\|";
@@ -325,12 +361,19 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 
     @Override
     @Transactional
     public void unit() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             List<String> codeList = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
@@ -341,8 +384,9 @@ public class HRDataServiceImpl implements HRDataService {
                     fileName = "HRUNIT.TXT"; // หน่วยย่อย
                 }
                 String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-                InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-                BufferedReader bfReader = new BufferedReader(streamReader);
+                fileInputStream = new FileInputStream(pathName);
+                streamReader = new InputStreamReader(fileInputStream,"UTF-8");
+                bfReader = new BufferedReader(streamReader);
 
                 String delimeter = "\\|";
                 int length = 2;
@@ -379,17 +423,25 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 
     @Override
     @Transactional
     public void orgGroup() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRBUSILINE.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
             int length = 2;
@@ -426,17 +478,25 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 
     @Override
     @Transactional
     public void company() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRMAINSTR.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
+            bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
             int length = 2;
@@ -473,18 +533,25 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 
     @Override
     @Transactional
     public void hrInterface() {
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
+        BufferedReader bfReader = null;
         try {
             String fileName = "HRCOMPANYREL.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-//            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\HRDATA\\" + fileName;
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
-            BufferedReader bfReader = new BufferedReader(streamReader);
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream,"UTF-8");
+            bfReader = new BufferedReader(streamReader);
 
             Date currentDate = DateUtil.getCurrentDate();
             LOGGER.debug("Start hrInterface {}", currentDate);
@@ -796,6 +863,10 @@ public class HRDataServiceImpl implements HRDataService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseBufferedReader(bfReader);
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
     }
 }

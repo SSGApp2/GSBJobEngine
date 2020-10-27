@@ -69,6 +69,8 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     public void InsertOrUpdateEmp() {
         Date currentDate = DateUtil.getCurrentDate();
         LOGGER.debug("Start InsertOrUpdateEmp {}", currentDate);
+        FileInputStream fileInputStream = null;
+        InputStreamReader streamReader = null;
         try {
 //            String fileName = "AD_20200525-Edit.csv";
             String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
@@ -76,7 +78,8 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD");
             LOGGER.debug("pathName File {}", pathName);
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            fileInputStream = new FileInputStream(pathName);
+            streamReader = new InputStreamReader(fileInputStream, "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withHeader(ADEmployee.class).parse(streamReader);
@@ -213,6 +216,9 @@ public class EmployeeADServiceImpl implements EmployeeADService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            AppUtil.safeCloseInputStreamReader(streamReader);
+            AppUtil.safeCloseFileInputStream(fileInputStream);
         }
 
     }
