@@ -64,16 +64,16 @@ public class SmbFileServiceImpl implements SmbFileService {
             localDir =  pathLocalDir(topic,"download");
             remoteDir =  pathRemoteDir(topic,"download");
 
-            LOGGER.debug("localDir {}", localDir);
-            LOGGER.debug("remoteDir {}", remoteDir);
+            LOGGER.debug("localDir : {}", localDir);
+            LOGGER.debug("remoteDir : {}", remoteDir);
 
             JSch jsch = new JSch();
             session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
             session.setPassword(LEAD_PASSWORD);
-            LOGGER.debug("LEAD_USERNAME {}", LEAD_USERNAME);
-            LOGGER.debug("LEAD_SERVER_ADDRESS {}", LEAD_SERVER_ADDRESS);
-            LOGGER.debug("LEAD_SERVER_PORT {}", LEAD_SERVER_PORT);
-            LOGGER.debug("LEAD_PASSWORD {}", LEAD_PASSWORD);
+            LOGGER.debug("LEAD_USERNAME : {}", LEAD_USERNAME);
+            LOGGER.debug("LEAD_SERVER_ADDRESS : {}", LEAD_SERVER_ADDRESS);
+            LOGGER.debug("LEAD_SERVER_PORT : {}", LEAD_SERVER_PORT);
+            LOGGER.debug("LEAD_PASSWORD : {}", LEAD_PASSWORD);
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
@@ -87,7 +87,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             LOGGER.debug("channelSftp.connect  !!");
 
             String src =remoteDir+"/"+fileName;
-            LOGGER.debug("src  {}",src);
+            LOGGER.debug("src {}",src);
             channelSftp.get(src,localDir);
 
             channelSftp.disconnect();
@@ -279,6 +279,17 @@ public class SmbFileServiceImpl implements SmbFileService {
                 parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "06");
                 break;
         }
+
+        if(AppUtil.isNotNull(parameter_DL)){
+            String paramDL = parameter_DL.getVariable1();
+            if(AppUtil.isNotNull(paramDL)){
+                File directory = new File(paramDL + "/" +DateUtil.codeCurrentDate());
+                if (! directory.exists()){
+                    directory.mkdirs();
+                }
+            }
+        }
+
         return this.getPath(parameter_DL,type);
     }
 
@@ -317,13 +328,6 @@ public class SmbFileServiceImpl implements SmbFileService {
                 remoteDir = param.getVariable1() + "/" + DateUtil.codeCurrentDate();
             }else if (type.equals("upload")){
                 remoteDir = param.getVariable2() + "/" + DateUtil.codeCurrentDate();
-            }
-        }
-
-        if(AppUtil.isNotNull(remoteDir)){
-            File directory = new File(remoteDir);
-            if (! directory.exists()){
-                directory.mkdirs();
             }
         }
 
