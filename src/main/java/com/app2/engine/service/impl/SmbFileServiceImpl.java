@@ -6,6 +6,7 @@ import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.repository.ParameterRepository;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
+import com.app2.engine.util.DateUtil;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -105,13 +106,9 @@ public class SmbFileServiceImpl implements SmbFileService {
             if (session != null && session.isConnected()) {
                 session.disconnect();
             }
-
-            String result = localDir+"/"+fileName;
-            LOGGER.debug("result  {}",result);
-
-            return result;
-
         }
+
+        return localDir+"/"+fileName;
     }
 
     @Override
@@ -170,9 +167,8 @@ public class SmbFileServiceImpl implements SmbFileService {
             if (session != null && session.isConnected()) {
                 session.disconnect();
             }
-            return localDir;
         }
-//        return null;
+        return localDir;
     }
 
     @Override
@@ -259,201 +255,82 @@ public class SmbFileServiceImpl implements SmbFileService {
         return pathFileLocal;
     }
 
-
-
-
-
-
-    public String pathLocalDir(String topic, String type){
+    private String pathLocalDir(String topic, String type){
         String localDir = null;
         ParameterDetail parameter_DL = null;
 
-        if(topic.equals("DCMS")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-        }else if(topic.equals("CBS")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","02");
-        }else if(topic.equals("CMS")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","03");
-        }else if(topic.equals("AD")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","04");
-        }else if(topic.equals("WRN")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","05");
-        }else if(topic.equals("HR")){
-            parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","06");
+        switch (topic) {
+            case "DCMS":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+                break;
+            case "CBS":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+                break;
+            case "CMS":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+                break;
+            case "AD":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "04");
+                break;
+            case "WRN":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "05");
+                break;
+            case "HR":
+                parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "06");
+                break;
         }
-
-        if (AppUtil.isNotNull(parameter_DL)){
-            if (type.equals("download")){
-                localDir = parameter_DL.getVariable1();
-            }else if (type.equals("upload")){
-                localDir = parameter_DL.getVariable2();
-            }
-        }
-        return localDir;
+        return this.getPath(parameter_DL,type);
     }
 
-    public String pathRemoteDir(String topic,String type){
+    private String pathRemoteDir(String topic, String type){
         String remoteDir  = null;
         ParameterDetail parameter_UL = null;
 
-        if(topic.equals("DCMS")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","01");
-        }else if(topic.equals("CMS")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","02");
-        }else if(topic.equals("CBS")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","03");
-        }else if(topic.equals("AD")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","04");
-        }else if(topic.equals("HR")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","05");
-        }else if(topic.equals("WRN")){
-            parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","06");
+        switch (topic) {
+            case "DCMS":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "01");
+                break;
+            case "CMS":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "02");
+                break;
+            case "CBS":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "03");
+                break;
+            case "AD":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "04");
+                break;
+            case "HR":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "05");
+                break;
+            case "WRN":
+                parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "06");
+                break;
         }
 
-        if (AppUtil.isNotNull(parameter_UL)){
+        return this.getPath(parameter_UL,type);
+    }
+
+    private String getPath(ParameterDetail param,String type){
+        String remoteDir = null;
+        if (AppUtil.isNotNull(param)){
             if (type.equals("download")){
-                remoteDir = parameter_UL.getVariable1();
+                remoteDir = param.getVariable1() + "/" + DateUtil.codeCurrentDate();
             }else if (type.equals("upload")){
-                remoteDir = parameter_UL.getVariable2();
+                remoteDir = param.getVariable2() + "/" + DateUtil.codeCurrentDate();
+            }
+        }
+
+        LOGGER.debug("Path : {}",remoteDir);
+
+        if(AppUtil.isNotNull(remoteDir)){
+            File directory = new File(remoteDir);
+            if (! directory.exists()){
+                directory.mkdir();
             }
         }
 
         return remoteDir;
     }
 
-    //    @Override
-//    public String copyRemoteFileToLocalFile(String fileName) {
-//        LOGGER.info("====> copyRemoteFileToLocalFile");
-//        ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "10");
-//        String smbPath = pDetail.getVariable1();
-//        String username = pDetail.getVariable2();
-//        String password = pDetail.getVariable3();
-//        String backup = pDetail.getVariable4();
-//        LOGGER.debug("smbPath    {}", smbPath);
-//        LOGGER.debug("username      {}", username);
-//        LOGGER.debug("password      {}", password);
-//        LOGGER.debug("remotePath    {}", fileName);
-//        LOGGER.debug("localPath    {}", backup);
-//        String pathFileLocal=null;
-//        try {
-//            if (AppUtil.isNull(pDetail.getVariable9())) {
-//                //From SMTP
-//                NtlmPasswordAuthentication authentication = new NtlmPasswordAuthentication("", username, password);
-//
-//
-//                SmbFile remoteFile = new SmbFile(smbPath + "/" + fileName, authentication);
-//                remoteFile.connect(); //Try to connect
-//                SmbFileInputStream in = new SmbFileInputStream(remoteFile);
-//
-//                File localFile = new File(backup + "/" + fileName);
-//                if (!localFile.exists()) {
-//                    localFile.getParentFile().mkdirs();
-//                    localFile.createNewFile();
-//                }
-//                FileOutputStream out = new FileOutputStream(localFile, false);
-//
-//
-//                byte[] buffer = new byte[16904];
-//                int read = 0;
-//                while ((read = in.read(buffer)) > 0)
-//                    out.write(buffer, 0, read);
-//
-//                in.close();
-//                out.close();
-//                pathFileLocal=localFile.getPath();
-//            } else {
-//                File source = new File(pDetail.getVariable9() + "/" + fileName);
-//                File dest = new File(backup + "/" + fileName);
-//                FileUtils.copyFile(source, dest);
-//                pathFileLocal=dest.getPath();
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error("Error {}", e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        }
-//        LOGGER.debug("pathFileLocal {}",pathFileLocal);
-//        return pathFileLocal;
-//    }
-//
-//    @Override
-//    public String copyLocalFileToRemoteFile(String fileName) {
-//        LOGGER.info("====> copyLocalFileToRemoteFile");
-//        ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "10");
-//        String smbPath = pDetail.getVariable1();
-//        String username = pDetail.getVariable2();
-//        String password = pDetail.getVariable3();
-//        String backup = pDetail.getVariable4();
-//        LOGGER.debug("smbPath    {}", smbPath);
-//        LOGGER.debug("username      {}", username);
-//        LOGGER.debug("password      {}", password);
-//        LOGGER.debug("remotePath    {}", fileName);
-//        LOGGER.debug("localPath    {}", backup);
-//        String pathFileLocal=null;
-//        try {
-//            if (AppUtil.isNull(pDetail.getVariable9())) {
-//                //From SMTP
-//                NtlmPasswordAuthentication authentication = new NtlmPasswordAuthentication("", username, password);
-//
-//
-//                SmbFile remoteFile = new SmbFile(smbPath + "/" + fileName, authentication);
-//                remoteFile.connect(); //Try to connect
-//                SmbFileOutputStream out = new SmbFileOutputStream(remoteFile,false);
-//
-//                File localFile = new File(backup + "/" + fileName);
-//                if (!localFile.exists()) {
-//                    localFile.getParentFile().mkdirs();
-//                    localFile.createNewFile();
-//                }
-//                FileInputStream in = new FileInputStream(localFile);
-//
-//
-//                byte[] buffer = new byte[16904];
-//                int read = 0;
-//                while ((read = in.read(buffer)) > 0)
-//                    out.write(buffer, 0, read);
-//
-//                in.close();
-//                out.close();
-//                pathFileLocal=localFile.getPath();
-//            } else {
-//                File dest = new File(pDetail.getVariable9() + "/" + fileName);
-//                File source = new File(backup + "/" + fileName);
-//            FileUtils.copyFile(source,dest);
-//                pathFileLocal = source.getPath();
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error("Error {}", e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        }
-//        LOGGER.debug("pathFileLocal {}",pathFileLocal);
-//        return pathFileLocal;
-//    }
-//
-
-//
-//    private void deleteFileERP(String fileName) {
-//
-//        ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "10");
-//        String smbPath = pDetail.getVariable1();
-//        String username = pDetail.getVariable2();
-//        String password = pDetail.getVariable3();
-//        LOGGER.debug("smbPath    {}", smbPath);
-//        LOGGER.debug("username      {}", username);
-//        LOGGER.debug("password      {}", password);
-//        NtlmPasswordAuthentication authentication = new NtlmPasswordAuthentication("", username, password);
-//        try {
-//            SmbFile remoteFile = new SmbFile(smbPath + "/" + fileName, authentication);
-//            if (remoteFile.isFile() && remoteFile.exists()) {
-//                remoteFile.delete();
-//                LOGGER.debug("Delete success");
-//            } else {
-//                LOGGER.debug("Not found File");
-//            }
-//        } catch (Exception e) {
-//            LOGGER.error("Error {}", e.getMessage(), e);
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
 }
 
