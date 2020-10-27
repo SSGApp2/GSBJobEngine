@@ -51,7 +51,7 @@ public class DCMSBatchTask {
         LOGGER.info(" createDocumentAutoByCifDebtor ");
         BatchTransaction batchTransaction = null;
         try {
-            String fileName = "ACN_STARTLEGAL_"+codeCurrentDate()+".txt";
+            String fileName = "ACN_STARTLEGAL_"+DateUtil.codeCurrentDate()+".txt";
 
             smbFileService.remoteFileToLocalFile(fileName,"DCMS");
 
@@ -318,13 +318,5 @@ public class DCMSBatchTask {
         LOGGER.info("**************************************************************************");
     }
 
-    public String codeCurrentDate(){
-        String pattern = "yyyy-MM-dd";
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        String currentDate = dateFormat.format(date);
-        String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
-    }
+
 }

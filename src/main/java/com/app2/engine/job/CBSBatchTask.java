@@ -598,7 +598,7 @@ public class CBSBatchTask {
         LOGGER.info("File : LS_ACN_YYYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
-            String fileName = "LS_ACN_"+codeCurrentDate()+".txt";
+            String fileName = "LS_ACN_"+DateUtil.codeCurrentDate()+".txt";
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
 
             ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
@@ -694,13 +694,4 @@ public class CBSBatchTask {
         LOGGER.info("**************************************************************************");
     }
 
-    public String codeCurrentDate(){
-        String pattern = "yyyy-MM-dd";
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        String currentDate = dateFormat.format(date);
-        String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
-    }
 }

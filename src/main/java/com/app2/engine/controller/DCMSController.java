@@ -4,6 +4,7 @@ import com.app2.engine.service.DCMSBatchTaskService;
 import com.app2.engine.service.LitigationUpdateService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.service.WRNService;
+import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,20 +36,10 @@ public class DCMSController {
     @Autowired
     WRNService wrnService;
 
-    public String codeCurrentDate(){
-        String pattern = "yyyy-MM-dd";
-        Date date = new Date();
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        String currentDate = dateFormat.format(date);
-        String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
-    }
-
     @GetMapping("ACNStartLegal")
     public void ACNStartLegal(){
         // ถ้าจะ test บนเครื่อง server เรา ต้องไปเปลี่ยน variable1 เป็น path [ตำแหน่งที่จะเรียกไฟล์] ทั้ง parameter : 5001 ,5002
-        String fileName = "ACN_STARTLEGAL_"+codeCurrentDate()+".txt";
+        String fileName = "ACN_STARTLEGAL_"+ DateUtil.codeCurrentDate()+".txt";
         smbFileService.remoteFileToLocalFile(fileName,"DCMS");
         ResponseEntity<String> response = dcmsBatchTaskService.ACNStartLegal();
     }
