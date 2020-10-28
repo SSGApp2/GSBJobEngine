@@ -77,7 +77,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void stblcntryTask() {
         // ประเทศ : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
@@ -215,7 +215,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataBranchTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -249,7 +249,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataCostCenterTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -283,7 +283,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataWorkingDaysTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -317,7 +317,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataHolidayTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -351,7 +351,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?")//ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?")//ss mm hh every day
     public void masterDataOUTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -385,7 +385,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataMarketCodeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -419,7 +419,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataProductGroupTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -453,7 +453,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataProductSubtypeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -487,7 +487,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataProductTypeTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -521,7 +521,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void masterDataTitleTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
