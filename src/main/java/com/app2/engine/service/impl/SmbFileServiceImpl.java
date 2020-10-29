@@ -10,10 +10,10 @@ import com.app2.engine.util.DateUtil;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpATTRS;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
-import jcifs.smb.SmbFileOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,6 +143,11 @@ public class SmbFileServiceImpl implements SmbFileService {
             channelSftp = (ChannelSftp) session.openChannel("sftp");
             channelSftp.connect();
             LOGGER.debug("channelSftp.connect  !!");
+            SftpATTRS attrs = channelSftp.stat(remoteDir);
+            LOGGER.debug("sftp attrs : {}",attrs);
+            if(attrs == null){
+                channelSftp.mkdir(remoteDir);
+            }
             channelSftp.cd(remoteDir);
 
             String src = localDir+"/"+fileName;
