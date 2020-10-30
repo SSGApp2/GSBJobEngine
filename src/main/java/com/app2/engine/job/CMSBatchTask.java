@@ -78,13 +78,13 @@ public class CMSBatchTask {
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("legalStatus ");
         LOGGER.info("Start create file get Litigation status.");
-        LOGGER.info("File : LEGAL_STATUS_YYYMMDD.txt");
+        LOGGER.info("File : LEGALSTATUS_YYYMMDD.txt");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DebtorTask.legalStatus");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LEGAL_STATUS_YYYMMDD.txt");
+            batchTransaction.setName("LEGALSTATUS_YYYMMDD.txt");
             batchTransaction.setStatus("S");
 
             ResponseEntity<String> response = cmsBatchTaskService.legalStatus();
