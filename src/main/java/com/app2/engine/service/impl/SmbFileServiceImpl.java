@@ -284,7 +284,12 @@ public class SmbFileServiceImpl implements SmbFileService {
         }
 
         if(AppUtil.isNotNull(parameter_DL)){
-            String paramDL = parameter_DL.getVariable1();
+            String paramDL = null;
+            if (type.equals("download")){
+                paramDL = parameter_DL.getVariable1();
+            }else if (type.equals("upload")){
+                paramDL = parameter_DL.getVariable2();
+            }
             if(AppUtil.isNotNull(paramDL)){
                 File directory = new File(paramDL + "/" +DateUtil.codeCurrentDate());
                 if (! directory.exists()){
