@@ -38,8 +38,8 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "23");
         ApplicationConstant.GSBMailEngine = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "24");
-        ApplicationConstant.GSBEngineLocal = pDetail.getVariable1();
-//        ApplicationConstant.GSBEngineLocal = "http://localhost:8009/GSBEngine";
+//        ApplicationConstant.GSBEngineLocal = pDetail.getVariable1();
+        ApplicationConstant.GSBEngineLocal = "http://localhost:8009/GSBEngine";
 
         LOGGER.info("GSBAPPServer   :{}", ApplicationConstant.GSBAPPServer);
         LOGGER.info("GSBEngine   :{}", ApplicationConstant.GSBEngine);

@@ -29,7 +29,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             LOGGER.info(" LitigationUpdateBKC http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -44,7 +44,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             LOGGER.info(" LitigationUpdate_BKO http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -59,7 +59,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             LOGGER.info(" LitigationUpdateCVA http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -74,7 +74,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             LOGGER.info(" LitigationUpdateCVC http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
@@ -89,7 +89,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             LOGGER.info(" LitigationUpdate_CVO http status : {}", result.getStatusCode().toString());
             LOGGER.info(" Result : {} ", result.getBody());
             String fileName = result.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);

@@ -1,4 +1,4 @@
-package com.app2.engine.job;
+package com.app2.engine.job.dcms;
 
 import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
@@ -53,7 +53,7 @@ public class DCMSBatchTask {
         try {
             String fileName = "ACN_STARTLEGAL_"+DateUtil.codeCurrentDate()+".txt";
 
-            smbFileService.remoteFileToLocalFile(fileName,"DCMS");
+//            smbFileService.remoteFileToLocalFile(fileName,"DCMS");
 
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMSBatchTask.ACNStartLegal");
@@ -104,7 +104,7 @@ public class DCMSBatchTask {
             }
 
             String fileName = response.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//            smbFileService.localFileToRemoteFile(fileName,"DCMS");
 
         }catch (Exception e) {
             batchTransaction.setStatus("E");

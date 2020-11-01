@@ -50,7 +50,7 @@ public class SmbFileServiceImpl implements SmbFileService {
     ParameterRepository parameterRepository;
 
     @Override
-    public String remoteFileToLocalFile(String fileName, String topic) {
+    public String remoteFileToLocalFile(String fileName, String topic,String date) {
         //folder ToLEAD --> folder Download
         String remoteDir  = null;
         String localDir = null;
@@ -58,8 +58,8 @@ public class SmbFileServiceImpl implements SmbFileService {
         ChannelSftp channelSftp = null;
         try {
 
-            localDir =  pathLocalDir(topic,"download");
-            remoteDir =  pathRemoteDir(topic,"download");
+            localDir =  pathLocalDir(topic,"download",date);
+            remoteDir =  pathRemoteDir(topic,"download",date);
 
             LOGGER.debug("localDir : {}", localDir);
             LOGGER.debug("remoteDir : {}", remoteDir);
@@ -109,7 +109,7 @@ public class SmbFileServiceImpl implements SmbFileService {
     }
 
     @Override
-    public String localFileToRemoteFile(String fileName, String topic) {
+    public String localFileToRemoteFile(String fileName, String topic,String date) {
         //folder upload --> folder FormLEAD
         String remoteDir = null;
         String localDir = null;
@@ -117,8 +117,8 @@ public class SmbFileServiceImpl implements SmbFileService {
         ChannelSftp channelSftp = null;
         try {
 
-            localDir =  pathLocalDir(topic,"upload");
-            remoteDir =  pathRemoteDir(topic,"upload");
+            localDir =  pathLocalDir(topic,"upload",date);
+            remoteDir =  pathRemoteDir(topic,"upload",date);
             LOGGER.debug("localDir {}", localDir);
             LOGGER.debug("remoteDir {}", remoteDir);
 
@@ -258,7 +258,7 @@ public class SmbFileServiceImpl implements SmbFileService {
         return pathFileLocal;
     }
 
-    private String pathLocalDir(String topic, String type){
+    private String pathLocalDir(String topic, String type,String date){
         String localDir = null;
         ParameterDetail parameter_DL = null;
 
@@ -283,25 +283,10 @@ public class SmbFileServiceImpl implements SmbFileService {
                 break;
         }
 
-        if(AppUtil.isNotNull(parameter_DL)){
-            String paramDL = null;
-            if (type.equals("download")){
-                paramDL = parameter_DL.getVariable1();
-            }else if (type.equals("upload")){
-                paramDL = parameter_DL.getVariable2();
-            }
-            if(AppUtil.isNotNull(paramDL)){
-                File directory = new File(paramDL + "/" +DateUtil.codeCurrentDate());
-                if (! directory.exists()){
-                    directory.mkdirs();
-                }
-            }
-        }
-
-        return this.getPath(parameter_DL,type);
+        return this.getPath(parameter_DL,type,date);
     }
 
-    private String pathRemoteDir(String topic, String type){
+    private String pathRemoteDir(String topic, String type,String date){
         String remoteDir  = null;
         ParameterDetail parameter_UL = null;
 
@@ -326,16 +311,16 @@ public class SmbFileServiceImpl implements SmbFileService {
                 break;
         }
 
-        return this.getPath(parameter_UL,type);
+        return this.getPath(parameter_UL,type,date);
     }
 
-    private String getPath(ParameterDetail param,String type){
+    private String getPath(ParameterDetail param,String type,String date){
         String remoteDir = null;
         if (AppUtil.isNotNull(param)){
             if (type.equals("download")){
-                remoteDir = param.getVariable1() + "/" + DateUtil.codeCurrentDate();
+                remoteDir = param.getVariable1() + "/" + date;
             }else if (type.equals("upload")){
-                remoteDir = param.getVariable2() + "/" + DateUtil.codeCurrentDate();
+                remoteDir = param.getVariable2() + "/" + date;
             }
         }
 

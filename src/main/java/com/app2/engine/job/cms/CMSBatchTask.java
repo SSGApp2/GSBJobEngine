@@ -1,4 +1,4 @@
-package com.app2.engine.job;
+package com.app2.engine.job.cms;
 
 import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
@@ -57,7 +57,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             }
             String fileName = response.getBody();
-            smbFileService.remoteFileToLocalFile(fileName,"CMS");
+//            smbFileService.remoteFileToLocalFile(fileName,"CMS");
 
         }catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -94,7 +94,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             }
             String fileName = response.getBody();
-            smbFileService.localFileToRemoteFile(fileName,"CMS");
+//            smbFileService.localFileToRemoteFile(fileName,"CMS");
         }catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -129,7 +129,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String fileName = response.getBody();
-                smbFileService.remoteFileToLocalFile(fileName,"CMS");
+//                smbFileService.remoteFileToLocalFile(fileName,"CMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -166,7 +166,7 @@ public class CMSBatchTask {
                 batchTransaction.setReason(response.getBody());
             } else {
                 String fileName = response.getBody();
-                smbFileService.remoteFileToLocalFile(fileName,"CMS");
+//                smbFileService.remoteFileToLocalFile(fileName,"CMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");

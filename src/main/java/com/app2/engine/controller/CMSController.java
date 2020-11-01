@@ -26,27 +26,27 @@ public class CMSController {
     public void legalStatus() {
         ResponseEntity<String> response = cmsBatchTaskService.legalStatus();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CMS");
+//        smbFileService.localFileToRemoteFile(fileName,"CMS");
     }
 
     @GetMapping("seizeInfo")
     public void seizeInfo(){
         ResponseEntity<String> response = cmsBatchTaskService.seizeInfo();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CMS");
+//        smbFileService.localFileToRemoteFile(fileName,"CMS");
     }
 
     @GetMapping("tblMtCourtTask")
     public void tblMtCourtTask(){
         ResponseEntity<String> response = cmsBatchTaskService.tblMtCourtTask();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CMS");
+//        smbFileService.localFileToRemoteFile(fileName,"CMS");
     }
 
     @GetMapping("tblMtLedTask")
     public void tblMtLedTask(){
         ResponseEntity<String> response = cmsBatchTaskService.tblMtLedTask();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CMS");
+//        smbFileService.localFileToRemoteFile(fileName,"CMS");
     }
 }

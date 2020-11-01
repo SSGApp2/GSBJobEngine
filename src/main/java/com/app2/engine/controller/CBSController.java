@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DateFormat;
@@ -34,24 +35,35 @@ public class CBSController {
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
 
+    @GetMapping("all")
+    public void all(@RequestParam(value = "date",required = false)String date){
+
+        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null?date:DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
+
+//        cbsBatchTaskService.ZLE(date != null?date:DateUtil.codeCurrentDate());
+//        LOGGER.debug("Batch : ZLE is completed.");
+//
+//        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null?date:DateUtil.codeCurrentDate());
+//        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
+    }
+
     @GetMapping("lsCollectionStatus")
-    public void lsCollectionStatus(){
-        ResponseEntity<String> response = cbsBatchTaskService.lsCollectionStatusTask();
-        String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CBS");
+    public void lsCollectionStatus(@RequestParam(value = "date",required = false)String date){
+        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null?date:DateUtil.codeCurrentDate());
     }
 
     @GetMapping("zle")
     public void zle(){
         ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CBS");
+//        smbFileService.localFileToRemoteFile(fileName,"CBS");
     }
 
     @GetMapping("lsAcn")
     public void lsAcnTask(){
         String fileName = "LS_ACN_"+ DateUtil.codeCurrentDate()+".txt";
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
     }
 
@@ -61,7 +73,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "01");
         String fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         cbsBatchTaskService.stblcntryTask(fileName);
     }
 
@@ -72,7 +84,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "02");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataProvinceTask(fileName);
     }
 
@@ -83,7 +95,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "03");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataDistrictTask(fileName);
     }
 
@@ -94,7 +106,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "04");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataSubDistrictTask(fileName);
     }
 
@@ -105,7 +117,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
     }
 
@@ -116,7 +128,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
     }
 
@@ -127,7 +139,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
     }
 
@@ -138,7 +150,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName);
     }
     @GetMapping("zutblOuBrcd")
@@ -148,7 +160,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
     }
 
@@ -159,7 +171,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "10");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataMarketCodeTask(fileName);
     }
 
@@ -170,7 +182,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "11");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataProductGroupTask(fileName);
     }
 
@@ -181,7 +193,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "12");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataProductSubtypeTask(fileName);
     }
 
@@ -192,7 +204,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "13");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataProductTypeTask(fileName);
     }
 
@@ -203,7 +215,7 @@ public class CBSController {
         String today = timeLog + ".txt";
         ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "16");
         fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
         ResponseEntity<String> response = cbsBatchTaskService.masterDataTitleTask(fileName);
     }
 

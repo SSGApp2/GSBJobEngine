@@ -74,7 +74,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
             String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
             String fileName = "AD_" + timeLog + ".csv";
 //            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
-            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD");
+//            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD");
             LOGGER.debug("pathName File {}", pathName);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 

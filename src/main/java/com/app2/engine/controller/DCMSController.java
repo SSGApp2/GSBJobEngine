@@ -40,7 +40,7 @@ public class DCMSController {
     public void ACNStartLegal(){
         // ถ้าจะ test บนเครื่อง server เรา ต้องไปเปลี่ยน variable1 เป็น path [ตำแหน่งที่จะเรียกไฟล์] ทั้ง parameter : 5001 ,5002
         String fileName = "ACN_STARTLEGAL_"+ DateUtil.codeCurrentDate()+".txt";
-        smbFileService.remoteFileToLocalFile(fileName,"DCMS");
+//        smbFileService.remoteFileToLocalFile(fileName,"DCMS");
         ResponseEntity<String> response = dcmsBatchTaskService.ACNStartLegal();
     }
 
@@ -48,7 +48,7 @@ public class DCMSController {
     public void ACNEndLegal(){
         ResponseEntity<String> response = dcmsBatchTaskService.ACNEndLegal();
         String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"DCMS");
+//        smbFileService.localFileToRemoteFile(fileName,"DCMS");
     }
 
     @GetMapping("litigationUpdateBKC")

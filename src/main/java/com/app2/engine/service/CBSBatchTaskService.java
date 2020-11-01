@@ -2,8 +2,11 @@ package com.app2.engine.service;
 
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+import java.util.Map;
+
 public interface CBSBatchTaskService {
-    ResponseEntity<String> lsCollectionStatusTask();
+    void LS_COLLECTION_STATUS(String date);
     ResponseEntity<String> accountEndLegalUpdateTask();
     ResponseEntity<String> createFileTXTRestrictionZLE();
     ResponseEntity<String> stblcntryTask(String fileName);
