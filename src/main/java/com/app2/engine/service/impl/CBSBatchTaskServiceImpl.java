@@ -9,23 +9,20 @@ import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CBSBatchTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
-import com.app2.engine.util.DateUtil;
 import com.app2.engine.util.FileUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.transaction.Transactional;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CBSBatchTaskService {
@@ -162,6 +159,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         return getResultByExchange(url);
     }
 
+//    -------------------------  ย้ายมาจาก Engine
     @Override
     public ResponseEntity<String> stblcntryTask(String fileName) {
         String url = "/jobs/stblcntry?fileName=";
@@ -186,34 +184,494 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         return getResultByExchange(url + fileName);
     }
 
+    @SneakyThrows
+    @Transactional
     @Override
-    public ResponseEntity<String> masterDataBranchTask(String fileName) {
-        String url = "/jobs/masterDataBranch?fileName=";
-        return getResultByExchange(url + fileName);
+    public void masterDataBranchTask(String fileName, String date) {
+        //หา path local
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(),date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+
+            ParameterDetail parameterDetails = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
+            String fileNameToDay = parameterDetails.getVariable1() + date + ".txt";
+            String parameterCode = parameterDetails.getVariable2();
+
+            if (file.isFile() && fileName.equals(fileNameToDay)) {
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                List<Map> list = new ArrayList<>();
+                List<Map> dataList = new ArrayList<>();
+                String readLine;
+
+                while ((readLine = reader.readLine()) != null) {
+                    String[] data = readLine.split("\\|");
+
+                    Map map = new HashMap();
+                    for (int i = 0; i <= (data.length - 1); i++) {
+                        if (i == 0) {
+                            map.put("parameterCode", parameterCode);
+                            map.put("code", data[i]);
+                        } else {
+                            map.put("variable" + i, data[i]);
+                        }
+                    }
+                    list.add(map);
+                }
+
+                for (int i = 1; i <= list.size() - 2; i++) {///// ตัดบรรทัดแรกที่เป็น DESC และบรรทัดสุดท้ายที่เป็น Total
+                    dataList.add(list.get(i));
+                }
+
+                saveOrUpdateBranch(dataList);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
     }
 
-    @Override
-    public ResponseEntity<String> masterDataCostCenterTask(String fileName) {
-        String url = "/jobs/masterDataCostCenter?fileName=";
-        return getResultByExchange(url + fileName);
+    @SneakyThrows
+    public void saveOrUpdateBranch(List<Map> data) {
+        for (Map map : data) {
+            String parameterCode = map.get("parameterCode").toString();
+            String code = map.get("code").toString();
+            String variable1 = (map.get("variable1") == null ? null : map.get("variable1").toString());
+            String variable2 = (map.get("variable2") == null ? null : map.get("variable2").toString());
+            String variable3 = (map.get("variable3") == null ? null : map.get("variable3").toString());
+            String variable4 = (map.get("variable4") == null ? null : map.get("variable4").toString());
+            String variable5 = (map.get("variable5") == null ? null : map.get("variable5").toString());
+            String variable6 = (map.get("variable6") == null ? null : map.get("variable6").toString());
+            String variable7 = (map.get("variable7") == null ? null : map.get("variable7").toString());
+            String variable8 = (map.get("variable8") == null ? null : map.get("variable8").toString());
+            String variable9 = (map.get("variable9") == null ? null : map.get("variable9").toString());
+
+            Parameter parameter = parameterRepository.findByCode(parameterCode);
+            List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+            List detailCode = parameterDetails.stream()
+                    .filter(value -> value.getCode().equals(code))
+                    .collect(Collectors.toList());
+
+            ParameterDetail newParameterDetail;
+            if (detailCode.isEmpty()) {
+                newParameterDetail = new ParameterDetail();
+            } else {
+                newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+            }
+            newParameterDetail.setCode(code);
+            newParameterDetail.setDescription(variable1);
+            newParameterDetail.setDescriptionEng(variable3);
+            newParameterDetail.setVariable1(variable2);
+            newParameterDetail.setVariable2(variable4);
+            newParameterDetail.setVariable3(variable5);
+            newParameterDetail.setVariable4(variable6);
+            newParameterDetail.setVariable5(variable7);
+            newParameterDetail.setVariable6(variable8);
+            newParameterDetail.setVariable7(variable9);
+            newParameterDetail.setParameter(parameter);
+
+            parameterDetailRepository.saveAndFlush(newParameterDetail);
+        }
     }
 
+    @SneakyThrows
+    @Transactional
     @Override
-    public ResponseEntity<String> masterDataWorkingDaysTask(String fileName) {
-        String url = "/jobs/masterDataWorkingDays?fileName=";
-        return getResultByExchange(url + fileName);
+    public void masterDataCostCenterTask(String fileName,String date) {
+        //หา path local
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(),date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+
+            ParameterDetail parameterDetails = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
+            String fileNameToDay = parameterDetails.getVariable1() + date + ".txt";
+            String parameterCode = parameterDetails.getVariable2();
+
+            if (file.isFile() && fileName.equals(fileNameToDay)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                List<Map> list = new ArrayList<>();
+                List<Map> dataList = new ArrayList<>();
+                String readLine;
+
+                while ((readLine = reader.readLine()) != null) {
+                    String[] data = readLine.split("\\|");
+
+                    Map map = new HashMap();
+                    for (int i = 0; i <= (data.length - 1); i++) {
+                        if (i == 0) {
+                            map.put("parameterCode", parameterCode);
+                            map.put("code", data[i]);
+                        } else {
+                            map.put("variable" + i, data[i]);
+                        }
+                    }
+                    list.add(map);
+                }
+
+                for (int i = 1; i <= list.size() - 2; i++) {///// ตัดบรรทัดแรกที่เป็น DESC และบรรทัดสุดท้ายที่เป็น Total
+                    dataList.add(list.get(i));
+                }
+
+                saveOrUpdateCostCenter(dataList);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
     }
 
-    @Override
-    public ResponseEntity<String> masterDataHolidayTask(String fileName) {
-        String url = "/jobs/masterDataHoliday?fileName=";
-        return getResultByExchange(url + fileName);
+    @SneakyThrows
+    public void saveOrUpdateCostCenter(List<Map> data) {
+        for (Map map : data) {
+            String parameterCode = map.get("parameterCode").toString();
+            String code = map.get("code").toString();
+            String variable1 = (map.get("variable1") == null ? null : map.get("variable1").toString());
+            String variable2 = (map.get("variable2") == null ? null : map.get("variable2").toString());
+            String variable3 = (map.get("variable3") == null ? null : map.get("variable3").toString());
+            String variable4 = (map.get("variable4") == null ? null : map.get("variable4").toString());
+            String variable5 = (map.get("variable5") == null ? null : map.get("variable5").toString());
+            String variable6 = (map.get("variable6") == null ? null : map.get("variable6").toString());
+            String variable7 = (map.get("variable7") == null ? null : map.get("variable7").toString());
+            String variable8 = (map.get("variable8") == null ? null : map.get("variable8").toString());
+            String variable9 = (map.get("variable9") == null ? null : map.get("variable9").toString());
+
+            Parameter parameter = parameterRepository.findByCode(parameterCode);
+            List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+            List detailCode = parameterDetails.stream()
+                    .filter(value -> value.getCode().equals(code))
+                    .collect(Collectors.toList());
+
+            ParameterDetail newParameterDetail;
+            if (detailCode.isEmpty()) {
+                newParameterDetail = new ParameterDetail();
+            } else {
+                newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+            }
+
+            newParameterDetail.setCode(code);
+            newParameterDetail.setDescription(variable1);
+            newParameterDetail.setDescriptionEng(variable2);
+            newParameterDetail.setVariable1(variable3);
+            newParameterDetail.setVariable2(variable4);
+            newParameterDetail.setVariable3(variable5);
+            newParameterDetail.setVariable4(variable6);
+            newParameterDetail.setVariable5(variable7);
+            newParameterDetail.setVariable6(variable8);
+            newParameterDetail.setVariable7(variable9);
+
+            newParameterDetail.setParameter(parameter);
+
+            parameterDetailRepository.saveAndFlush(newParameterDetail);
+        }
     }
 
+    @SneakyThrows
+    @Transactional
     @Override
-    public ResponseEntity<String> masterDataOUTask(String fileName) {
-        String url = "/jobs/masterDataOU?fileName=";
-        return getResultByExchange(url + fileName);
+    public void masterDataWorkingDaysTask(String fileName,String date) {
+        //หา path local
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(),date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+
+            ParameterDetail parameterDetails = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
+            String fileNameToDay = parameterDetails.getVariable1() + date + ".txt";
+            String parameterCode = parameterDetails.getVariable2();
+
+            if (file.isFile() && fileName.equals(fileNameToDay)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                List<Map> list = new ArrayList<>();
+                List<Map> dataList = new ArrayList<>();
+                String readLine;
+
+                while ((readLine = reader.readLine()) != null) {
+                    String[] data = readLine.split("\\|");
+
+                    Map map = new HashMap();
+                    for (int i = 0; i <= (data.length - 1); i++) {
+                        if (i == 0) {
+                            map.put("parameterCode", parameterCode);
+                            map.put("code", data[i]);
+                        } else {
+                            map.put("variable" + i, data[i]);
+                        }
+                    }
+                    list.add(map);
+                }
+
+                for (int i = 1; i <= list.size() - 2; i++) {///// ตัดบรรทัดแรกที่เป็น DESC และบรรทัดสุดท้ายที่เป็น Total
+                    dataList.add(list.get(i));
+                }
+
+                saveOrUpdateWorkingDays(dataList);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
+    }
+
+    @SneakyThrows
+    public void saveOrUpdateWorkingDays(List<Map> data) {
+        for (Map map : data) {
+            String parameterCode = map.get("parameterCode").toString();
+            String code = map.get("code").toString();
+            String variable1 = (map.get("variable1") == null ? null : map.get("variable1").toString());
+            String variable2 = (map.get("variable2") == null ? null : map.get("variable2").toString());
+            String variable3 = (map.get("variable3") == null ? null : map.get("variable3").toString());
+            String variable4 = (map.get("variable4") == null ? null : map.get("variable4").toString());
+            String variable5 = (map.get("variable5") == null ? null : map.get("variable5").toString());
+            String variable6 = (map.get("variable6") == null ? null : map.get("variable6").toString());
+            String variable7 = (map.get("variable7") == null ? null : map.get("variable7").toString());
+            String variable8 = (map.get("variable8") == null ? null : map.get("variable8").toString());
+            String variable9 = (map.get("variable9") == null ? null : map.get("variable9").toString());
+
+            Parameter parameter = parameterRepository.findByCode(parameterCode);
+            List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+            List detailCode = parameterDetails.stream()
+                    .filter(value -> value.getCode().equals(code))
+                    .collect(Collectors.toList());
+
+            ParameterDetail newParameterDetail;
+            if (detailCode.isEmpty()) {
+                newParameterDetail = new ParameterDetail();
+            } else {
+                newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+            }
+
+            newParameterDetail.setCode(code);
+            newParameterDetail.setDescription(variable1);
+            newParameterDetail.setDescriptionEng(variable2);
+            newParameterDetail.setVariable1(variable3);
+            newParameterDetail.setVariable2(variable4);
+            newParameterDetail.setVariable3(variable5);
+            newParameterDetail.setVariable4(variable6);
+            newParameterDetail.setVariable5(variable7);
+            newParameterDetail.setVariable6(variable8);
+            newParameterDetail.setVariable7(variable9);
+
+            newParameterDetail.setParameter(parameter);
+
+            parameterDetailRepository.saveAndFlush(newParameterDetail);
+        }
+    }
+
+    @SneakyThrows
+    @Transactional
+    @Override
+    public void masterDataHolidayTask(String fileName, String date) {
+        //หา path local
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(),date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+
+            ParameterDetail parameterDetails = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
+            String fileNameToDay = parameterDetails.getVariable1() + date + ".txt";
+            String parameterCode = parameterDetails.getVariable2();
+
+            if (file.isFile() && fileName.equals(fileNameToDay)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                List<Map> list = new ArrayList<>();
+                List<Map> dataList = new ArrayList<>();
+                String readLine;
+
+                while ((readLine = reader.readLine()) != null) {
+                    String[] data = readLine.split("\\|");
+
+                    Map map = new HashMap();
+                    for (int i = 0; i <= (data.length - 1); i++) {
+                        if (i == 0) {
+                            map.put("parameterCode", parameterCode);
+                            map.put("code", data[i]);
+                        } else {
+                            map.put("variable0" + i, data[i]);
+                        }
+                    }
+                    if (map.size() > 2) {
+                        String dateStr = map.get("variable01").toString();
+                        String[] dateSp = dateStr.split("/");
+                        if (dateSp.length > 2) {
+                            for (int i = 0; i <= (dateSp.length - 1); i++) {
+                                map.put("variable" + i, dateSp[i]);
+                            }
+                        }
+                    }
+                    list.add(map);
+                }
+
+                for (int i = 1; i <= list.size() - 2; i++) {///// ตัดบรรทัดแรกที่เป็น DESC และบรรทัดสุดท้ายที่เป็น Total
+                    dataList.add(list.get(i));
+                }
+
+                Parameter holiday = parameterRepository.findByCode(parameterCode);
+                List<ParameterDetail> pHoliday = parameterDetailRepository.findByParameter(holiday);
+                parameterDetailRepository.deleteAll(pHoliday);
+
+                saveOrUpdateHoliday(dataList);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
+    }
+
+    @SneakyThrows
+    public void saveOrUpdateHoliday(List<Map> data) {
+        for (Map map : data) {
+            String parameterCode = map.get("parameterCode").toString();
+            String code = map.get("code").toString();
+            String variable = (map.get("variable01") == null ? null : map.get("variable01").toString());
+            String variable0 = (map.get("variable0") == null ? null : map.get("variable0").toString());
+            String variable1 = (map.get("variable1") == null ? null : map.get("variable1").toString());
+            String variable2 = (map.get("variable2") == null ? null : map.get("variable2").toString());
+
+            String holidayCd = code + variable0 + variable1 + variable2;
+
+            Parameter parameter = parameterRepository.findByCode(parameterCode);
+
+            ParameterDetail newParameterDetail = new ParameterDetail();
+            newParameterDetail.setCode(holidayCd);
+            newParameterDetail.setName(code);
+            newParameterDetail.setDescription(variable);
+            newParameterDetail.setVariable1(variable0);
+            newParameterDetail.setVariable2(variable1);
+            newParameterDetail.setVariable3(variable2);
+
+            newParameterDetail.setParameter(parameter);
+
+            parameterDetailRepository.saveAndFlush(newParameterDetail);
+
+        }
+    }
+
+    @SneakyThrows
+    @Transactional
+    @Override
+    public void masterDataOUTask(String fileName, String date) {
+        //หา path local
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(),date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+
+            ParameterDetail parameterDetails = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
+            String fileNameToDay = parameterDetails.getVariable1() + date + ".txt";
+            String parameterCode = parameterDetails.getVariable2();
+
+            if (file.isFile() && fileName.equals(fileNameToDay)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                List<Map> list = new ArrayList<>();
+                List<Map> dataList = new ArrayList<>();
+                String readLine;
+
+                while ((readLine = reader.readLine()) != null) {
+                    String[] data = readLine.split("\\|");
+
+                    Map map = new HashMap();
+                    for (int i = 0; i <= (data.length - 1); i++) {
+                        if (i == 0) {
+                            map.put("parameterCode", parameterCode);
+                            map.put("code", data[i]);
+                        } else {
+                            map.put("variable" + i, data[i]);
+                        }
+                    }
+                    list.add(map);
+                }
+
+                for (int i = 1; i <= list.size() - 2; i++) {///// ตัดบรรทัดแรกที่เป็น DESC และบรรทัดสุดท้ายที่เป็น Total
+                    dataList.add(list.get(i));
+                }
+
+                saveOrUpdateOU(dataList);
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
+    }
+
+    @SneakyThrows
+    public void saveOrUpdateOU(List<Map> data) {
+        for (Map map : data) {
+            String parameterCode = map.get("parameterCode").toString();
+            String code = map.get("code").toString();
+            String variable1 = (map.get("variable1") == null ? null : map.get("variable1").toString());
+            String variable2 = (map.get("variable2") == null ? null : map.get("variable2").toString());
+            String variable3 = (map.get("variable3") == null ? null : map.get("variable3").toString());
+            String variable4 = (map.get("variable4") == null ? null : map.get("variable4").toString());
+            String variable5 = (map.get("variable5") == null ? null : map.get("variable5").toString());
+            String variable6 = (map.get("variable6") == null ? null : map.get("variable6").toString());
+            String variable7 = (map.get("variable7") == null ? null : map.get("variable7").toString());
+            String variable8 = (map.get("variable8") == null ? null : map.get("variable8").toString());
+            String variable9 = (map.get("variable9") == null ? null : map.get("variable9").toString());
+
+            Parameter parameter = parameterRepository.findByCode(parameterCode);
+            List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+            List detailCode = parameterDetails.stream()
+                    .filter(value -> value.getCode().equals(code))
+                    .collect(Collectors.toList());
+
+            ParameterDetail newParameterDetail;
+            if (detailCode.isEmpty()) {
+                newParameterDetail = new ParameterDetail();
+                newParameterDetail.setCode(code);
+            } else {
+                newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+            }
+
+            newParameterDetail.setDescription(variable1);
+            newParameterDetail.setDescriptionEng(variable2);
+            newParameterDetail.setVariable1(variable3);
+            newParameterDetail.setVariable2(variable4);
+            newParameterDetail.setVariable3(variable5);
+            newParameterDetail.setVariable4(variable6);
+            newParameterDetail.setVariable5(variable7);
+            newParameterDetail.setVariable6(variable8);
+            newParameterDetail.setVariable7(variable9);
+
+            newParameterDetail.setParameter(parameter);
+
+            parameterDetailRepository.saveAndFlush(newParameterDetail);
+        }
     }
 
     @Override

@@ -22,6 +22,8 @@ public class ParameterDetail extends BaseEntity {
 
     private String description;
 
+    private String descriptionEng;
+
     private String code;
 
     private String variable1;

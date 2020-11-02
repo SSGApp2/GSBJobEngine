@@ -13,15 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.transaction.Transactional;
-import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 @Component
 public class CBSBatchTask {
@@ -182,175 +178,175 @@ public class CBSBatchTask {
         LOGGER.info("***************************************");
     }
 
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void masterDataBranchTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataBranchTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataBranchTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_UTBLBRCD");
-            batchTransaction.setStatus("S");
+//    @Transactional
+//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+//    public void masterDataBranchTask() {
+//        LOGGER.info("***************************************");
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+//        LOGGER.info("Start Copy File MasterDataBranchTask");
+//        BatchTransaction batchTransaction = null;
+//        String fileName = null;
+//        try {
+//            batchTransaction = new BatchTransaction();
+//            batchTransaction.setControllerMethod("CBSBatchTask.masterDataBranchTask");
+//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+//            batchTransaction.setName("MasterData_UTBLBRCD");
+//            batchTransaction.setStatus("S");
+//
+//            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//            String today = timeLog + ".txt";
+//            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
+//            fileName = file.getVariable1() + today;
+////            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+////            ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
+//        }
+//        catch (Exception e) {
+//            batchTransaction.setStatus("E");
+//            batchTransaction.setReason(fileName +"  "+e.getMessage());
+//            LOGGER.error("Error {}", e.getMessage());
+//        }
+//        finally {
+//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+//            batchTransactionRepository.saveAndFlush(batchTransaction);
+//        }
+//        LOGGER.info("***************************************");
+//    }
 
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
-            fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
+//    @Transactional
+//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+//    public void masterDataCostCenterTask() {
+//        LOGGER.info("***************************************");
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+//        LOGGER.info("Start Copy File MasterDataCostCenterTask");
+//        BatchTransaction batchTransaction = null;
+//        String fileName = null;
+//        try {
+//            batchTransaction = new BatchTransaction();
+//            batchTransaction.setControllerMethod("CBSBatchTask.masterDataCostCenterTask");
+//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+//            batchTransaction.setName("MasterData_UTBLCCNTR");
+//            batchTransaction.setStatus("S");
+//
+//            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//            String today = timeLog + ".txt";
+//            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
+//            fileName = file.getVariable1() + today;
+////            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//            ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
+//        }
+//        catch (Exception e) {
+//            batchTransaction.setStatus("E");
+//            batchTransaction.setReason(fileName +"  "+e.getMessage());
+//            LOGGER.error("Error {}", e.getMessage());
+//        }
+//        finally {
+//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+//            batchTransactionRepository.saveAndFlush(batchTransaction);
+//        }
+//        LOGGER.info("***************************************");
+//    }
 
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void masterDataCostCenterTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataCostCenterTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataCostCenterTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_UTBLCCNTR");
-            batchTransaction.setStatus("S");
+//    @Transactional
+//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+//    public void masterDataWorkingDaysTask() {
+//        LOGGER.info("***************************************");
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+//        LOGGER.info("Start Copy File MasterDataWorkingDaysTask");
+//        BatchTransaction batchTransaction = null;
+//        String fileName = null;
+//        try {
+//            batchTransaction = new BatchTransaction();
+//            batchTransaction.setControllerMethod("CBSBatchTask.masterDataWorkingDaysTask");
+//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+//            batchTransaction.setName("MasterData_UTBLNBD");
+//            batchTransaction.setStatus("S");
+//
+//            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//            String today = timeLog + ".txt";
+//            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
+//            fileName = file.getVariable1() + today;
+////            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//            ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
+//        }
+//        catch (Exception e) {
+//            batchTransaction.setStatus("E");
+//            batchTransaction.setReason(fileName +"  "+e.getMessage());
+//            LOGGER.error("Error {}", e.getMessage());
+//        }
+//        finally {
+//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+//            batchTransactionRepository.saveAndFlush(batchTransaction);
+//        }
+//        LOGGER.info("***************************************");
+//    }
 
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
-            fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
+//    @Transactional
+//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+//    public void masterDataHolidayTask() {
+//        LOGGER.info("***************************************");
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+//        LOGGER.info("Start Copy File MasterDataHolidayTask");
+//        BatchTransaction batchTransaction = null;
+//        String fileName = null;
+//        try {
+//            batchTransaction = new BatchTransaction();
+//            batchTransaction.setControllerMethod("CBSBatchTask.masterDataHolidayTask");
+//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+//            batchTransaction.setName("MasterData_UTBLNBD1");
+//            batchTransaction.setStatus("S");
+//
+//            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//            String today = timeLog + ".txt";
+//            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
+//            fileName = file.getVariable1() + today;
+////            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//            ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName, );
+//        }
+//        catch (Exception e) {
+//            batchTransaction.setStatus("E");
+//            batchTransaction.setReason(fileName +"  "+e.getMessage());
+//            LOGGER.error("Error {}", e.getMessage());
+//        }
+//        finally {
+//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+//            batchTransactionRepository.saveAndFlush(batchTransaction);
+//        }
+//        LOGGER.info("***************************************");
+//    }
 
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void masterDataWorkingDaysTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataWorkingDaysTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataWorkingDaysTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_UTBLNBD");
-            batchTransaction.setStatus("S");
-
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
-            fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void masterDataHolidayTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataHolidayTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataHolidayTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_UTBLNBD1");
-            batchTransaction.setStatus("S");
-
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
-            fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName);
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?")//ss mm hh every day
-    public void masterDataOUTask() {
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start Copy File MasterDataOUTask");
-        BatchTransaction batchTransaction = null;
-        String fileName = null;
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.masterDataOUTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("MasterData_ZUTBLOUBRCD");
-            batchTransaction.setStatus("S");
-
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String today = timeLog + ".txt";
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
-            fileName = file.getVariable1() + today;
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-            ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
-        }
-        catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(fileName +"  "+e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        }
-        finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
+//    @Transactional
+//    @Scheduled(cron = "0 50 23 * * ?")//ss mm hh every day
+//    public void masterDataOUTask() {
+//        LOGGER.info("***************************************");
+//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+//        LOGGER.info("Start Copy File MasterDataOUTask");
+//        BatchTransaction batchTransaction = null;
+//        String fileName = null;
+//        try {
+//            batchTransaction = new BatchTransaction();
+//            batchTransaction.setControllerMethod("CBSBatchTask.masterDataOUTask");
+//            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+//            batchTransaction.setName("MasterData_ZUTBLOUBRCD");
+//            batchTransaction.setStatus("S");
+//
+//            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//            String today = timeLog + ".txt";
+//            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
+//            fileName = file.getVariable1() + today;
+////            smbFileService.remoteFileToLocalFile(fileName,"CBS");
+//            ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
+//        }
+//        catch (Exception e) {
+//            batchTransaction.setStatus("E");
+//            batchTransaction.setReason(fileName +"  "+e.getMessage());
+//            LOGGER.error("Error {}", e.getMessage());
+//        }
+//        finally {
+//            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+//            batchTransactionRepository.saveAndFlush(batchTransaction);
+//        }
+//        LOGGER.info("***************************************");
+//    }
 
     @Transactional
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
