@@ -43,7 +43,7 @@ public class CBSBatchTask {
     ParameterDetailRepository parameterDetailRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?")
+    @Scheduled(cron = "0 10 19 * * ?")
     public void lsCollectionStatusTask() {
         //รับข้อมูลสถานะการติดตามหนี้ (Collection Status) : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -555,7 +555,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 2 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
     public void zleTask() {
         //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน : รับจากระบบ LEAD
         LOGGER.info("***************************************");

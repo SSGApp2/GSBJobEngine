@@ -36,7 +36,7 @@ public class CMSBatchTask {
     SmbFileService smbFileService;
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
     public void seizeInfo() {
         // รับข้อมูลการยึดทรัพย์ (CollSeizeDetail) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -71,7 +71,7 @@ public class CMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
     public void legalStatus() {
         // รับข้อมูลสถานะ Litigation (LitigationStatus) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -107,7 +107,7 @@ public class CMSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
     public void tblMtLedTask() {
         // ข้อมูลสำนักงานบังคับคดี
         LOGGER.info("***************************************");
@@ -144,7 +144,7 @@ public class CMSBatchTask {
   
   
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
     public void tblMtCourtTask() {
         // ข้อมูลศาล : รับจากระบบ LEAD
         LOGGER.info("***************************************");

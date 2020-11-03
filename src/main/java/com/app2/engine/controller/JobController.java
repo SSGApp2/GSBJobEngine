@@ -50,6 +50,18 @@ public class JobController {
     BatchTransactionRepository batchTransactionRepository;
 
     @Autowired
+    CBSBatchTaskService cbsBatchTaskService;
+
+    @Autowired
+    CMSBatchTaskService cmsBatchTaskService;
+
+    @Autowired
+    DCMSBatchTaskService dcmsBatchTaskService;
+
+    @Autowired
+    LitigationUpdateService litigationUpdateService;
+
+    @Autowired
     private WRNService wrnService;
 
 
@@ -128,6 +140,59 @@ public class JobController {
     @GetMapping("/wrnTDR")
     public void wrnTDR(){
         wrnService.wrnTDR();
+    }
+
+    @GetMapping("allUpload")
+    public void allUpload(){
+
+        LOGGER.debug("Start Manual Upload All");
+        LOGGER.debug(">>============= CBS =============");
+        ResponseEntity<String> lsCollectionStatus = cbsBatchTaskService.lsCollectionStatusTask();
+        smbFileService.localFileToRemoteFile(lsCollectionStatus.getBody(),"CBS");
+        LOGGER.debug("LS_COLLECTION_STATUS Completed.");
+
+        ResponseEntity<String> zle = cbsBatchTaskService.batchZLETask();
+        smbFileService.localFileToRemoteFile(zle.getBody(),"CBS");
+        LOGGER.debug("ZLE Completed.");
+
+        LOGGER.debug(">>============= CMS =============");
+        ResponseEntity<String> legalStatus = cmsBatchTaskService.legalStatus();
+        smbFileService.localFileToRemoteFile(legalStatus.getBody(),"CMS");
+        LOGGER.debug("LEGAL_STATUS Completed.");
+
+        ResponseEntity<String> response = cmsBatchTaskService.seizeInfo();
+        String fileName = response.getBody();
+        smbFileService.localFileToRemoteFile(fileName,"CMS");
+        LOGGER.debug("SEIZE_INFO Completed.");
+
+        ResponseEntity<String> tblMtCourt = cmsBatchTaskService.tblMtCourtTask();
+        smbFileService.localFileToRemoteFile(tblMtCourt.getBody(),"CMS");
+        LOGGER.debug("TBL_MT_LED Completed.");
+
+        ResponseEntity<String> tblMtLed = cmsBatchTaskService.tblMtLedTask();
+        smbFileService.localFileToRemoteFile(tblMtLed.getBody(),"CMS");
+        LOGGER.debug("TBL_MT_COURT Completed.");
+
+        LOGGER.debug(">>============= DCMS =============");
+        ResponseEntity<String> acnEndLegal = dcmsBatchTaskService.ACNEndLegal();
+        smbFileService.localFileToRemoteFile(acnEndLegal.getBody(),"DCMS");
+        LOGGER.debug("ACN_ENDLEGAL Completed.");
+
+        litigationUpdateService.litigationUpdateBKC();
+        LOGGER.debug("LITIGATION_UPDATE_BKC Completed.");
+
+        litigationUpdateService.litigationUpdateBKO();
+        LOGGER.debug("LITIGATION_UPDATE_BKO Completed.");
+
+        litigationUpdateService.litigationUpdateCVA();
+        LOGGER.debug("LITIGATION_UPDATE_CVA Completed.");
+
+        litigationUpdateService.litigationUpdateCVC();
+        LOGGER.debug("LITIGATION_UPDATE_CVC Completed.");
+
+        litigationUpdateService.litigationUpdateCVO();
+        LOGGER.debug("LITIGATION_UPDATE_CVO Completed.");
+
     }
 
 }

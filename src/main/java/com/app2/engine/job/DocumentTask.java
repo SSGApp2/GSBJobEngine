@@ -28,7 +28,7 @@ public class DocumentTask {
     BatchTransactionRepository batchTransactionRepository;
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
+    @Scheduled(cron = "0 0 6 * * *") //ss mm hh every day
     public void task1() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));

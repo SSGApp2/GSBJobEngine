@@ -34,6 +34,8 @@ public class CBSController {
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
 
+
+
     @GetMapping("lsCollectionStatus")
     public void lsCollectionStatus(){
         ResponseEntity<String> response = cbsBatchTaskService.lsCollectionStatusTask();
