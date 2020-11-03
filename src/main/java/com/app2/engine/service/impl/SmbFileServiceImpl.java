@@ -7,6 +7,7 @@ import com.app2.engine.repository.ParameterRepository;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
 import com.app2.engine.util.DateUtil;
+import com.app2.engine.util.FileUtil;
 import com.jcraft.jsch.*;
 import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbFile;
@@ -281,6 +282,21 @@ public class SmbFileServiceImpl implements SmbFileService {
             case "HR":
                 parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "06");
                 break;
+        }
+
+        if(AppUtil.isNotNull(parameter_DL)){
+            String paramDL = null;
+            if (type.equals("download")){
+                paramDL = parameter_DL.getVariable1();
+            }else if (type.equals("upload")){
+                paramDL = parameter_DL.getVariable2();
+            }
+            if(AppUtil.isNotNull(paramDL)){
+                File directory = new File(paramDL + "/" +DateUtil.codeCurrentDate());
+                if (! directory.exists()){
+                    directory.mkdirs();
+                }
+            }
         }
 
         return this.getPath(parameter_DL,type,date);

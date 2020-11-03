@@ -10,7 +10,6 @@ import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -38,25 +37,108 @@ public class Download {
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
 
-
     @Transactional
-//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
 //    @Scheduled(fixedRate = 60000) // 60 second
-    public void MASTER_DATA_BRANCH() {
+    public void MASTER_DATA_COUNTRY() {
+        // ประเทศ : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Download to FTP Server.");
-        LOGGER.info("File name : UTBLBRCD_YYYYMMDD.txt");
+        LOGGER.info("File name : STBLCNTRY_YYYYMMDD.txt");
 
         BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_BRANCH");
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_COUNTRY");
         batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("UTBLBRCD_YYYYMMDD.txt");
+        batchTransaction.setName("STBLCNTRY_YYYYMMDD.txt");
+
         try {
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
-            String fileName = file.getVariable1() + DateUtil.codeCurrentDate() +".txt";
-            smbFileService.remoteFileToLocalFile(fileName,"CBS",DateUtil.codeCurrentDate());
-            cbsBatchTaskService.masterDataBranchTask(fileName,DateUtil.codeCurrentDate());
+            cbsBatchTaskService.MASTER_DATA_COUNTRY(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+            MASTER_DATA_PROVINCE();
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    public void MASTER_DATA_PROVINCE() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : STBLCNTRY1_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PROVINCE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("STBLCNTRY1_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_PROVINCE(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+            MASTER_DATA_DISTRICT();
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    public void MASTER_DATA_DISTRICT() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : ZUTBLDIST_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PROVINCE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ZUTBLDIST_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_DISTRICT(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+            MASTER_DATA_SUB_DISTRICT();
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    public void MASTER_DATA_SUB_DISTRICT() {
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : ZUTBLSDISTCD_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PROVINCE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ZUTBLSDISTCD_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_SUB_DISTRICT(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -71,8 +153,34 @@ public class Download {
     }
 
     @Transactional
-//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-//    @Scheduled(fixedRate = 60000) // 60 second
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_BRANCH() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : UTBLBRCD_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_BRANCH");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("UTBLBRCD_YYYYMMDD.txt");
+        try {
+            cbsBatchTaskService.MASTER_DATA_BRANCH(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void MASTER_DATA_COST_CENTER() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -85,10 +193,7 @@ public class Download {
         batchTransaction.setName("UTBLCCNTR_YYYYMMDD.txt");
 
         try {
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
-            String fileName = file.getVariable1() + DateUtil.codeCurrentDate() +".txt";
-            smbFileService.remoteFileToLocalFile(fileName,"CBS",DateUtil.codeCurrentDate());
-            cbsBatchTaskService.masterDataCostCenterTask(fileName,DateUtil.codeCurrentDate());
+            cbsBatchTaskService.MASTER_DATA_COST_CENTER(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -103,8 +208,7 @@ public class Download {
     }
 
     @Transactional
-//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-//    @Scheduled(fixedRate = 60000) // 60 second
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void MASTER_DATA_WORKING_DAYS() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -117,10 +221,7 @@ public class Download {
         batchTransaction.setName("UTBLNBD_YYYYMMDD.txt");
 
         try {
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
-            String fileName = file.getVariable1() + DateUtil.codeCurrentDate() +".txt";
-            smbFileService.remoteFileToLocalFile(fileName,"CBS",DateUtil.codeCurrentDate());
-            cbsBatchTaskService.masterDataWorkingDaysTask(fileName,DateUtil.codeCurrentDate());
+            cbsBatchTaskService.MASTER_DATA_WORKING_DAYS(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -135,8 +236,7 @@ public class Download {
     }
 
     @Transactional
-//    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-//    @Scheduled(fixedRate = 60000) // 60 second
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void MASTER_DATA_HOLIDAY() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
@@ -149,10 +249,7 @@ public class Download {
         batchTransaction.setName("UTBLNBD1_YYYYMMDD.txt");
 
         try {
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
-            String fileName = file.getVariable1() + DateUtil.codeCurrentDate() +".txt";
-            smbFileService.remoteFileToLocalFile(fileName,"CBS",DateUtil.codeCurrentDate());
-            cbsBatchTaskService.masterDataHolidayTask(fileName,DateUtil.codeCurrentDate());
+            cbsBatchTaskService.MASTER_DATA_HOLIDAY(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -167,24 +264,20 @@ public class Download {
     }
 
     @Transactional
-//    @Scheduled(cron = "0 50 23 * * ?")//ss mm hh every day
-//    @Scheduled(fixedRate = 60000) // 60 second
+    @Scheduled(cron = "0 50 23 * * ?")//ss mm hh every day
     public void MASTER_DATA_OU() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Download to FTP Server.");
-        LOGGER.info("File name : ZUTBLOUBRCD__YYYYMMDD.txt");
+        LOGGER.info("File name : ZUTBLOUBRCD_YYYYMMDD.txt");
 
         BatchTransaction batchTransaction = new BatchTransaction();
         batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_OU");
         batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("ZUTBLOUBRCD__YYYYMMDD.txt");
+        batchTransaction.setName("ZUTBLOUBRCD_YYYYMMDD.txt");
 
         try {
-            ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
-            String fileName = file.getVariable1() + DateUtil.codeCurrentDate() +".txt";
-            smbFileService.remoteFileToLocalFile(fileName,"CBS",DateUtil.codeCurrentDate());
-            cbsBatchTaskService.masterDataOUTask(fileName,DateUtil.codeCurrentDate());
+            cbsBatchTaskService.MASTER_DATA_OU(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -198,5 +291,145 @@ public class Download {
         LOGGER.info("***************************************");
     }
 
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_MARKET_CODE() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : MT_MARKET_CODE_YYYYMMDD.txt");
 
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_MARKET_CODE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("MT_MARKET_CODE_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_MARKET_CODE(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_PRODUCT_GROUP() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : MT_PRODUCT_GROUP_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PRODUCT_GROUP");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("MT_PRODUCT_GROUP_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_PRODUCT_GROUP(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_PRODUCT_SUBTYPE() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : MT_PRODUCT_SUBTYPE_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PRODUCT_SUBTYPE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("MT_PRODUCT_SUBTYPE_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_PRODUCT_SUBTYPE(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_PRODUCT_TYPE() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : MT_PRODUCT_TYPE_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_PRODUCT_TYPE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("MT_PRODUCT_TYPE_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_PRODUCT_TYPE(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
+    public void MASTER_DATA_TITLE() {
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : ZUTBLTITLE2_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_TITLE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ZUTBLTITLE2_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.MASTER_DATA_TITLE(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
 }

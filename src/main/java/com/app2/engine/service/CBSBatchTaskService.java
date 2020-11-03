@@ -9,33 +9,33 @@ public interface CBSBatchTaskService {
 
     ResponseEntity<String> createFileTXTRestrictionZLE();
 
-    ResponseEntity<String> stblcntryTask(String fileName);
+    void MASTER_DATA_COUNTRY(String date);
 
-    ResponseEntity<String> masterDataProvinceTask(String fileName);
+    void MASTER_DATA_PROVINCE(String date);
 
-    ResponseEntity<String> masterDataDistrictTask(String fileName);
+    void MASTER_DATA_DISTRICT(String date);
 
-    ResponseEntity<String> masterDataSubDistrictTask(String fileName);
+    void MASTER_DATA_SUB_DISTRICT(String date);
 
-    void masterDataBranchTask(String fileName, String date);
+    void MASTER_DATA_BRANCH(String date);
 
-    void masterDataCostCenterTask(String fileName, String date);
+    void MASTER_DATA_COST_CENTER(String date);
 
-    void masterDataWorkingDaysTask(String fileName, String date);
+    void MASTER_DATA_WORKING_DAYS(String date);
 
-    void masterDataHolidayTask(String fileName, String date);
+    void MASTER_DATA_HOLIDAY(String date);
 
-    void masterDataOUTask(String fileName, String date);
+    void MASTER_DATA_OU(String date);
 
-    ResponseEntity<String> masterDataMarketCodeTask(String fileName);
+    void MASTER_DATA_MARKET_CODE(String date);
 
-    ResponseEntity<String> masterDataProductGroupTask(String fileName);
+    void MASTER_DATA_PRODUCT_GROUP(String date);
 
-    ResponseEntity<String> masterDataProductSubtypeTask(String fileName);
+    void MASTER_DATA_PRODUCT_SUBTYPE(String date);
 
-    ResponseEntity<String> masterDataProductTypeTask(String fileName);
+    void MASTER_DATA_PRODUCT_TYPE(String date);
 
-    ResponseEntity<String> masterDataTitleTask(String fileName);
+    void MASTER_DATA_TITLE(String date);
 
     ResponseEntity<String> batchZLETask();
 
