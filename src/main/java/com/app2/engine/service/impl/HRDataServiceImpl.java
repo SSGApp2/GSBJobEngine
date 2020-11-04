@@ -514,6 +514,14 @@ public class HRDataServiceImpl implements HRDataService {
                         LOGGER.debug(line);
                     }
                 }
+
+                if (bfReader != null) {
+                    try {
+                        bfReader.close();
+                    } catch (IOException e) {
+                        LOGGER.error("Error {}", e.getMessage(), e);
+                    }
+                }
             }
 
             List<Unit> units = unitRepository.findByCodeNotIn(codeList);
@@ -525,13 +533,6 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bfReader != null) {
-                try {
-                    bfReader.close();
-                } catch (IOException e) {
-                    LOGGER.error("Error {}", e.getMessage(), e);
-                }
-            }
 
             if (streamReader != null) {
                 try {
