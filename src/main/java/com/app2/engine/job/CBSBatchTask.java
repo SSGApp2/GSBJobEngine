@@ -43,7 +43,7 @@ public class CBSBatchTask {
     ParameterDetailRepository parameterDetailRepository;
 
     @Transactional
-    @Scheduled(cron = "0 10 19 * * ?")
+    @Scheduled(cron = "0 50 19 * * ?")
     public void lsCollectionStatusTask() {
         //รับข้อมูลสถานะการติดตามหนี้ (Collection Status) : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -64,6 +64,7 @@ public class CBSBatchTask {
             } else {
                 String fileName = response.getBody();
                 smbFileService.localFileToRemoteFile(fileName,"CBS");
+                smbFileService.localFileToRemoteFile(fileName,"DCMS");
             }
         } catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -555,7 +556,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 10 19 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void zleTask() {
         //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน : รับจากระบบ LEAD
         LOGGER.info("***************************************");
