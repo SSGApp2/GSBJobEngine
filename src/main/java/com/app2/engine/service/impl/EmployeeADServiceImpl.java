@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -217,8 +218,21 @@ public class EmployeeADServiceImpl implements EmployeeADService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
 
     }

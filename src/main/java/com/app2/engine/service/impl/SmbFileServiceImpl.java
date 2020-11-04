@@ -172,7 +172,13 @@ public class SmbFileServiceImpl implements SmbFileService {
                 session.disconnect();
             }
 
-            IOUtils.closeQuietly(targetStream);
+            if (targetStream != null) {
+                try {
+                    targetStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
         return localDir;
     }

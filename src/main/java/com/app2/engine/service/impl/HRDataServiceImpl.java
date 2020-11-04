@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -136,9 +137,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
 
     }
@@ -192,9 +213,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
 
     }
@@ -242,9 +283,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
 
     }
@@ -307,9 +368,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -362,9 +443,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -424,9 +525,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -479,9 +600,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -534,9 +675,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -864,9 +1025,29 @@ public class HRDataServiceImpl implements HRDataService {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            AppUtil.safeCloseBufferedReader(bfReader);
-            AppUtil.safeCloseInputStreamReader(streamReader);
-            AppUtil.safeCloseFileInputStream(fileInputStream);
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
+
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 }
