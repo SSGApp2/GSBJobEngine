@@ -61,6 +61,7 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     }
 
 
+    String pathName = "";
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 

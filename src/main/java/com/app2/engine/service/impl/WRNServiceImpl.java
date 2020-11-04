@@ -24,6 +24,8 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
     @Value("${Api.WRN}")
     private String API_WRN;
 
+    String pathName = "";
+
     @Override
     @Transactional
     public void wrnConsent() {

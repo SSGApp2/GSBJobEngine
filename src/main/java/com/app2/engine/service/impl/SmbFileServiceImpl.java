@@ -52,7 +52,7 @@ public class SmbFileServiceImpl implements SmbFileService {
 
     @Override
     public String remoteFileToLocalFile(String fileName, String topic,String date) {
-        //folder ToLEAD --> folder Download
+        //folder ToLEAD --> folder Download รับจากธนาคาร
         String remoteDir  = null;
         String localDir = null;
         Session session = null;
@@ -111,7 +111,7 @@ public class SmbFileServiceImpl implements SmbFileService {
 
     @Override
     public String localFileToRemoteFile(String fileName, String topic,String date) {
-        //folder upload --> folder FormLEAD
+        //folder upload --> folder FormLEAD ส่งให้ธนาคาร
         String remoteDir = null;
         String localDir = null;
         Session session = null;
@@ -325,6 +325,21 @@ public class SmbFileServiceImpl implements SmbFileService {
             case "WRN":
                 parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "06");
                 break;
+        }
+
+        if(AppUtil.isNotNull(parameter_UL)){
+            String paramUL = null;
+            if (type.equals("download")){
+                paramUL = parameter_UL.getVariable1();
+            }else if (type.equals("upload")){
+                paramUL = parameter_UL.getVariable2();
+            }
+            if(AppUtil.isNotNull(paramUL)){
+                File directory = new File(paramUL + "/" +DateUtil.codeCurrentDate());
+                if (! directory.exists()){
+                    directory.mkdirs();
+                }
+            }
         }
 
         return this.getPath(parameter_UL,type,date);

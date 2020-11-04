@@ -11,12 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/jobs/dcms/")
@@ -36,6 +32,20 @@ public class DCMSController {
     @Autowired
     WRNService wrnService;
 
+    @GetMapping("uploadAll")
+    public void uploadAll(@RequestParam(value = "date", required = false) String date) {
+
+
+        // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
+        dcmsBatchTaskService.ACN_END_LEGAL(DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
+
+        // BKC ----------------------------------------------------
+        // รับรายละเอียดข้อมูลแฟ้มดำเนินคดีล้มละลายที่มีการ update ในแต่ละวัน : รับจากระบบ LEAD
+        litigationUpdateService.litigationUpdateBKC();
+        LOGGER.debug("Batch : litigationUpdateBKC is completed.");
+    }
+
     @GetMapping("ACNStartLegal")
     public void ACNStartLegal(){
         // ถ้าจะ test บนเครื่อง server เรา ต้องไปเปลี่ยน variable1 เป็น path [ตำแหน่งที่จะเรียกไฟล์] ทั้ง parameter : 5001 ,5002
@@ -46,14 +56,14 @@ public class DCMSController {
 
     @GetMapping("ACNEndLegal")
     public void ACNEndLegal(){
-        ResponseEntity<String> response = dcmsBatchTaskService.ACNEndLegal();
-        String fileName = response.getBody();
-//        smbFileService.localFileToRemoteFile(fileName,"DCMS");
+        dcmsBatchTaskService.ACN_END_LEGAL(DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
     }
 
     @GetMapping("litigationUpdateBKC")
     public void LitigationUpdateBKC(){
         litigationUpdateService.litigationUpdateBKC();
+        LOGGER.debug("Batch : litigationUpdateBKC is completed.");
     }
 
     @GetMapping("litigationUpdateBKO")

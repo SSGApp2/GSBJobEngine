@@ -14,6 +14,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     private JsonParser parser = new JsonParser();
 
     private Gson gson = new GsonBuilder().create();
+
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     SmbFileService smbFileService;
@@ -58,6 +62,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
         String fileName = "LS_COLLECTION_STATUS_" + date + ".txt";
+        int total = 0;
 
         try {
             File file = new File(path + "/" + fileName);
@@ -124,12 +129,15 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 }
 
                 if (AppUtil.isNotEmpty(ZCOLLST)) {
-                    String line = CID + "|" + BATCH_DATE1 + "|" + BATCH_DATE2 + "|" + ZCOLLST + "|" + LEGAL_ID + "|" + USER_CODE + "\n";
+                    String line = CID + "|" + BATCH_DATE1 + "|" + BATCH_DATE2 + "|||" + ZCOLLST + "||" + LEGAL_ID + "|" + USER_CODE + "\n";
                     writer.write(line);
                     // ข้อมูลที่ออกมาในไฟล์จะไม่มีค่า NULL ต้องเป็นค่าว่างเท่านั้น
+                    total++;
                 }
 
             }
+
+            writer.write("Total " + total);
             //เมื่อสร้างไฟล์เสร็จแล้ว ต้องปิด connection ทุกครั้ง
             writer.close();
             //Copy file to FTP Server
@@ -1591,9 +1599,61 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     }
 
     @Override
-    public ResponseEntity<String> batchZLETask() {
-        String url = "/jobs/batchZLE";
-        return getResultByExchange(url);
+    public void ZLE(String date) {
+        //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+        String fileName = "ZLE_" + date + ".txt";
+
+        File file = new File(path + "/" + fileName);
+
+        List<Map> debtorList = new ArrayList<>();
+
+        FileWriter writer = null;
+        String total = "0";
+
+        try {
+            //delete old file
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+
+            //create new file
+            writer = new FileWriter(file, true);
+            writer.write("ID|CUST_TYPE|RESTRICTION\n");
+
+            if (!debtorList.isEmpty()) {
+                total = String.valueOf(debtorList.size());
+                for (Map debtor : debtorList) {
+                    String type_person = (debtor.get("type_person") == null ? "null" : debtor.get("type_person").toString());
+                    String card_number = (debtor.get("card_number") == null ? "null" : debtor.get("card_number").toString());
+                    String restriction = "";
+
+                    if (!type_person.equals("null") && !card_number.equals("null")) {
+                        ///write data in file
+                        writer.write(card_number + "|" + type_person + "|" + restriction + "\n");
+                    }
+                }
+            }
+
+            writer.write("Total " + total + "|\n");
+
+            //Copy file to FTP Server
+            smbFileService.localFileToRemoteFile(file.getName(), "CBS", date);
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                writer.close();
+            } catch (Exception e) {
+            }
+        }
     }
 
     @Override

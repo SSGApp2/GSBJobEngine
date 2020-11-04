@@ -27,15 +27,15 @@ public class CBSController {
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
 
-    @GetMapping("all")
-    public void all(@RequestParam(value = "date", required = false) String date) {
+    @GetMapping("uploadAll")
+    public void uploadAll(@RequestParam(value = "date", required = false) String date) {
 
         cbsBatchTaskService.LS_COLLECTION_STATUS(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
 
-//        cbsBatchTaskService.ZLE(date != null?date:DateUtil.codeCurrentDate());
-//        LOGGER.debug("Batch : ZLE is completed.");
-//
+        cbsBatchTaskService.ZLE(date != null?date:DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ZLE is completed.");
+
 //        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null?date:DateUtil.codeCurrentDate());
 //        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
     }
@@ -102,13 +102,13 @@ public class CBSController {
     @GetMapping("lsCollectionStatus")
     public void lsCollectionStatus(@RequestParam(value = "date", required = false) String date) {
         cbsBatchTaskService.LS_COLLECTION_STATUS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
     }
 
     @GetMapping("zle")
-    public void zle() {
-        ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
-        String fileName = response.getBody();
-//        smbFileService.localFileToRemoteFile(fileName,"CBS");
+    public void zle(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ZLE is completed.");
     }
 
     @GetMapping("lsAcn")

@@ -37,7 +37,7 @@ public interface CBSBatchTaskService {
 
     void MASTER_DATA_TITLE(String date);
 
-    ResponseEntity<String> batchZLETask();
+    void ZLE(String date);
 
     ResponseEntity<String> lsAcn();
 }

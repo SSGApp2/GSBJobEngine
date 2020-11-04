@@ -19,5 +19,8 @@ public interface ParameterDetailRepository extends JpaRepository<ParameterDetail
     @Query("select pd from ParameterDetail pd join  pd.parameter p where pd.code =:pdCode and p.code =:pCode")
     ParameterDetail findByPCodeAndPdCode(@Param("pCode")String pCode,@Param("pdCode")String pdCode);
 
+    @Query("select pd from ParameterDetail pd join  pd.parameter p where p.code =:pCode")
+    List<ParameterDetail>  findByPCode(@Param("pCode")String pCode);
+
 
 }

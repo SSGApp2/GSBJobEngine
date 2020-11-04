@@ -75,6 +75,8 @@ public class HRDataServiceImpl implements HRDataService {
     @Autowired
     DepartmentService departmentService;
 
+    String pathName = "";
+
     @Override
     @Transactional
     public void region() {

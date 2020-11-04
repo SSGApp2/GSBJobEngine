@@ -39,7 +39,6 @@ public class Download {
 
     @Transactional
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-//    @Scheduled(fixedRate = 60000) // 60 second
     public void MASTER_DATA_COUNTRY() {
         // ประเทศ : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");

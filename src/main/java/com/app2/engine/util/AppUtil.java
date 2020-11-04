@@ -215,4 +215,36 @@ public class AppUtil {
 		}
 		return r;
 	}
+
+	public static String checkEmpty(Object object) {
+		String returnValue = null;
+		if (object != null && object != "" && object != "null") {
+			returnValue = object.toString();
+		}
+		return returnValue;
+	}
+
+	public static String checkEmptyStr(String object) {
+		String returnValue = null;
+		if (object != null && object != "" && object != "null" ) {
+			returnValue = object;
+		}
+		return returnValue;
+	}
+
+	public static Double checkEmptyDouble(Object object) {
+		Double returnValue = null;
+		if (AppUtil.isNotNull(object) && !object.equals("")) {
+			returnValue = Double.valueOf(object.toString());
+		}
+		return returnValue;
+	}
+
+	public static Integer checkEmptyInteger(Object object) {
+		Integer returnValue = null;
+		if (object != null && object != "") {
+			returnValue = Integer.valueOf(object.toString());
+		}
+		return returnValue;
+	}
 }
