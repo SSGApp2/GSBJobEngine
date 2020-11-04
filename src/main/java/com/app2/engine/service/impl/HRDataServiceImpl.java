@@ -796,7 +796,7 @@ public class HRDataServiceImpl implements HRDataService {
                     }
 
                     // set LineBusiness of zone
-                    if (AppUtil.isNotNull(zone1)) {
+                    if (zone1 != null) {
                         zone1.setLineBusiness(lineBusiness1);
                         zoneRepository.save(zone1);
                     }
@@ -824,21 +824,21 @@ public class HRDataServiceImpl implements HRDataService {
                     }
 
                     // set phone number of branch
-                    if (AppUtil.isNotEmpty(branch1)) {
+                    if (branch1 != null) {
                         branch1.setPhoneNumber(telephoneNumber);
                         branch1.setCenterCost(String.valueOf(Long.valueOf(costCenter)));
                         branchRepository.save(branch1);
                     }
 
                     // set branch of unit
-                    if (AppUtil.isNotEmpty(unit1)) {
+                    if (unit1 != null) {
                         unit1.setBranch(branch1);
                         unitRepository.save(unit1);
                     }
 
                     // set parent of unit
-                    if (AppUtil.isNotEmpty(subUnit1)) {
-                        if (AppUtil.isNotNull(unit1)) {
+                    if (subUnit1 != null) {
+                        if (unit1 != null) {
                             subUnit1.setUnitParent(unit1.getId());
                             unitRepository.save(subUnit1);
                         }

@@ -293,7 +293,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","06");
         }
 
-        if (AppUtil.isNotNull(parameter_DL)){
+        if (parameter_DL != null){
             if (type.equals("download")){
                 localDir = parameter_DL.getVariable1();
             }else if (type.equals("upload")){
@@ -321,7 +321,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE","06");
         }
 
-        if (AppUtil.isNotNull(parameter_UL)){
+        if (parameter_UL != null){
             if (type.equals("download")){
                 remoteDir = parameter_UL.getVariable1();
             }else if (type.equals("upload")){
