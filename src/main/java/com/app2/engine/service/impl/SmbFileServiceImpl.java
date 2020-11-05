@@ -292,8 +292,8 @@ public class SmbFileServiceImpl implements SmbFileService {
                 paramDL = parameter_DL.getVariable2();
             }
             if(AppUtil.isNotNull(paramDL)){
-                File directory = new File(paramDL + "/" +DateUtil.codeCurrentDate());
-                if (! directory.exists()){
+                File directory = new File(paramDL + "/" +date);
+                if (!directory.exists()){
                     directory.mkdirs();
                 }
             }
@@ -335,8 +335,8 @@ public class SmbFileServiceImpl implements SmbFileService {
                 paramUL = parameter_UL.getVariable2();
             }
             if(AppUtil.isNotNull(paramUL)){
-                File directory = new File(paramUL + "/" +DateUtil.codeCurrentDate());
-                if (! directory.exists()){
+                File directory = new File(paramUL + "/" +date);
+                if (!directory.exists()){
                     directory.mkdirs();
                 }
             }

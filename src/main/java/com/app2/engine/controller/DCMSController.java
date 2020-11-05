@@ -37,13 +37,33 @@ public class DCMSController {
 
 
         // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
-        dcmsBatchTaskService.ACN_END_LEGAL(DateUtil.codeCurrentDate());
+        dcmsBatchTaskService.ACN_END_LEGAL(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
 
         // BKC ----------------------------------------------------
         // รับรายละเอียดข้อมูลแฟ้มดำเนินคดีล้มละลายที่มีการ update ในแต่ละวัน : รับจากระบบ LEAD
-        litigationUpdateService.litigationUpdateBKC();
+        litigationUpdateService.litigationUpdateBKC(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : litigationUpdateBKC is completed.");
+
+        // BKO ----------------------------------------------------
+        // รับข้อมูลแฟ้มดำเนินคดีเจ้าหนี้นอกฟ้องลูกหนี้ธนาคารในคดีล้มละลายที่มีการ update : รับจากระบบ LEAD
+        litigationUpdateService.litigationUpdateBKO(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateBKO is completed.");
+
+        // CVA ----------------------------------------------------
+        // รับข้อมูลแฟ้มดำเนินคดีลูกหนี้ผิดนัดหลังคำพิพากษาที่มีการ update : รับจากระบบ LEAD
+        litigationUpdateService.litigationUpdateCVA(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVA is completed.");
+
+        // CVA ----------------------------------------------------
+        // รับข้อมูลแฟ้มดำเนินคดีแพ่งที่มีการ update : รับจากระบบ LEAD
+        litigationUpdateService.litigationUpdateCVC(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVC is completed.");
+
+        // CVO ----------------------------------------------------
+        // รับข้อมูลแฟ้มดำเนินคดีเจ้าหนี้นอกยึดทรัพย์หลักประกันลูกหนี้ธนาคารที่มีการ update ให้ระบบ : รับจากระบบ LEAD
+        litigationUpdateService.litigationUpdateCVO(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVO is completed.");
     }
 
     @GetMapping("ACNStartLegal")
@@ -55,35 +75,39 @@ public class DCMSController {
     }
 
     @GetMapping("ACNEndLegal")
-    public void ACNEndLegal(){
-        dcmsBatchTaskService.ACN_END_LEGAL(DateUtil.codeCurrentDate());
+    public void ACNEndLegal(@RequestParam(value = "date", required = false) String date){
+        dcmsBatchTaskService.ACN_END_LEGAL(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
     }
 
     @GetMapping("litigationUpdateBKC")
-    public void LitigationUpdateBKC(){
-        litigationUpdateService.litigationUpdateBKC();
+    public void LitigationUpdateBKC(@RequestParam(value = "date", required = false) String date){
+        litigationUpdateService.litigationUpdateBKC(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : litigationUpdateBKC is completed.");
     }
 
     @GetMapping("litigationUpdateBKO")
-    public void litigationUpdateBKO(){
-        litigationUpdateService.litigationUpdateBKO();
+    public void litigationUpdateBKO(@RequestParam(value = "date", required = false) String date){
+        litigationUpdateService.litigationUpdateBKO(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateBKO is completed.");
     }
 
     @GetMapping("litigationUpdateCVA")
-    public void LitigationUpdateCVA(){
-        litigationUpdateService.litigationUpdateCVA();
+    public void LitigationUpdateCVA(@RequestParam(value = "date", required = false) String date){
+        litigationUpdateService.litigationUpdateCVA(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVA is completed.");
     }
 
     @GetMapping("litigationUpdateCVC")
-    public void LitigationUpdateCVC(){
-        litigationUpdateService.litigationUpdateCVC();
+    public void LitigationUpdateCVC(@RequestParam(value = "date", required = false) String date){
+        litigationUpdateService.litigationUpdateCVC(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVC is completed.");
     }
 
     @GetMapping("litigationUpdateCVO")
-    public void litigationUpdateCVO(){
-        litigationUpdateService.litigationUpdateCVO();
+    public void litigationUpdateCVO(@RequestParam(value = "date", required = false) String date){
+        litigationUpdateService.litigationUpdateCVO(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : litigationUpdateCVO is completed.");
     }
 
     @GetMapping("WRNConsent")

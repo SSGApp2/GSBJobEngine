@@ -32,11 +32,9 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
         ParameterDetail pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "20");
         ApplicationConstant.GSBAPPServer = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "21");
-//        ApplicationConstant.GSBEngine = pDetail.getVariable1();
-        ApplicationConstant.GSBEngine = "http://localhost:8009/GSBEngine";
+        ApplicationConstant.GSBEngine = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "22");
-//        ApplicationConstant.GSBJobEngine = pDetail.getVariable1();
-        ApplicationConstant.GSBJobEngine = "http://localhost:8009/GSBEngine";
+        ApplicationConstant.GSBJobEngine = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "23");
         ApplicationConstant.GSBMailEngine = pDetail.getVariable1();
         pDetail = parameterDetailRepository.findByParameterAndCode("APP_CONFIG", "24");

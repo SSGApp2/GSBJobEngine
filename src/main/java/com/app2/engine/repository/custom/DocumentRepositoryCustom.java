@@ -7,4 +7,7 @@ public interface DocumentRepositoryCustom {
 
     List<Map> findDocumentMovementsCollection();
 
+    List findCurDate(String curDate);
+
+    List findCurDtByRoleByDocument(String curDate, String role, String docID);
 }

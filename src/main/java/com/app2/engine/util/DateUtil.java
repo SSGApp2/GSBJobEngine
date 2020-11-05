@@ -137,16 +137,14 @@ public class DateUtil {
     public static String convertStringToDate(String dateString1) {
         String newDate = "";
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd", DateUtil.getSystemLocale()).parse(dateString1);
-            SimpleDateFormat newformat = new SimpleDateFormat("dd-MM-yyyy", DateUtil.getSystemLocale());
+            Date date = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale()).parse(dateString1);
+            SimpleDateFormat newformat = new SimpleDateFormat("yyyy-MM-dd", DateUtil.getSystemLocale());
             newDate = newformat.format(date);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return newDate;
-
-
     }
 
     public static String convertDateToString(Date dateIn) {

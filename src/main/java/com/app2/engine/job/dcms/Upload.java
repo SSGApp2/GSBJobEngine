@@ -81,7 +81,7 @@ public class Upload {
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_BKC_YYYYMMDD.csv");
             batchTransaction.setStatus("S");
-            litigationUpdateService.litigationUpdateBKC();
+            litigationUpdateService.litigationUpdateBKC(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -100,6 +100,7 @@ public class Upload {
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Upload to FTP Server.");
         LOGGER.info("File : LitigationUpdate_BKO_YYYYMMDD.csv");
+
         BatchTransaction batchTransaction = null;
 
         try {
@@ -108,40 +109,11 @@ public class Upload {
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_BKO_YYYYMMDD.csv");
             batchTransaction.setStatus("S");
-            litigationUpdateService.litigationUpdateBKO();
+            litigationUpdateService.litigationUpdateBKO(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error BKO {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("**************************************************************************");
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
-    public void LitigationUpdateCVC() {
-        // CVA ----------------------------------------------------
-        // รับข้อมูลแฟ้มดำเนินคดีแพ่งที่มีการ update : รับจากระบบ LEAD
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Upload to FTP Server.");
-        LOGGER.info("File : LitigationUpdate_CVC_YYYYMMDD.csv");
-        BatchTransaction batchTransaction = null;
-
-        // CVC ----------------------------------------------------
-        try {
-            batchTransaction=new BatchTransaction();
-            batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVC");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LitigationUpdate_CVC_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
-            litigationUpdateService.litigationUpdateCVC();
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error CVC {}", e.getMessage());
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -166,11 +138,40 @@ public class Upload {
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVA_YYYYMMDD.csv");
             batchTransaction.setStatus("S");
-            litigationUpdateService.litigationUpdateCVA();
+            litigationUpdateService.litigationUpdateCVA(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error litigationUpdate_CVA {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("**************************************************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 30 20 * * ?")  //ss mm hh every day
+    public void LitigationUpdateCVC() {
+        // CVA ----------------------------------------------------
+        // รับข้อมูลแฟ้มดำเนินคดีแพ่งที่มีการ update : รับจากระบบ LEAD
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Upload to FTP Server.");
+        LOGGER.info("File : LitigationUpdate_CVC_YYYYMMDD.csv");
+        BatchTransaction batchTransaction = null;
+
+        // CVC ----------------------------------------------------
+        try {
+            batchTransaction=new BatchTransaction();
+            batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVC");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("LitigationUpdate_CVC_YYYYMMDD.csv");
+            batchTransaction.setStatus("S");
+            litigationUpdateService.litigationUpdateCVC(DateUtil.codeCurrentDate());
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error CVC {}", e.getMessage());
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -194,7 +195,7 @@ public class Upload {
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVO_YYYYMMDD.csv");
             batchTransaction.setStatus("S");
-            litigationUpdateService.litigationUpdateCVO();
+            litigationUpdateService.litigationUpdateCVO(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());

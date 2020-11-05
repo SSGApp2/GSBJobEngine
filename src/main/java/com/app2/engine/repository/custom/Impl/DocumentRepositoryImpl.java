@@ -1,5 +1,6 @@
 package com.app2.engine.repository.custom.Impl;
 
+import com.app2.engine.config.Statement;
 import com.app2.engine.repository.custom.DocumentRepositoryCustom;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -41,6 +42,37 @@ public class DocumentRepositoryImpl implements DocumentRepositoryCustom {
                 "left join witness_exam_progress wep on wep.document_progress = dpo.id\n" +
                 "where d.doc_status <> 'A1' and dma.active = 'Y' \n" +
                 "order by d.updated_date asc");
+        LOGGER.debug("SQL Query {}", querySql.toString());
+        SQLQuery query = session.createSQLQuery(querySql.toString());
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+        return query.list();
+    }
+
+    @Override
+    public List findCurDate(String curDate) {
+        String curDateFormat = curDate;
+        Session session = (Session) entityManager.getDelegate();
+        StringBuilder querySql = new StringBuilder();
+
+        querySql.append(Statement.GET_DOC_CUR_DATE);
+        querySql.append("WHERE datediff(day, d.updated_date , '" + curDateFormat + "') = 0");
+
+        LOGGER.debug("SQL Query {}", querySql.toString());
+        SQLQuery query = session.createSQLQuery(querySql.toString());
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+        return query.list();
+    }
+
+    @Override
+    public List findCurDtByRoleByDocument(String curDate, String role, String docID) {
+        String curDateFormat = curDate;
+        Session session = (Session) entityManager.getDelegate();
+        StringBuilder querySql = new StringBuilder();
+
+        querySql.append(Statement.GET_DOC_CUR_DATE_AND_DOCHIS_BY_ROLE_BY_DOC);
+        querySql.append(" WHERE dh.user_role_to = '" + role + "' ");
+        querySql.append(" AND document = " + docID + " ORDER BY dh.[sequence] DESC ");
+
         LOGGER.debug("SQL Query {}", querySql.toString());
         SQLQuery query = session.createSQLQuery(querySql.toString());
         query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
