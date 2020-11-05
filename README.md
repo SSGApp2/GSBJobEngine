@@ -1,8 +1,7 @@
-# STDEngine
-Standard Engine for App2
-
-AOP LOG START - END METHOD
-https://stackoverflow.com/questions/27714015/can-i-use-spring-aop-to-log-start-and-end-of-a-method-to-help-easy-debuging
-
-CompletableFuture 
-https://developers.ascendcorp.com/java-%E0%B8%AA%E0%B8%A3%E0%B8%B8%E0%B8%9B%E0%B9%80%E0%B8%97%E0%B8%84%E0%B8%99%E0%B8%B4%E0%B8%84%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%83%E0%B8%8A%E0%B9%89-completablefuture-%E0%B9%81%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B9%88%E0%B8%B2%E0%B8%99%E0%B8%81%E0%B9%88%E0%B8%AD%E0%B8%99%E0%B8%AA%E0%B8%AD%E0%B8%9A-a90974546182
+# Change Logs
+LEAD V.19.00.06.00
+1. LEAD_INUO_63_108 - ระบบแสดงไม่แสดงข้อมูลบัตรประจำตัวประชาชน
+2. LEAD_INUO_63_111 - ระบบ LEAD ไม่แสดง ข้อมูลบัญชีเงินฝาก
+3. LEAD_INUO_63_118 - ค้นหาข้อมูลลูกหนี้โดยเลขที่บัญชีสินเชื่อ ระบบแสดงข้อมูลลูกหนี้อื่นไม่เกี่ยวข้อง
+4. LEAD_INUO_63_142 - แก้ไข Batch Error ตามที่ธนาคารแจ้งมา
+5. LEAD_INUO_63_128 - สร้างแฟ้มแล้วระบบเตือนพบข้อผิดพลาด
