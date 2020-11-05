@@ -1,7 +1,6 @@
 package com.app2.engine.job.cbs;
 
 import com.app2.engine.entity.app.BatchTransaction;
-import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.CBSBatchTaskService;
@@ -15,11 +14,10 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 @Component
-public class Download {
+public class CBSDownload {
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -36,6 +34,35 @@ public class Download {
 
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
+
+    @Transactional
+    @Scheduled(cron = "0 30 0 * * ?")
+    public void LS_ACN(){
+        //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : LS_ACN_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Download.LS_ACN");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LS_ACN_YYYYMMDD.txt");
+
+        try {
+            cbsBatchTaskService.LS_ACN(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("***************************************");
+    }
 
     @Transactional
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day

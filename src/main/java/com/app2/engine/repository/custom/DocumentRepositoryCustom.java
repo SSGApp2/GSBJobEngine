@@ -10,4 +10,6 @@ public interface DocumentRepositoryCustom {
     List findCurDate(String curDate);
 
     List findCurDtByRoleByDocument(String curDate, String role, String docID);
+
+    List<Map> findLsAccountList();
 }

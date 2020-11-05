@@ -90,8 +90,6 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
 
     private char delimiterPipe = '|';
 
-//    private String curDate = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-
     public String convertDateToFile(String pattern,String dateTime){
         Date date = new Date(Long.valueOf(dateTime.toString()));
         DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
@@ -694,9 +692,6 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                             }
                         }
                     }
-
-
-
                 }
 
                 resultCVOMap.put("LEGAL_ID",document.getDocNumber());

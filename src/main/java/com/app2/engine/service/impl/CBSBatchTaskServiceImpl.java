@@ -1,9 +1,7 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.Parameter;
-import com.app2.engine.entity.app.ParameterDetail;
-import com.app2.engine.repository.ParameterDetailRepository;
-import com.app2.engine.repository.ParameterRepository;
+import com.app2.engine.entity.app.*;
+import com.app2.engine.repository.*;
 import com.app2.engine.repository.custom.DocumentRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CBSBatchTaskService;
@@ -47,6 +45,15 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     @Autowired
     DocumentRepositoryCustom documentRepositoryCustom;
 
+    @Autowired
+    DocumentRepository documentRepository;
+
+    @Autowired
+    DebtorAccDebtInfoRepository debtorAccDebtInfoRepository;
+
+    @Autowired
+    BranchRepository branchRepository;
+
     @SneakyThrows
     @Override
     public void LS_COLLECTION_STATUS(String date) {
@@ -54,12 +61,12 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         List<Map> documentList = documentRepositoryCustom.findDocumentMovementsCollection();
         ParameterDetail params;
 
-        for (int i=0;i<2;i++) {
+        for (int i = 0; i < 2; i++) {
             //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
-            if (i==0) {
+            if (i == 0) {
                 //CBS
                 params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
-            }else {
+            } else {
                 //DCMS
                 params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
             }
@@ -148,9 +155,9 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 writer.close();
 
                 //Copy file to FTP Server
-                if (i==0){
+                if (i == 0) {
                     smbFileService.localFileToRemoteFile(file.getName(), "CBS", date);
-                }else {
+                } else {
                     smbFileService.localFileToRemoteFile(file.getName(), "DCMS", date);
                 }
 
@@ -165,6 +172,58 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                         // reported via an IOException from the final flush.
                     }
                 }
+            }
+        }
+    }
+
+    @Override
+    public void LS_ACCOUNT_LIST(String date) {
+        //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+        String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
+
+        File file = new File(path + "/" + fileName);
+
+        List<Map> documentList = documentRepositoryCustom.findLsAccountList();
+
+        FileWriter writer = null;
+        int total = 0;
+
+        try {
+            //delete old file
+            if (file.exists() && file.isFile()) {
+                file.delete();
+            }
+
+            //create new file
+            writer = new FileWriter(file, true);
+
+            if (!documentList.isEmpty()) {
+                total = documentList.size();
+                for (int i = 0; i < documentList.size(); i++) {
+                    String CreditAccountNumber = documentList.get(i).get("value").toString();
+
+                        ///write data in file
+                        writer.write( CreditAccountNumber+"\n");
+                }
+            }
+            writer.write("Total " + total);
+
+            //Copy file to FTP Server
+            smbFileService.localFileToRemoteFile(fileName, "CBS", date);
+
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            try {
+                // Close the writer regardless of what happens...
+                writer.close();
+            } catch (Exception e) {
             }
         }
     }
@@ -1669,9 +1728,119 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         }
     }
 
+    @SneakyThrows
     @Override
-    public ResponseEntity<String> lsAcn() {
-        String url = "/jobs/lsACN";
-        return getResultByExchange(url);
+    public void LS_ACN(String date) {
+        String fileName = "LS_ACN_" + date + ".txt";
+
+        smbFileService.remoteFileToLocalFile(fileName, "CBS", date);
+
+        //หา path local Download
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
+
+        try {
+            File file = new File(path + "/" + fileName);
+            if (file.exists() && !file.isDirectory()) {
+                List<String> linesList = new ArrayList<>();
+                Scanner fileReader = new Scanner(file);
+
+                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+
+                String readLine;
+                while ((readLine = reader.readLine()) != null) {
+                    linesList.add(readLine);
+                }
+
+                for (int i = 0; i <= linesList.size() - 2; i++) {
+                    if (i == 0) continue;
+                    String row = linesList.get(i);
+                    if (!row.equals("")) {
+                        String[] resultSplitAr = row.split("\\|");
+
+                        if (resultSplitAr.length > 0) {
+                            String ACN = resultSplitAr[0];
+                            String BRANCH_CD = resultSplitAr[1];
+                            String ACCT_STATUS = resultSplitAr[2];
+                            String ACCT_STATUS_DESC = resultSplitAr[3];
+                            String PRODUCT_CLASS = resultSplitAr[4];
+                            String PRODUCT_GRP = resultSplitAr[5];
+                            String PRODUCT_GRP_DESC = resultSplitAr[6];
+                            String MARKET_CD = resultSplitAr[7];
+                            String MARKET_CD_DESC = resultSplitAr[8];
+                            String ACCT_RELINFO = resultSplitAr[9];
+                            String ACCT_RELINFO_DESC = resultSplitAr[10];
+                            String LEDGER_BALANCE = resultSplitAr[11];
+                            String AVAILABLE_BALANCE = resultSplitAr[12];
+                            String LIMIT_AMOUNT = resultSplitAr[13];
+                            String OUTSTANDING_BALANCE = resultSplitAr[14];
+                            String INTEREST_RECEIVABLE = resultSplitAr[15];
+                            String LATE_CHARGE_DUE = resultSplitAr[16];
+                            String TDU_AMOUNT = resultSplitAr[17];
+                            String SCHEDULED_INTERNALBILL = resultSplitAr[18];
+                            String INTERNALBILL_NEXTDUE = resultSplitAr[19];
+                            String LAST_PAID_DT = resultSplitAr[20];
+                            String WRITE_OFF_FLG = resultSplitAr[21];
+                            String WRITE_OFF_DESC = resultSplitAr[22];
+                            String TDR_FLG = resultSplitAr[23];
+                            String LEGAL_STATUS = resultSplitAr[24];
+                            String LEGAL_DESC = resultSplitAr[25];
+                            String PRODUCT_SUBTYPE = resultSplitAr[26];
+                            String PRODUCT_SUBTYPE_DESC = resultSplitAr[27];
+                            String COLLECTION_STATUS_CD = resultSplitAr[28];
+                            String COLLECTION_STATUS_DESC = resultSplitAr[29];
+                            String COMMITMENT_ACCT = resultSplitAr[30];
+                            String RESTRUCTURED_ACCT = resultSplitAr[31];
+                            String ADVANCEMENT_ACCT = resultSplitAr[32];
+                            String PRODUCT_TYPE = resultSplitAr[33];
+                            String PRODUCT_TYPE_DESC = resultSplitAr[34];
+                            String IS_FLATRATE = resultSplitAr[35];
+                            String MONTH_OVERDUE = resultSplitAr[36];
+                            String PROV_CAT = resultSplitAr[37];
+                            String PROV_CAT_DESC = resultSplitAr[38];
+
+                            DebtorAccDebtInfo debtorAccDebtInfo = debtorAccDebtInfoRepository.findByAccountNo(ACN);
+
+                            if (AppUtil.isNotNull(debtorAccDebtInfo)) {
+
+                                debtorAccDebtInfo.setAccountNo(AppUtil.checkEmptyStr(ACN));
+                                if (!BRANCH_CD.equals("")) {
+                                    Long branchID = Long.valueOf(BRANCH_CD);
+                                    Branch branch = branchRepository.getOne(branchID);
+                                    if (AppUtil.isNotNull(branch)) {
+                                        debtorAccDebtInfo.setBranchAccount(branch.getCode());
+                                    }
+                                }
+                                debtorAccDebtInfo.setDocCreatedStatus(AppUtil.checkEmptyStr(ACCT_STATUS));
+                                debtorAccDebtInfo.setAcctStatusDesc(AppUtil.checkEmptyStr(ACCT_STATUS_DESC));
+                                debtorAccDebtInfo.setProductClass(AppUtil.checkEmptyStr(PRODUCT_CLASS));
+                                debtorAccDebtInfo.setProductGroup(AppUtil.checkEmptyStr(PRODUCT_GRP));
+                                debtorAccDebtInfo.setMarketCode(AppUtil.checkEmptyStr(MARKET_CD));
+                                debtorAccDebtInfo.setMarketDesc(AppUtil.checkEmptyStr(MARKET_CD_DESC));
+                                if (!LAST_PAID_DT.equals("")) {
+                                    Date LastPaidDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(LAST_PAID_DT);
+                                    debtorAccDebtInfo.setLastPaidDate(LastPaidDate);
+                                }
+                                debtorAccDebtInfo.setWriteOffFlag(AppUtil.checkEmptyStr(WRITE_OFF_FLG));
+                                debtorAccDebtInfo.setTdrFlag(AppUtil.checkEmptyStr(TDR_FLG));
+                                debtorAccDebtInfo.setLegalStatus(AppUtil.checkEmptyStr(LEGAL_STATUS));
+                                debtorAccDebtInfo.setLegalStatusDesc(AppUtil.checkEmptyStr(LEGAL_DESC));
+                                debtorAccDebtInfo.setCollectionStatus(AppUtil.checkEmptyStr(COLLECTION_STATUS_CD));
+                                debtorAccDebtInfo.setCollectionStatusDesc(AppUtil.checkEmptyStr(COLLECTION_STATUS_DESC));
+                                LOGGER.info("accountNo : {}", debtorAccDebtInfo.getAccountNo());
+                                debtorAccDebtInfoRepository.saveAndFlush(debtorAccDebtInfo);
+                            }
+                        }
+                    }
+                }
+                fileReader.close();
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error save file {}", fileName);
+            throw new RuntimeException(fileName);
+        }
     }
 }

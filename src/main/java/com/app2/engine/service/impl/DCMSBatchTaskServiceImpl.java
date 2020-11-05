@@ -12,6 +12,7 @@ import com.app2.engine.service.DCMSBatchTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
 import com.app2.engine.util.FileUtil;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -101,6 +102,44 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
             LOGGER.error("Error {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public void ACN_END_LEGAL_TOTAL(String date) {
+        try {
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+        String fileName = "ACN_ENDLEGAL_TOTAL_" + date + ".txt";
+        int count = 0;
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
+        List<DebtorAccDebtInfo> debtorAccDebtInfoList = debtorAccDebtInfoRepository.findAll();
+
+        for (DebtorAccDebtInfo debtorAccDebtInfo : debtorAccDebtInfoList){
+
+            Debtor debtor = debtorAccDebtInfo.getDebtor();
+
+            List<Document> documentList = documentRepository.findByDebtor(debtor);
+
+            for (Document document : documentList){
+                count++;
+            }
+        }
+
+        writer.write(String.valueOf(count));
+        writer.close();
+
+        //Copy file to FTP Server
+        smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
+    }catch (Exception e) {
+        LOGGER.error("Error {}", e.getMessage());
+        throw new RuntimeException(e.getMessage());
+    }
     }
 }
 

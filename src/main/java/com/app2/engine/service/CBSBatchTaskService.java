@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 public interface CBSBatchTaskService {
     void LS_COLLECTION_STATUS(String date);
 
+    void LS_ACCOUNT_LIST(String date);
+
     ResponseEntity<String> accountEndLegalUpdateTask();
 
     ResponseEntity<String> createFileTXTRestrictionZLE();
@@ -39,5 +41,5 @@ public interface CBSBatchTaskService {
 
     void ZLE(String date);
 
-    ResponseEntity<String> lsAcn();
+    void LS_ACN(String date);
 }

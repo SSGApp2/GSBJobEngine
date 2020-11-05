@@ -33,11 +33,9 @@ public class CBSController {
         cbsBatchTaskService.LS_COLLECTION_STATUS(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
 
-        cbsBatchTaskService.ZLE(date != null?date:DateUtil.codeCurrentDate());
+        cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ZLE is completed.");
 
-//        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null?date:DateUtil.codeCurrentDate());
-//        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
     }
 
     @GetMapping("downloadAll")
@@ -112,10 +110,15 @@ public class CBSController {
     }
 
     @GetMapping("lsAcn")
-    public void lsAcnTask() {
-        String fileName = "LS_ACN_" + DateUtil.codeCurrentDate() + ".txt";
-//        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
+    public void lsAcnTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.LS_ACN(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACN is completed.");
+    }
+
+    @GetMapping("lsAccountList")
+    public void lsAccountList(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.LS_ACCOUNT_LIST(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACCOUNT_LIST is completed.");
     }
 
     @GetMapping("stblcntry")

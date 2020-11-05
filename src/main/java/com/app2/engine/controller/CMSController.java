@@ -37,7 +37,7 @@ public class CMSController {
         cmsBatchTaskService.TBL_MT_COURT(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : TBL_MT_COURT is completed.");
 
-        // ข้อมูลสำนักงานบังคับคดี
+        // ข้อมูลสำนักงานบังคับคดี : รับจากระบบ LEAD
         cmsBatchTaskService.TBL_MT_LED(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : TBL_MT_LED is completed.");
     }

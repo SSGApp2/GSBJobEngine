@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
-public class Upload {
+public class CBSUpload {
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -26,7 +26,6 @@ public class Upload {
 
     @Autowired
     BatchTransactionRepository batchTransactionRepository;
-
 
     @Transactional
     @Scheduled(cron = "0 0 21 * * ?")
@@ -58,7 +57,6 @@ public class Upload {
 
     @Transactional
     @Scheduled(cron = "0 30 2 * * ?")
-//    @Scheduled(fixedRate = 60000) // 60 second
     public void ZLE() {
         //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน
         LOGGER.info("***************************************");
@@ -82,6 +80,35 @@ public class Upload {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
+        LOGGER.info("***************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 19 * * ?")
+//    @Scheduled(fixedRate = 60000) // 60 second
+    public void LS_ACCOUNT_LIST() {
+        //รับข้อมูลบัญชีทั้งหมดที่ถูกดำเนินคดี
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
+        LOGGER.info("Upload to FTP Server.");
+        LOGGER.info("File name : LS_ACCOUNTLIST_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Upload.LS_ACCOUNT_LIST");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LS_ACCOUNTLIST_YYYYMMDD.txt");
+        try {
+            cbsBatchTaskService.LS_ACCOUNT_LIST(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+
         LOGGER.info("***************************************");
     }
 }

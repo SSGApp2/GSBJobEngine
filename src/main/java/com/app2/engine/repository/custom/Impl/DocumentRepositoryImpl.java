@@ -78,4 +78,20 @@ public class DocumentRepositoryImpl implements DocumentRepositoryCustom {
         query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
         return query.list();
     }
+
+    @Override
+    public List<Map> findLsAccountList() {
+        Session session = (Session) entityManager.getDelegate();
+        StringBuilder querySql = new StringBuilder();
+
+        querySql.append("SELECT distinct value  \n" +
+                "FROM document  \n" +
+                "   CROSS APPLY STRING_SPLIT(credit_account_number, ',')\n" +
+                "   order by value ASC; ");
+
+        LOGGER.debug("SQL Query {}", querySql.toString());
+        SQLQuery query = session.createSQLQuery(querySql.toString());
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+        return query.list();
+    }
 }

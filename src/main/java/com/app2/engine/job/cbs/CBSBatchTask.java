@@ -39,44 +39,6 @@ public class CBSBatchTask {
     ParameterDetailRepository parameterDetailRepository;
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?")
-    public void lsAcnTask(){
-        //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start receive file account data synchronization.");
-        LOGGER.info("File : LS_ACN_YYYYMMDD.txt");
-        BatchTransaction batchTransaction = null;
-        try {
-            String fileName = "LS_ACN_"+DateUtil.codeCurrentDate()+".txt";
-//            smbFileService.remoteFileToLocalFile(fileName,"CBS");
-
-            ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
-
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("CBSBatchTask.lsAcnTask");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("LS_ACN_YYYYMMDD.txt");
-            batchTransaction.setReason(response.getBody());
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody().equals("success")) {
-                batchTransaction.setStatus("S");
-            }else {
-                batchTransaction.setStatus("E");
-            }
-
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
-
-    @Transactional
 //    @Scheduled(cron = "0 0 22 * * *") //ss mm hh every day
     public void accountEndLegalUpdateTask() {
         LOGGER.info("***************************************");

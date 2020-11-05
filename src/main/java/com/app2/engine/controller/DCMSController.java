@@ -35,7 +35,6 @@ public class DCMSController {
     @GetMapping("uploadAll")
     public void uploadAll(@RequestParam(value = "date", required = false) String date) {
 
-
         // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
         dcmsBatchTaskService.ACN_END_LEGAL(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
@@ -78,6 +77,12 @@ public class DCMSController {
     public void ACNEndLegal(@RequestParam(value = "date", required = false) String date){
         dcmsBatchTaskService.ACN_END_LEGAL(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ACN_END_LEGAL is completed.");
+    }
+
+    @GetMapping("ACNEndLegalTotal")
+    public void ACNEndLegalTotal(@RequestParam(value = "date", required = false) String date){
+        dcmsBatchTaskService.ACN_END_LEGAL_TOTAL(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ACN_END_LEGAL_TOTAL is completed.");
     }
 
     @GetMapping("litigationUpdateBKC")

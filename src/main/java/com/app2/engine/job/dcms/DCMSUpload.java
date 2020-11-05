@@ -11,12 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Upload {
+@Component
+public class DCMSUpload {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
@@ -37,7 +39,7 @@ public class Upload {
     WRNService wrnService;
 
     @Transactional
-    @Scheduled(cron = "0 30 20 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void ACN_END_LEGAL() {
         // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
@@ -51,6 +53,34 @@ public class Upload {
         batchTransaction.setName("ACN_ENDLEGAL_YYYYMMDD.txt");
         try {
             dcmsBatchTaskService.ACN_END_LEGAL(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
+
+        } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage());
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+        }
+        LOGGER.info("**************************************************************************");
+    }
+
+    @Transactional
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
+    public void ACN_END_LEGAL_TOTAL() {
+        // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
+        LOGGER.info("**************************************************************************");
+        LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
+        LOGGER.info("Upload to FTP Server.");
+        LOGGER.info("File name : ACN_END_LEGAL_TOTAL_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.ACN_END_LEGAL_TOTAL");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ACN_END_LEGAL_TOTAL_YYYYMMDD.txt");
+        try {
+            dcmsBatchTaskService.ACN_END_LEGAL_TOTAL(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -104,7 +134,7 @@ public class Upload {
         BatchTransaction batchTransaction = null;
 
         try {
-            batchTransaction=new BatchTransaction();
+            batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateBKO");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_BKO_YYYYMMDD.csv");
@@ -133,7 +163,7 @@ public class Upload {
 
         try {
             LOGGER.info("File : LitigationUpdate_CVA_YYYYMMDD.csv");
-            batchTransaction=new BatchTransaction();
+            batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVA");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVA_YYYYMMDD.csv");
@@ -162,7 +192,7 @@ public class Upload {
 
         // CVC ----------------------------------------------------
         try {
-            batchTransaction=new BatchTransaction();
+            batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVC");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVC_YYYYMMDD.csv");
@@ -190,7 +220,7 @@ public class Upload {
         BatchTransaction batchTransaction = null;
 
         try {
-            batchTransaction=new BatchTransaction();
+            batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMS.Upload.batchLitigationUpdateCVO");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVO_YYYYMMDD.csv");
