@@ -1,7 +1,6 @@
 package com.app2.engine.controller;
 
 
-import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.service.DocumentTaskService;
 import com.app2.engine.service.EmployeeADService;
@@ -9,16 +8,13 @@ import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.service.NotificationTaskService;
 import com.app2.engine.service.*;
-import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
 
 @RestController
 @RequestMapping("/api/jobs")
@@ -48,11 +44,6 @@ public class JobController {
 
     @Autowired
     BatchTransactionRepository batchTransactionRepository;
-
-    @Autowired
-    private WRNService wrnService;
-
-
 
     @GetMapping("/HrRegion")
     public void HrRegion() {
@@ -119,15 +110,4 @@ public class JobController {
     public void notification(@RequestParam("processType")String processType) {
         notificationTaskService.notification(processType);
     }
-
-    @GetMapping("/wrnConsent")
-    public void wrnConsent(){
-        wrnService.wrnConsent();
-    }
-
-    @GetMapping("/wrnTDR")
-    public void wrnTDR(){
-        wrnService.wrnTDR();
-    }
-
 }

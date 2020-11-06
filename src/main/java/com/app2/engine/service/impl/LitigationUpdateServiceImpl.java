@@ -61,9 +61,6 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Autowired
     CourtOrderDetailRepository courtOrderDetailRepository;
 
-    @Value("${Api.LitigationUpdate}")
-    private String API_LitigationUpdate;
-
     @PersistenceContext
     private EntityManager entityManager;
 

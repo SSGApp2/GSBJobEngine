@@ -9,18 +9,22 @@ import com.app2.engine.repository.DocumentRepository;
 import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.DCMSBatchTaskService;
+import com.app2.engine.service.DocumentService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
 import com.app2.engine.util.FileUtil;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.*;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements DCMSBatchTaskService{
@@ -35,6 +39,12 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
 
     @Autowired
     DocumentRepository documentRepository;
+
+    @Autowired
+    DocumentService documentService;
+
+    @Value("${sync.interface}")
+    private String syncInterface;
 
     @Override
     public ResponseEntity<String> ACNStartLegal() {

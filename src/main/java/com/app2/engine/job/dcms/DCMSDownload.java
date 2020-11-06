@@ -10,18 +10,15 @@ import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 @Component
-public class DCMSBatchTask {
+public class DCMSDownload {
 
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
@@ -43,30 +40,22 @@ public class DCMSBatchTask {
     @Autowired
     WRNService wrnService;
 
-    @Transactional
+    @Transactional ///ยังแก้ไม่เสร็จ
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void createDocumentAutoByCifDebtor() {
+    public void ACN_START_LEGAL() {
+        // ส่งข้อมูล Account และ CIF ที่ต้องการดำเนินคดี (AccountStartLegal)
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info(" createDocumentAutoByCifDebtor ");
-        BatchTransaction batchTransaction = null;
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : ACN_STARTLEGAL_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Download.ACN_START_LEGAL");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ACN_STARTLEGAL_YYYYMMDD.txt");
         try {
-            String fileName = "ACN_STARTLEGAL_"+DateUtil.codeCurrentDate()+".txt";
-
-//            smbFileService.remoteFileToLocalFile(fileName,"DCMS");
-
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DCMSBatchTask.ACNStartLegal");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("createDocumentAuto");
+            dcmsBatchTaskService.ACNStartLegal();
             batchTransaction.setStatus("S");
-
-            ResponseEntity<String> response = dcmsBatchTaskService.ACNStartLegal();
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                batchTransaction.setStatus("E");
-                batchTransaction.setReason(response.getBody());
-            }
 
         } catch (Exception e) {
             batchTransaction.setStatus("E");
@@ -81,21 +70,19 @@ public class DCMSBatchTask {
 
     @Transactional
     @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
-    public void WRNConsent() {
+    public void WRN_CONSENT() {
         // ส่งข้อมูลบัญชีที่มีรายการแจ้งเตือนกรณีที่ลูกหนี้ที่ศาลมีคำพิพากษาตามยอมทั้งหมด : ส่งให้ระบบ LEAD
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start create file send account information that case debtor has judgment of court. ");
-        LOGGER.info("File : WRN_CONSENT_YYYYMMDD.txt");
-        BatchTransaction batchTransaction = null;
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : WRN_CONSENT_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Download.WRN_CONSENT");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("WRN_CONSENT_YYYYMMDD.txt");
 
         try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DCMSBatchTask.WRNConsent");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("WRN_CONSENT_YYYYMMDD.txt");
-
-            wrnService.wrnConsent();
-
+            wrnService.WRN_CONSENT(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -111,21 +98,19 @@ public class DCMSBatchTask {
 
     @Transactional
     @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
-    public void wrnTdr() {
+    public void WRN_TDR() {
         // ส่งข้อมูลรายการแจ้งเตือนบัญชีปรับปรุงโครงสร้างหนี้หลังคำพิพากษาผิดนัดชำระหนี้ทั้งหมด : ส่งให้ระบบ LEAD
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start create file send account information change of the debt. ");
-        LOGGER.info("File : WRN_TDR_YYYYMMDD.txt");
-        BatchTransaction batchTransaction = null;
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("File name : WRN_TDR_YYYYMMDD.txt");
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Download.WRN_TDR");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("WRN_TDR_YYYYMMDD.txt");
 
         try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DCMSBatchTask.wrnTdr");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("WRN_TDR_YYYYMMDD.txt");
-
-            wrnService.wrnTDR();
-
+            wrnService.WRN_TDR(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
 
         } catch (Exception e) {
@@ -138,6 +123,4 @@ public class DCMSBatchTask {
         }
         LOGGER.info("**************************************************************************");
     }
-
-
 }

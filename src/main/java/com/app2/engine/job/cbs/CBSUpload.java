@@ -85,7 +85,6 @@ public class CBSUpload {
 
     @Transactional
     @Scheduled(cron = "0 50 19 * * ?")
-//    @Scheduled(fixedRate = 60000) // 60 second
     public void LS_ACCOUNT_LIST() {
         //รับข้อมูลบัญชีทั้งหมดที่ถูกดำเนินคดี
         LOGGER.info("***************************************");

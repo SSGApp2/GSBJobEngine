@@ -69,7 +69,6 @@ public class DCMSUpload {
     @Transactional
     @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void ACN_END_LEGAL_TOTAL() {
-        // รับข้อมูล Account update ทางคดี และสิ้นสุดคดี (AccountEndLegal) : รับจากระบบ LEAD
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
         LOGGER.info("Upload to FTP Server.");
@@ -110,8 +109,8 @@ public class DCMSUpload {
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateBKC");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_BKC_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
             litigationUpdateService.litigationUpdateBKC(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -138,8 +137,8 @@ public class DCMSUpload {
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateBKO");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_BKO_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
             litigationUpdateService.litigationUpdateBKO(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -167,8 +166,8 @@ public class DCMSUpload {
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVA");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVA_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
             litigationUpdateService.litigationUpdateCVA(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -196,8 +195,8 @@ public class DCMSUpload {
             batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVC");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVC_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
             litigationUpdateService.litigationUpdateCVC(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
@@ -224,8 +223,8 @@ public class DCMSUpload {
             batchTransaction.setControllerMethod("DCMS.Upload.batchLitigationUpdateCVO");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("LitigationUpdate_CVO_YYYYMMDD.csv");
-            batchTransaction.setStatus("S");
             litigationUpdateService.litigationUpdateCVO(DateUtil.codeCurrentDate());
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
