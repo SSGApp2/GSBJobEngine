@@ -149,6 +149,7 @@ public class JobController {
         LOGGER.debug(">>============= CBS =============");
         ResponseEntity<String> lsCollectionStatus = cbsBatchTaskService.lsCollectionStatusTask();
         smbFileService.localFileToRemoteFile(lsCollectionStatus.getBody(),"CBS");
+        smbFileService.localFileToRemoteFile(lsCollectionStatus.getBody(),"DCMS");
         LOGGER.debug("LS_COLLECTION_STATUS Completed.");
 
         ResponseEntity<String> zle = cbsBatchTaskService.batchZLETask();
