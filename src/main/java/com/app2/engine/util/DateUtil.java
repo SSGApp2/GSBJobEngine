@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-
 @Component
 public class DateUtil {
     private static Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
@@ -27,7 +26,6 @@ public class DateUtil {
             "กรกฎาคม", "สิงหาคม", "กันยายน",
             "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
     };
-
 
     public static Timestamp getCurrentDate() {
         Timestamp today = null;
@@ -54,8 +52,6 @@ public class DateUtil {
     }
 
     public static Timestamp getTimeStampGetMaxTime(String stringDate) {
-
-//        LOGGER.info()
         Timestamp today = null;
         try {
             today = getTimeMax(DATE_FORMAT.parse(stringDate));
@@ -63,13 +59,11 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return today;
     }
 
 
     public static Locale getSystemLocale() {
-//        LOGGER.info("getSystemLocale  Locale.US");
         return Locale.US;
     }
 
@@ -84,7 +78,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return maxTimeDate;
     }
 
@@ -100,7 +93,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return maxTimeDate;
     }
 
@@ -116,7 +108,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return minTimeDate;
     }
 
@@ -133,7 +124,6 @@ public class DateUtil {
         return newDate;
     }
 
-
     public static String convertStringToDate(String dateString1) {
         String newDate = "";
         try {
@@ -143,7 +133,6 @@ public class DateUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return newDate;
     }
 
@@ -181,7 +170,6 @@ public class DateUtil {
 
 
     public static String ConvertDateExcelDateFormat(String stringDate) {
-
         try {
             String dateStr = stringDate;
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
@@ -197,14 +185,9 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
-
     }
 
-
     public static String checkDateFormat(String str) {
-
-
         if (str.length() > 10) {
             String itemSplit[] = str.split("\\-");
 
@@ -225,8 +208,6 @@ public class DateUtil {
         } else {
             return str;
         }
-
-
     }
 
     public static String getDateStringThai(Date date) {

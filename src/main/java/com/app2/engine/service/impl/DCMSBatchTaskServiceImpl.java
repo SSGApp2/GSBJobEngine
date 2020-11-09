@@ -7,6 +7,7 @@ import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.DebtorAccDebtInfoRepository;
 import com.app2.engine.repository.DocumentRepository;
 import com.app2.engine.repository.ParameterDetailRepository;
+import com.app2.engine.repository.custom.DebtorAccDebtInfoRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.DCMSBatchTaskService;
 import com.app2.engine.service.DocumentService;
@@ -27,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements DCMSBatchTaskService{
+public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements DCMSBatchTaskService {
     @Autowired
     SmbFileService smbFileService;
 
@@ -36,6 +37,9 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
 
     @Autowired
     DebtorAccDebtInfoRepository debtorAccDebtInfoRepository;
+
+    @Autowired
+    DebtorAccDebtInfoRepositoryCustom debtorAccDebtInfoRepositoryCustom;
 
     @Autowired
     DocumentRepository documentRepository;
@@ -65,9 +69,9 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
 
-            List<DebtorAccDebtInfo> debtorAccDebtInfoList = debtorAccDebtInfoRepository.findAll();
+            List<Map> debtorAccDebtInfoList = debtorAccDebtInfoRepositoryCustom.findAcnEndLegal();
 
-            for (DebtorAccDebtInfo debtorAccDebtInfo : debtorAccDebtInfoList){
+            for (Map debtorAccDebtInfo : debtorAccDebtInfoList) {
                 BigInteger accountNo;
                 String wfTypeID = "";
                 String wfTypeDesc = "";
@@ -76,39 +80,34 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
                 String endStepReasonDesc = "";
                 String description = "";
 
-                Debtor debtor = debtorAccDebtInfo.getDebtor();
+                accountNo = new BigInteger(String.valueOf(debtorAccDebtInfo.get("accountNo")));
 
-                List<Document> documentList = documentRepository.findByDebtor(debtor);
+                if (AppUtil.isNotNull(debtorAccDebtInfo.get("docType"))) {
+                    String docType = String.valueOf(debtorAccDebtInfo.get("docType"));
 
-                for (Document document : documentList){
-
-                    accountNo = new BigInteger(debtorAccDebtInfo.getAccountNo());
-
-                    if (AppUtil.isNotNull(document.getDocType())){
-                        if (document.getDocType().equals("1")){
-                            wfTypeID = "1";
-                        }else if (document.getDocType().equals("2")){
-                            wfTypeID = "3";
-                        }else if (document.getDocType().equals("3")){
-                            wfTypeID = "4";
-                        }else if (document.getDocType().equals("4")){
-                            wfTypeID = "5";
-                        }else if (document.getDocType().equals("5")){
-                            wfTypeID = "6";
-                        }
+                    if (docType.equals("1")) {
+                        wfTypeID = "1";
+                    } else if (docType.equals("2")) {
+                        wfTypeID = "3";
+                    } else if (docType.equals("3")) {
+                        wfTypeID = "4";
+                    } else if (docType.equals("4")) {
+                        wfTypeID = "5";
+                    } else if (docType.equals("5")) {
+                        wfTypeID = "6";
                     }
-
-                    String dataStr = accountNo+"|"+wfTypeID+"|"+wfTypeDesc+"|"+endDt+"|"+endStepReasonID+"|"+endStepReasonDesc+"|"+description;
-                    writer.write(dataStr);
-                    writer.newLine();
                 }
+
+                String dataStr = accountNo + "|" + wfTypeID + "|" + wfTypeDesc + "|" + endDt + "|" + endStepReasonID + "|" + endStepReasonDesc + "|" + description;
+                writer.write(dataStr);
+                writer.newLine();
             }
             writer.close();
 
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
@@ -117,39 +116,32 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
     @Override
     public void ACN_END_LEGAL_TOTAL(String date) {
         try {
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        String fileName = "ACN_ENDLEGAL_TOTAL_" + date + ".txt";
-        int count = 0;
+            String fileName = "ACN_ENDLEGAL_TOTAL_" + date + ".txt";
+            int count = 0;
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
 
-        List<DebtorAccDebtInfo> debtorAccDebtInfoList = debtorAccDebtInfoRepository.findAll();
+            List<Map> debtorAccDebtInfoList = debtorAccDebtInfoRepositoryCustom.findAcnEndLegal();
 
-        for (DebtorAccDebtInfo debtorAccDebtInfo : debtorAccDebtInfoList){
-
-            Debtor debtor = debtorAccDebtInfo.getDebtor();
-
-            List<Document> documentList = documentRepository.findByDebtor(debtor);
-
-            for (Document document : documentList){
-                count++;
+            if (!debtorAccDebtInfoList.isEmpty()) {
+                count = debtorAccDebtInfoList.size();
             }
+
+            writer.write(String.valueOf(count));
+            writer.close();
+
+            //Copy file to FTP Server
+            smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
+        } catch (Exception e) {
+            LOGGER.error("Error {}", e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
-
-        writer.write(String.valueOf(count));
-        writer.close();
-
-        //Copy file to FTP Server
-        smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
-    }catch (Exception e) {
-        LOGGER.error("Error {}", e.getMessage());
-        throw new RuntimeException(e.getMessage());
-    }
     }
 }
 

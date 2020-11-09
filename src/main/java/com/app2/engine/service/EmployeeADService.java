@@ -1,5 +1,5 @@
 package com.app2.engine.service;
 
 public interface EmployeeADService {
-    void InsertOrUpdateEmp();
+    void InsertOrUpdateEmp(String date);
 }

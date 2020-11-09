@@ -45,52 +45,6 @@ public class JobController {
     @Autowired
     BatchTransactionRepository batchTransactionRepository;
 
-    @GetMapping("/HrRegion")
-    public void HrRegion() {
-        hrDataService.region();
-    }
-
-    @GetMapping("/HrSection")
-    public void HrSection() {
-        hrDataService.section();
-    }
-
-    @GetMapping("/HrPosition")
-    public void HrPosition() {
-        hrDataService.position();
-    }
-
-    @GetMapping("/HrBranch")
-    public void HrBranch() {
-        hrDataService.branch();
-    }
-
-    @GetMapping("/HrLineBusiness")
-    public void HrLineBusiness() {
-        hrDataService.lineBusiness();
-    }
-
-    @GetMapping("/HrUnit")
-    public void HrUnit() {
-        hrDataService.unit();
-    }
-
-    @GetMapping("/HrOrgGroup")
-    public void HrOrgGroup() {
-        hrDataService.orgGroup();
-    }
-
-    @GetMapping("/HrCompany")
-    public void HrCompany() {
-        hrDataService.company();
-    }
-
-    @GetMapping("/HrInterface")
-    public void HrInterface() {
-        hrDataService.hrInterface();
-    }
-
-
     @GetMapping("/assignedDocAuto")
     public ResponseEntity<String> assignedDocAuto() {
         return documentTaskService.assignedDocAuto();
@@ -99,11 +53,6 @@ public class JobController {
     @GetMapping("/houseKeeping")
     public void deleteDataByDay() {
         houseKeepingService.deleteDataByDay();
-    }
-
-    @GetMapping("/InsertOrUpdateEmp")
-    public void InsertOrUpdateEmp() {
-        employeeADService.InsertOrUpdateEmp();
     }
 
     @GetMapping("/notification")

@@ -60,23 +60,19 @@ public class EmployeeADServiceImpl implements EmployeeADService {
         employeeID, givenName, sn, displayName, description, title, employeeNumber, employeeType, postOfficeBox, mail, department, l, st, postalCode, division, otherPager, otherhomephone, otherIpPhone, streetAddress, userAccountControl, sAMAccountName, otherTelephone
     }
 
-
-    String pathName = "";
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
     @Transactional
-    public void InsertOrUpdateEmp() {
+    public void InsertOrUpdateEmp(String date) {
         Date currentDate = DateUtil.getCurrentDate();
         LOGGER.debug("Start InsertOrUpdateEmp {}", currentDate);
         try {
-//            String fileName = "AD_20200525-Edit.csv";
-            String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-            String fileName = "AD_" + timeLog + ".csv";
-//            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\InterfaceAD\\encode\\" + fileName;
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD");
+            String fileName = "AD_" + date + ".csv";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD",date);
             LOGGER.debug("pathName File {}", pathName);
+
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT

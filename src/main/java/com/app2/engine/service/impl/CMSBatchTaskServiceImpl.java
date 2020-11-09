@@ -50,12 +50,6 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     DocumentProgressRepositoryCustom documentProgressRepositoryCustom;
 
     @Override
-    public ResponseEntity<String> createFileCSVLitigationCVA() {
-        String url = "/jobs/createFileCSVLitigationCVA";
-        return getResultByExchange(url);
-    }
-
-    @Override
     @SneakyThrows
     public void SEIZE_INFO(String date) {
         String fileName = "SEIZEINFO_"+ date +".txt";

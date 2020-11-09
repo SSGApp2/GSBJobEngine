@@ -36,6 +36,9 @@ public class CBSController {
         cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ZLE is completed.");
 
+        cbsBatchTaskService.LS_ACCOUNT_LIST(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACCOUNT_LIST is completed.");
+
     }
 
     @GetMapping("downloadAll")

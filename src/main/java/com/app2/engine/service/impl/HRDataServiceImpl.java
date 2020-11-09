@@ -75,17 +75,14 @@ public class HRDataServiceImpl implements HRDataService {
     @Autowired
     DepartmentService departmentService;
 
-    String pathName = "";
-
     @Override
     @Transactional
-    public void region() {
+    public void region(String date) {
         //update รหัสภาค/ฝ่าย
         try {
-            String fileName = "HRREGION.TXT";
-//            smbFileService.remoteFileToLocalFile(fileName,"HR");
-//            String pathName = "/home/thongchai/Documents/GSB/HRDATA/HRREGION.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR");
+            String fileName = "HRREGION.txt";
+//            String pathName = "/home/thongchai/Documents/GSB/HRDATA/HRREGION.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
@@ -139,10 +136,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void section() {
+    public void section(String date) {
         try {
-            String fileName = "HRSECTION.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRSECTION.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
@@ -188,10 +185,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void position() {
+    public void position(String date) {
         try {
-            String fileName = "HRPOSITION.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRPOSITION.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -229,10 +226,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void branch() {
+    public void branch(String date) {
         try {
-            String fileName = "HRBRANCH.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRBRANCH.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -285,10 +282,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void lineBusiness() {
+    public void lineBusiness(String date) {
         try {
-            String fileName = "HRDIV.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRDIV.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
@@ -332,17 +329,17 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void unit() {
+    public void unit(String date) {
         try {
             List<String> codeList = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
                 String fileName;
                 if (i == 0) {
-                    fileName = "HRDEPT.TXT"; // หน่วย
+                    fileName = "HRDEPT.txt"; // หน่วย
                 } else {
-                    fileName = "HRUNIT.TXT"; // หน่วยย่อย
+                    fileName = "HRUNIT.txt"; // หน่วยย่อย
                 }
-//                String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+                String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
                 InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
                 BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -386,10 +383,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void orgGroup() {
+    public void orgGroup(String date) {
         try {
-            String fileName = "HRBUSILINE.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRBUSILINE.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -433,10 +430,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void company() {
+    public void company(String date) {
         try {
-            String fileName = "HRMAINSTR.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
+            String fileName = "HRMAINSTR.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
@@ -480,11 +477,10 @@ public class HRDataServiceImpl implements HRDataService {
 
     @Override
     @Transactional
-    public void hrInterface() {
+    public void hrInterface(String date) {
         try {
-            String fileName = "HRCOMPANYREL.TXT";
-//            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-//            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\HRDATA\\" + fileName;
+            String fileName = "HRCOMPANYREL.txt";
+            String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR",date);
             InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
