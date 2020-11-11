@@ -3,16 +3,16 @@
 
     <Properties>
         <Property name="PID">????</Property>
-        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%wEx</Property>
+        <Property name="LOG_PATTERN">%clr{%d}{faint} %clr{%5p} [%t] %clr{[%X{Role}-%X{Username}]}{magenta} %C{2} (%F:%L) %clr{-}{faint} %m%n</Property>
     </Properties>
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
         </Console>
         <RollingFile name="ENGINE" fileName="${sys:java.io.tmpdir}/GSBJobEngine.log"
                      filePattern="${sys:java.io.tmpdir}/$${date:yyyy-MM}/GSBJobEngine-%d{yyyy-MM-dd}-%i.log.gz">
-            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
             <Policies>
                 <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
                 <SizeBasedTriggeringPolicy size="30 MB"/> <!-- Or every 100 MB -->
@@ -21,7 +21,7 @@
         </RollingFile>
         <RollingFile name="ENGINEERROR" fileName="${sys:java.io.tmpdir}/GSBJobEngine-error.log"
                      filePattern="${sys:java.io.tmpdir}/$${date:yyyy-MM}/GSBJobEngine-error-%d{yyyy-MM-dd}-%i.log.gz">
-            <PatternLayout pattern="%d %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
             <Policies>
                 <TimeBasedTriggeringPolicy /><!-- Rotated everyday -->
                 <SizeBasedTriggeringPolicy size="30 MB"/> <!-- Or every 100 MB -->
