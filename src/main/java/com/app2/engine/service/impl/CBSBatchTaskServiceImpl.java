@@ -217,7 +217,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             smbFileService.localFileToRemoteFile(fileName, "CBS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         } finally {
             try {
@@ -289,7 +289,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -390,7 +390,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -490,7 +490,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -599,7 +599,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -720,7 +720,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -819,7 +819,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -920,7 +920,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1034,7 +1034,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1118,7 +1118,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1219,7 +1219,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1320,7 +1320,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1421,7 +1421,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1523,7 +1523,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1624,7 +1624,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }
@@ -1717,7 +1717,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             smbFileService.localFileToRemoteFile(file.getName(), "CBS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         } finally {
             try {
@@ -1838,7 +1838,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 fileReader.close();
             }
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
         }

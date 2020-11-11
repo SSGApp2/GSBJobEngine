@@ -20,8 +20,6 @@ import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -166,7 +164,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
 
     @Transactional
     public List<Map<String, Object>> dataForBKC(String date) {
-        String newDate = DateUtil.convertStringToDate(date);
+        String newDate = DateUtil.convertStringDateToString(date);
 //        date = "2020-07-17"; ////test
 
         List<Map<String, Object>> listMap = new ArrayList<>();
@@ -345,7 +343,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @SneakyThrows
     @Transactional
     public List<Map<String, Object>> dataForBKO(String date) {
-        String newDate = DateUtil.convertStringToDate(date);
+        String newDate = DateUtil.convertStringDateToString(date);
 //        String curDate = "2020-07-17"; ////test
 
         List<Map<String, Object>> listMap = new ArrayList<>();
@@ -571,7 +569,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Transactional
     public List<Map<String, Object>> dataForCVC(String date) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        String fileDate = DateUtil.convertStringToDate(date);
+        String fileDate = DateUtil.convertStringDateToString(date);
         ObjectMapper oMapper = new ObjectMapper();
 
         List resultCVCtList = findLitigationUpdate("CVC",fileDate);
@@ -914,7 +912,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Transactional
     public List<Map<String, Object>> dataForCVO(String date) {
         List<Map<String, Object>> listMap = new ArrayList<>();
-        String fileDate = DateUtil.convertStringToDate(date);
+        String fileDate = DateUtil.convertStringDateToString(date);
         ObjectMapper oMapper = new ObjectMapper();
 
         List resultCVOtList = findLitigationUpdate("CVO",fileDate);

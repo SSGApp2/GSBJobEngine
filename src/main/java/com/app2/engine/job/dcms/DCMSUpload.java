@@ -58,7 +58,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -72,12 +72,12 @@ public class DCMSUpload {
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
         LOGGER.info("Upload to FTP Server.");
-        LOGGER.info("File name : ACN_END_LEGAL_TOTAL_YYYYMMDD.txt");
+        LOGGER.info("File name : ACN_ENDLEGAL_TOTAL_YYYYMMDD.txt");
 
         BatchTransaction batchTransaction = new BatchTransaction();
         batchTransaction.setControllerMethod("DCMS.Upload.ACN_END_LEGAL_TOTAL");
         batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("ACN_END_LEGAL_TOTAL_YYYYMMDD.txt");
+        batchTransaction.setName("ACN_ENDLEGAL_TOTAL_YYYYMMDD.txt");
         try {
             dcmsBatchTaskService.ACN_END_LEGAL_TOTAL(DateUtil.codeCurrentDate());
             batchTransaction.setStatus("S");
@@ -85,7 +85,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -114,7 +114,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error BKC {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -142,7 +142,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error BKO {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -171,7 +171,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error litigationUpdate_CVA {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -200,7 +200,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error CVC {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -228,7 +228,7 @@ public class DCMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error CVO {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);

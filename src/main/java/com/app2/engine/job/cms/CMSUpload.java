@@ -27,7 +27,7 @@ public class CMSUpload {
     BatchTransactionRepository batchTransactionRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void SEIZE_INFO() {
         // รับข้อมูลการยึดทรัพย์ (CollSeizeDetail) : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -46,7 +46,7 @@ public class CMSUpload {
         }catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -55,18 +55,18 @@ public class CMSUpload {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void LEGAL_STATUS() {
         // รับข้อมูลสถานะ Litigation (LitigationStatus) : รับจากระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
         LOGGER.info("Upload to FTP Server.");
-        LOGGER.info("File name : LEGAL_STATUS_YYYMMDD.txt");
+        LOGGER.info("File name : LEGALSTATUS_YYYMMDD.txt");
 
         BatchTransaction batchTransaction = new BatchTransaction();
         batchTransaction.setControllerMethod("CMS.Upload.LEGAL_STATUS");
         batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("LEGAL_STATUS_YYYMMDD.txt");
+        batchTransaction.setName("LEGALSTATUS_YYYMMDD.txt");
 
         try {
             cmsBatchTaskService.LEGAL_STATUS(DateUtil.codeCurrentDate());
@@ -75,7 +75,7 @@ public class CMSUpload {
         }catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -84,7 +84,7 @@ public class CMSUpload {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void TBL_MT_COURT() {
         // ข้อมูลศาล : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -103,7 +103,7 @@ public class CMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -112,7 +112,7 @@ public class CMSUpload {
     }
 
     @Transactional
-    @Scheduled(cron = "0 0 22 * * ?") //ss mm hh every day
+    @Scheduled(cron = "0 50 19 * * ?") //ss mm hh every day
     public void TBL_MT_LED() {
         // ข้อมูลสำนักงานบังคับคดี : รับจากระบบ LEAD
         LOGGER.info("***************************************");
@@ -131,7 +131,7 @@ public class CMSUpload {
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);

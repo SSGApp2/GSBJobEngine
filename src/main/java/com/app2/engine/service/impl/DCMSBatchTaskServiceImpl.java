@@ -108,7 +108,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -139,7 +139,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         }
     }

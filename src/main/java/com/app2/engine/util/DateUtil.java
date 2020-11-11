@@ -124,11 +124,23 @@ public class DateUtil {
         return newDate;
     }
 
-    public static String convertStringToDate(String dateString1) {
+    public static String convertStringDateToString(String dateString) {
         String newDate = "";
         try {
-            Date date = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale()).parse(dateString1);
+            Date date = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale()).parse(dateString);
             SimpleDateFormat newformat = new SimpleDateFormat("yyyy-MM-dd", DateUtil.getSystemLocale());
+            newDate = newformat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newDate;
+    }
+
+    public static String convertStringDateTimeToString(String dateString) {
+        String newDate = "";
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateString);
+            SimpleDateFormat newformat = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale());
             newDate = newformat.format(date);
         } catch (Exception e) {
             e.printStackTrace();
