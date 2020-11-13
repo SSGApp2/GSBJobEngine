@@ -1,9 +1,8 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.config.Statement;
 import com.app2.engine.entity.app.*;
 import com.app2.engine.repository.*;
-import com.app2.engine.repository.custom.DocumentRepositoryCustom;
+import com.app2.engine.repository.custom.DCMSRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.LitigationUpdateService;
 import com.app2.engine.service.SmbFileService;
@@ -14,21 +13,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,20 +42,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     ParameterDetailRepository parameterDetailRepository;
 
     @Autowired
-    private DocumentRepository documentRepository;
-
-    @Autowired
-    private DocumentProgressRepository documentProgressRepository;
-
-    @Autowired
-    DocumentRepositoryCustom documentRepositoryCustom;
-
-    @Autowired
-    CourtOrderDetailRepository courtOrderDetailRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
-
+    DCMSRepositoryCustom dcmsRepositoryCustom;
 
     private enum BKC_HEADER {
         SEQ, LEGAL_ID, WF_TYPE_ID, WF_TYPE_DESC, ACN, COLL_ID, COLL_TYPE, ASSIGN_LAWYER_DT, NOTICE_DT, JUDGMENT_UNDECIDED_NO, JUDGMENT_UNDECIDED_YEAR, JUDGMENT_SUE_DT, JUDGMENT_DT, JUDGMENT_DECIDED_NO, JUDGMENT_DECIDED_YEAR, JUDGMENT_RESULT_DESC, BANKRUPT_DT, GAZETTE_DT, DUE_DT, SETTLEMENT_DT, SETTLEMENT_SEQ, PRINCIPAL_AMT, INTEREST_AMT, COURT_DT, COURT_SEQ, COURT_PRINCIPAL_AMT, COURT_INTEREST_AMT, SEIZE_DT, LED_APPRAISAL, APPROVED_DT, APPRAISAL_VAL, AUCTION_DT, AUCTION_AMT, LITIGTION_STATUS
@@ -85,30 +66,53 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
 
     private char delimiterPipe = '|';
 
-    public String convertDateToFile(String pattern,String dateTime){
-        Date date = new Date(Long.valueOf(dateTime.toString()));
-        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
-        return dateFormat.format(date);
+    public String convertDateToFile(String pattern, String dateTime) {
+        String newDate = "";
+        try {
+            if (AppUtil.isNotNull(dateTime)) {
+                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateTime);
+                SimpleDateFormat newformat = new SimpleDateFormat(pattern, Locale.US);
+                newDate = newformat.format(date);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newDate;
     }
 
+    public String convertDoubleToString(Double value) {
+        String newValue = "";
+        try {
+            if (AppUtil.isNotNull(value)) {
+                DecimalFormat df = new DecimalFormat("#.00");
+                newValue = df.format(value);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newValue;
+    }
+
+    @SneakyThrows
     @Override
     public void litigationUpdateBKC(String date) {
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+        String fileName = "LitigationUpdate_BKC_" + date + ".csv";
+
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-            String fileName = "LitigationUpdate_BKC_" + date + ".csv";
-
-            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
-            bufferedWriter.write('\ufeff');
+            bufferedWriter.write('\ufeff'); ///รองรับภาษาไทย
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(BKC_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForBKC(date);
-            String total = String.format("%010d",listMap.size());
+            String total = String.format("%010d", listMap.size());
 
             for (Map<String, Object> objectMap : listMap) {
                 csvPrinter.printRecord(
@@ -149,7 +153,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 );
             }
 
-            csvPrinter.printRecord("TOTAL : "+total);
+            csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
@@ -159,30 +163,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
     @Transactional
     public List<Map<String, Object>> dataForBKC(String date) {
         String newDate = DateUtil.convertStringDateToString(date);
-//        date = "2020-07-17"; ////test
 
         List<Map<String, Object>> listMap = new ArrayList<>();
+
         // --- Get data For file here
-
-        Session session = (Session) entityManager.getDelegate();
-        StringBuilder querySql = new StringBuilder();
-        querySql.append(Statement.GET_DATA_BKC);
-        querySql.append("where d.doc_type = 2\n" +
-                "and d.updated_date like '%" + newDate + "%'\n" +
-                "and dh.user_role_to = 'LAW'\n" +
-                "order by d.updated_date DESC,dp.updated_date DESC,ap.updated_date DESC,ag.updated_date DESC," +
-                "ass.updated_date DESC,con.updated_date,dh.[sequence] DESC");
-
-        SQLQuery query = session.createSQLQuery(querySql.toString());
-        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-        List<Map> maps = new ArrayList<>(query.list());
+        List<Map> maps = dcmsRepositoryCustom.litigationUpdateBKC(newDate);
         List<Map> listData = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -270,23 +270,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
+    @SneakyThrows
     public void litigationUpdateBKO(String date) {
+
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+        String fileName = "LitigationUpdate_BKO_" + date + ".csv";
+
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-            String fileName = "LitigationUpdate_BKO_" + date + ".csv";
-
-            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
-            bufferedWriter.write('\ufeff');
+            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(BKO_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForBKO(date);
-            String total = String.format("%010d",listMap.size());
+            String total = String.format("%010d", listMap.size());
 
             for (Map<String, Object> objectMap : listMap) {
                 csvPrinter.printRecord(
@@ -327,7 +330,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 );
             }
 
-            csvPrinter.printRecord("TOTAL : "+total);
+            csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
@@ -337,6 +340,15 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -344,21 +356,11 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Transactional
     public List<Map<String, Object>> dataForBKO(String date) {
         String newDate = DateUtil.convertStringDateToString(date);
-//        String curDate = "2020-07-17"; ////test
 
         List<Map<String, Object>> listMap = new ArrayList<>();
+
         // --- Get data For file here
-
-        Session session = (Session) entityManager.getDelegate();
-        StringBuilder querySql = new StringBuilder();
-        querySql.append(Statement.GET_DATA_BKO);
-        querySql.append("where d.updated_date like '%" + newDate + "%'\n" +
-                "order by d.updated_date DESC ,document_progress.updated_date DESC ,account_payment.updated_date DESC ,document_history.action_time DESC");
-
-        SQLQuery query = session.createSQLQuery(querySql.toString());
-        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-
-        List<Map> maps = new ArrayList<>(query.list());
+        List<Map> maps = dcmsRepositoryCustom.litigationUpdateBKO(newDate);
         List<Map> listData = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
 
@@ -433,22 +435,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     @Override
+    @SneakyThrows
     public void litigationUpdateCVA(String date) {
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+        String fileName = "LitigationUpdate_CVA_" + date + ".csv";
+
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-            String fileName = "LitigationUpdate_CVA_" + date + ".csv";
-
-            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVA_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVA();
-            String total = String.format("%010d",listMap.size());
+            String total = String.format("%010d", listMap.size());
 
             for (Map<String, Object> objectMap : listMap) {
                 csvPrinter.printRecord(
@@ -479,7 +484,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                         , objectMap.get(CVA_HEADER.LITIGTION_STATUS.toString())
                 );
             }
-            csvPrinter.printRecord("TOTAL : "+total);
+            csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
@@ -488,6 +493,15 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -498,23 +512,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         return listMap;
     }
 
+    @SneakyThrows
     @Override
     public void litigationUpdateCVC(String date) {
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+        String fileName = "LitigationUpdate_CVC_" + date + ".csv";
+
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-            String fileName = "LitigationUpdate_CVC_" + date + ".csv";
-
-            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVC_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVC(date);
-            String total = String.format("%010d",listMap.size());
+            String total = String.format("%010d", listMap.size());
 
             for (Map<String, Object> objectMap : listMap) {
                 csvPrinter.printRecord(
@@ -553,7 +570,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                         , objectMap.get(CVC_HEADER.LITIGTION_STATUS.toString())
                 );
             }
-            csvPrinter.printRecord("TOTAL : "+total);
+            csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
@@ -563,6 +580,15 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -572,282 +598,198 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         String fileDate = DateUtil.convertStringDateToString(date);
         ObjectMapper oMapper = new ObjectMapper();
 
-        List resultCVCtList = findLitigationUpdate("CVC",fileDate);
+        List resultCVCtList = findLitigationUpdateCVC(fileDate);
 
-        for (int i=0 ; i<resultCVCtList.size() ; i++) {
+        for (int i = 0; i < resultCVCtList.size(); i++) {
             Map<String, Object> CVCMap = new HashMap();
             Map dataMap = oMapper.convertValue(resultCVCtList.get(i), Map.class);
-            CVCMap.put(CVC_HEADER.SEQ.toString(),i+1);
-            CVCMap.put(CVC_HEADER.LEGAL_ID.toString(),dataMap.get("LEGAL_ID"));
-            CVCMap.put(CVC_HEADER.WF_TYPE_ID.toString(),"");
-            CVCMap.put(CVC_HEADER.WF_TYPE_DESC.toString(),"");
-            CVCMap.put(CVC_HEADER.ACN.toString(),"");
-            CVCMap.put(CVC_HEADER.COLL_ID.toString(),"");
-            CVCMap.put(CVC_HEADER.COLL_TYPE.toString(),"");
-            CVCMap.put(CVC_HEADER.ASSIGN_LAWYER_DT.toString(),dataMap.get("ASSIGN_LAWYER_DT"));
-            CVCMap.put(CVC_HEADER.NOTICE_DT.toString(),"");
-            CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_NO.toString(),dataMap.get("JUDGMENT_UNDECIDED_NO"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_YEAR.toString(),dataMap.get("JUDGMENT_UNDECIDED_YEAR"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_SUE_DT.toString(),dataMap.get("JUDGMENT_SUE_DT"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_NO.toString(),dataMap.get("JUDGMENT_DECIDED_NO"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_YEAR.toString(),dataMap.get("JUDGMENT_DECIDED_YEAR"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_RESULT_DESC.toString(),dataMap.get("JUDGMENT_RESULT_DESC"));
-            CVCMap.put(CVC_HEADER.JUDGMENT_AMOUNT.toString(),dataMap.get("JUDGMENT_AMOUNT"));
-            CVCMap.put(CVC_HEADER.APPEAL_DECIDED_NO.toString(),dataMap.get("APPEAL_DECIDED_NO"));
-            CVCMap.put(CVC_HEADER.APPEAL_DECIDED_YEAR.toString(),dataMap.get("APPEAL_DECIDED_YEAR"));
-            CVCMap.put(CVC_HEADER.APPEAL_DT.toString(),dataMap.get("APPEAL_DT"));
-            CVCMap.put(CVC_HEADER.APPEAL_RESULT_DESC.toString(),dataMap.get("APPEAL_RESULT_DESC"));
-            CVCMap.put(CVC_HEADER.APPEAL_AMOUNT.toString(),dataMap.get("APPEAL_AMOUNT"));
-            CVCMap.put(CVC_HEADER.DEKA_DECIDED_NO.toString(),dataMap.get("DEKA_DECIDED_NO"));
-            CVCMap.put(CVC_HEADER.DEKA_DECIDED_YEAR.toString(),dataMap.get("DEKA_DECIDED_YEAR"));
-            CVCMap.put(CVC_HEADER.DEKA_DT.toString(),dataMap.get("DEKA_DT"));
-            CVCMap.put(CVC_HEADER.DEKA_RESULT_DESC.toString(),dataMap.get("DEKA_RESULT_DESC"));
-            CVCMap.put(CVC_HEADER.DEKA_AMOUNT.toString(),dataMap.get("DEKA_AMOUNT"));
-            CVCMap.put(CVC_HEADER.SEIZE_DT.toString(),"");
-            CVCMap.put(CVC_HEADER.LED_APPRAISAL.toString(),"");
-            CVCMap.put(CVC_HEADER.APPROVED_DT.toString(),"");
-            CVCMap.put(CVC_HEADER.APPRAISAL_VAL.toString(),"");
-            CVCMap.put(CVC_HEADER.AUCTION_DT.toString(),"");
-            CVCMap.put(CVC_HEADER.AUCTION_AMT.toString(),"");
-            CVCMap.put(CVC_HEADER.LITIGTION_STATUS.toString(),"");
+            CVCMap.put(CVC_HEADER.SEQ.toString(), i + 1);
+            CVCMap.put(CVC_HEADER.LEGAL_ID.toString(), dataMap.get("LEGAL_ID"));
+            CVCMap.put(CVC_HEADER.WF_TYPE_ID.toString(), "");
+            CVCMap.put(CVC_HEADER.WF_TYPE_DESC.toString(), "");
+            CVCMap.put(CVC_HEADER.ACN.toString(), "");
+            CVCMap.put(CVC_HEADER.COLL_ID.toString(), "");
+            CVCMap.put(CVC_HEADER.COLL_TYPE.toString(), "");
+            CVCMap.put(CVC_HEADER.ASSIGN_LAWYER_DT.toString(), dataMap.get("ASSIGN_LAWYER_DT"));
+            CVCMap.put(CVC_HEADER.NOTICE_DT.toString(), "");
+            CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_NO.toString(), dataMap.get("JUDGMENT_UNDECIDED_NO"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_YEAR.toString(), dataMap.get("JUDGMENT_UNDECIDED_YEAR"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_SUE_DT.toString(), dataMap.get("JUDGMENT_SUE_DT"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_NO.toString(), dataMap.get("JUDGMENT_DECIDED_NO"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_YEAR.toString(), dataMap.get("JUDGMENT_DECIDED_YEAR"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_RESULT_DESC.toString(), dataMap.get("JUDGMENT_RESULT_DESC"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_AMOUNT.toString(), dataMap.get("JUDGMENT_AMOUNT"));
+            CVCMap.put(CVC_HEADER.APPEAL_DECIDED_NO.toString(), dataMap.get("APPEAL_DECIDED_NO"));
+            CVCMap.put(CVC_HEADER.APPEAL_DECIDED_YEAR.toString(), dataMap.get("APPEAL_DECIDED_YEAR"));
+            CVCMap.put(CVC_HEADER.APPEAL_DT.toString(), dataMap.get("APPEAL_DT"));
+            CVCMap.put(CVC_HEADER.APPEAL_RESULT_DESC.toString(), dataMap.get("APPEAL_RESULT_DESC"));
+            CVCMap.put(CVC_HEADER.APPEAL_AMOUNT.toString(), dataMap.get("APPEAL_AMOUNT"));
+            CVCMap.put(CVC_HEADER.DEKA_DECIDED_NO.toString(), dataMap.get("DEKA_DECIDED_NO"));
+            CVCMap.put(CVC_HEADER.DEKA_DECIDED_YEAR.toString(), dataMap.get("DEKA_DECIDED_YEAR"));
+            CVCMap.put(CVC_HEADER.DEKA_DT.toString(), dataMap.get("DEKA_DT"));
+            CVCMap.put(CVC_HEADER.DEKA_RESULT_DESC.toString(), dataMap.get("DEKA_RESULT_DESC"));
+            CVCMap.put(CVC_HEADER.DEKA_AMOUNT.toString(), dataMap.get("DEKA_AMOUNT"));
+            CVCMap.put(CVC_HEADER.SEIZE_DT.toString(), "");
+            CVCMap.put(CVC_HEADER.LED_APPRAISAL.toString(), "");
+            CVCMap.put(CVC_HEADER.APPROVED_DT.toString(), "");
+            CVCMap.put(CVC_HEADER.APPRAISAL_VAL.toString(), "");
+            CVCMap.put(CVC_HEADER.AUCTION_DT.toString(), "");
+            CVCMap.put(CVC_HEADER.AUCTION_AMT.toString(), "");
+            CVCMap.put(CVC_HEADER.LITIGTION_STATUS.toString(), "");
             listMap.add(CVCMap);
         }
         return listMap;
     }
 
     @Transactional
-    public List findLitigationUpdate(String type ,String curDate) {
+    public List findLitigationUpdateCVC(String curDate) {
         List completeResult = new ArrayList();
-        ObjectMapper oMapper = new ObjectMapper();
 
-        List resultDocCurDateList = documentRepositoryCustom.findCurDate(curDate);
+        List<Map> resultDocCurDateList = dcmsRepositoryCustom.litigationUpdateCVC(curDate);
 
-        if (type.equals("CVO")){
-            for (int i=0 ; i<resultDocCurDateList.size() ; i++){
-                Map<String, Object> resultCVOMap = new HashMap();
-                Object actionTimeLAW = null;
-                Object actionTimeMK2 = null;
-                String prefered_preferentialRequestDate = null;
-                String prefered_amount = null;
-                String prefered_permissDate = null;
-                String appeal_preventRequestDate = null;
-                String appeal_amount = null;
-                String appeal_permissDate = null;
+        for (Map map : resultDocCurDateList) {
+            Map<String, Object> resultCVCMap = new HashMap();
+            String actionTimeLAW = null;
+            String blackCaseNumNo = null;
+            String blackCaseNumYear = null;
+            String lawSuitSendDate = null;
+            String redCaseNumNo1 = null;
+            String redCaseNumYear1 = null;
+            String adjDate1 = null;
+            String adjudication1 = null;
+            Double judgmentAmount1 = null;
+            String redCaseNumNo2 = null;
+            String redCaseNumYear2 = null;
+            String adjDate2 = null;
+            String adjudication2 = null;
+            Double judgmentAmount2 = null;
+            String redCaseNumNo3 = null;
+            String redCaseNumYear3 = null;
+            String adjDate3 = null;
+            String adjudication3 = null;
+            Double judgmentAmount3 = null;
 
-                Map dataMap = oMapper.convertValue(resultDocCurDateList.get(i), Map.class);
-                Long idDocument = Long.valueOf(dataMap.get("docID").toString());
-                Document document = documentRepository.getOne(idDocument);
+            String docType = map.get("docType").toString();
+            Double principalBalance = (Double) map.get("principalBalance");
+            Double interest = (Double) map.get("interest");
 
-                List curDateRoleLAWList = documentRepositoryCustom.findCurDtByRoleByDocument(curDate,"LAW",idDocument.toString());
-                List curDateRoleMK2List = documentRepositoryCustom.findCurDtByRoleByDocument(curDate,"MK2",idDocument.toString());
+            if (docType.equals("1")) {
 
-                if (!curDateRoleLAWList.isEmpty()){
-                    Map resultRoleMap = oMapper.convertValue(curDateRoleLAWList.get(0), Map.class);
-                    actionTimeLAW = convertDateToFile("dd/MM/yyyy",resultRoleMap.get("actionTime").toString());
+                if (AppUtil.isNotNull(map.get("actionTime"))) {
+                    actionTimeLAW = convertDateToFile("dd/MM/yyyy", map.get("actionTime").toString());
                 }
-                if (!curDateRoleMK2List.isEmpty()){
-                    Map resultRoleMap = oMapper.convertValue(curDateRoleMK2List.get(0), Map.class);
-                    actionTimeMK2 = convertDateToFile("dd/MM/yyyy",resultRoleMap.get("actionTime").toString());
+
+                String redCaseNumberNo = "";
+                String redCaseNumberYear = "";
+                if (AppUtil.isNotNull(map.get("redCaseNumber"))) {
+                    String redCaseNumber = map.get("redCaseNumber").toString();
+                    String[] redCaseNumAr = redCaseNumber.split("/");
+                    redCaseNumberNo = redCaseNumAr[0];
+                    redCaseNumberYear = redCaseNumAr[1];
                 }
 
-                List<DocumentProgress> docProgressCurDateList = documentProgressRepository.findByDocumentOrderByUpdatedDateDesc(document);
+                String adjDate = "";
+                if (AppUtil.isNotNull(map.get("adjDate"))) {
+                    adjDate = convertDateToFile("dd/MM/yyyy", map.get("adjDate").toString());
+                }
 
-                if (!docProgressCurDateList.isEmpty()){
-                    DocumentProgress documentProgress = docProgressCurDateList.get(0);
-                    List<CourtOrderDetail> courtOrderDetailCurDatelList = courtOrderDetailRepository.findByDocumentProgressOrderByUpdatedDateDesc(documentProgress);
+                String adjudication = "";
+                if (AppUtil.isNotNull(map.get("adjudication"))) {
+                    adjudication = map.get("adjudication").toString();
+                }
 
-                    if (AppUtil.isNotNull(document.getTypeProcess()) && AppUtil.isNotNull(document.getDocType())){
-                        //การยื่นขอชำระหนี้
-                        if (document.getTypeProcess().equals("1") && document.getDocType().equals("3")){
-                            if (!docProgressCurDateList.isEmpty()){
-                                if (AppUtil.isNotNull(docProgressCurDateList.get(0).getPreferentialRequestDate())){
-                                    prefered_preferentialRequestDate = docProgressCurDateList.get(0).getPreferentialRequestDate().toString();
-                                }
-                            }
-                            if (!courtOrderDetailCurDatelList.isEmpty()){
-                                prefered_amount = courtOrderDetailCurDatelList.get(0).getTotalAmount().toString();
-                                if (AppUtil.isNotNull(courtOrderDetailCurDatelList.get(0).getPermissDate())){
-                                    prefered_permissDate = courtOrderDetailCurDatelList.get(0).getPermissDate().toString();
-                                }
-                            }
-                        }
-                        //การร้องกันส่วน
-                        if (document.getTypeProcess().equals("2") && document.getDocType().equals("3")){
-                            if (!docProgressCurDateList.isEmpty()){
-                                if (AppUtil.isNotNull(docProgressCurDateList.get(0).getPreventRequestDate())){
-                                    appeal_preventRequestDate = docProgressCurDateList.get(0).getPreventRequestDate().toString();
-                                }
-                            }
+                if (AppUtil.isNotNull(map.get("blackCaseNumber")) && !map.get("blackCaseNumber").equals("/")) {
+                    String blackCaseNumber = map.get("blackCaseNumber").toString();
+                    String[] blackCaseNumAr = blackCaseNumber.split("/");
+                    blackCaseNumNo = blackCaseNumAr[0];
+                    blackCaseNumYear = blackCaseNumAr[1];
+                }
 
-                            if (!courtOrderDetailCurDatelList.isEmpty()){
-                                appeal_amount = courtOrderDetailCurDatelList.get(0).getTotalAmount().toString();
-                                if (AppUtil.isNotNull(courtOrderDetailCurDatelList.get(0).getPermissDate())){
-                                    appeal_permissDate = courtOrderDetailCurDatelList.get(0).getPermissDate().toString();
-                                }
-                            }
-                        }
+                if (AppUtil.isNotNull(map.get("lawSuitSendDate"))) {
+                    lawSuitSendDate = convertDateToFile("dd/MM/yyyy", map.get("lawSuitSendDate").toString());
+                }
+
+                if (AppUtil.isNotNull(map.get("court"))) {
+                    String court = map.get("court").toString();
+
+                    //ศาลชั้นต้น
+                    if (court.equals("1")) {
+                        redCaseNumNo1 = redCaseNumberNo;
+                        redCaseNumYear1 = redCaseNumberYear;
+                        adjDate1 = adjDate;
+                        adjudication1 = adjudication;
+                        judgmentAmount1 = principalBalance + interest;
+                    }
+
+                    //ศาลอุทธรณ์
+                    if (court.equals("2")) {
+                        redCaseNumNo2 = redCaseNumberNo;
+                        redCaseNumYear2 = redCaseNumberYear;
+                        adjDate2 = adjDate;
+                        adjudication2 = adjudication;
+                        judgmentAmount2 = principalBalance + interest;
+                    }
+
+                    //ศาลฎีกา
+                    if (court.equals("3")) {
+                        redCaseNumNo3 = redCaseNumberNo;
+                        redCaseNumYear3 = redCaseNumberYear;
+                        adjDate3 = adjDate;
+                        adjudication3 = adjudication;
+                        judgmentAmount3 = principalBalance + interest;
                     }
                 }
 
-                resultCVOMap.put("LEGAL_ID",document.getDocNumber());
-                resultCVOMap.put("ASSIGN_LAWYER_DT",actionTimeLAW);
-                resultCVOMap.put("OFFICER_SENDDOC_DT",actionTimeMK2);
-                resultCVOMap.put("PREFERED_DEBT_DT",convertDateToFile("dd/MM/yyyy",prefered_preferentialRequestDate));
-                resultCVOMap.put("PREFERED_DEBT_AMOUNT",prefered_amount);
-                resultCVOMap.put("PREFERED_COURT_DT",convertDateToFile("dd/MM/yyyy",prefered_permissDate));
-                resultCVOMap.put("APPEAL_DT",convertDateToFile("dd/MM/yyyy",appeal_preventRequestDate));
-                resultCVOMap.put("APPEAL_AMOUNT",appeal_amount);
-                resultCVOMap.put("APPEAL_COURT_DT",convertDateToFile("dd/MM/yyyy",appeal_permissDate));
-                completeResult.add(resultCVOMap);
-            }
-        }else if (type.equals("CVC")){
-            for (int i=0 ; i<resultDocCurDateList.size() ; i++){
-                Map<String, Object> resultCVCMap = new HashMap();
-                String actionTimeLAW = null;
-                String blackCaseNumNo = null;
-                String blackCaseNumYear = null;
-                String lawSuitSendDate = null;
-                String redCaseNumNo1 = null;
-                String redCaseNumYear1 = null;
-                String adjDate1 = null;
-                String adjudication1 = null;
-                Double judgmentAmount1 = null;
-                String redCaseNumNo2 = null;
-                String redCaseNumYear2 = null;
-                String adjDate2 = null;
-                String adjudication2 = null;
-                Double judgmentAmount2 = null;
-                String redCaseNumNo3 = null;
-                String redCaseNumYear3 = null;
-                String adjDate3 = null;
-                String adjudication3 = null;
-                Double judgmentAmount3 = null;
+                resultCVCMap.put("LEGAL_ID", map.get("docNumber"));
+                resultCVCMap.put("ASSIGN_LAWYER_DT", actionTimeLAW);
+                resultCVCMap.put("JUDGMENT_UNDECIDED_NO", blackCaseNumNo);
+                resultCVCMap.put("JUDGMENT_UNDECIDED_YEAR", blackCaseNumYear);
+                resultCVCMap.put("JUDGMENT_SUE_DT", lawSuitSendDate);
 
-                Map dataMap = oMapper.convertValue(resultDocCurDateList.get(i), Map.class);
-                Long idDocument = Long.valueOf(dataMap.get("docID").toString());
-                Document document = documentRepository.getOne(idDocument);
-                String docType = document.getDocType();
+                resultCVCMap.put("JUDGMENT_DECIDED_NO", redCaseNumNo1);
+                resultCVCMap.put("JUDGMENT_DECIDED_YEAR", redCaseNumYear1);
+                resultCVCMap.put("JUDGMENT_DT", adjDate1);
+                resultCVCMap.put("JUDGMENT_RESULT_DESC", adjudication1);
+                resultCVCMap.put("JUDGMENT_AMOUNT", convertDoubleToString(judgmentAmount1));
 
-                if (docType == "1"){
+                resultCVCMap.put("APPEAL_DECIDED_NO", redCaseNumNo2);
+                resultCVCMap.put("APPEAL_DECIDED_YEAR", redCaseNumYear2);
+                resultCVCMap.put("APPEAL_DT", adjDate2);
+                resultCVCMap.put("APPEAL_RESULT_DESC", adjudication2);
+                resultCVCMap.put("APPEAL_AMOUNT", convertDoubleToString(judgmentAmount2));
 
-                    List curDateRoleLAWList = documentRepositoryCustom.findCurDtByRoleByDocument(curDate,"LAW",idDocument.toString());
-
-                    if (!curDateRoleLAWList.isEmpty()){
-                        Map resultRoleMap = oMapper.convertValue(curDateRoleLAWList.get(0), Map.class);
-                        if (AppUtil.isNotNull(resultRoleMap.get("actionTime"))){
-                            actionTimeLAW = convertDateToFile("dd/MM/yyyy",resultRoleMap.get("actionTime").toString());
-                        }
-                    }
-
-                    List<DocumentProgress> docProgressCurDateList = documentProgressRepository.findByDocumentOrderByUpdatedDateDesc(document);
-
-                    if (!docProgressCurDateList.isEmpty()){
-                        DocumentProgress documentProgress = docProgressCurDateList.get(0);
-                        String blackCaseNumber = documentProgress.getBlackCaseNumber();
-                        String redCaseNumber = documentProgress.getRedCaseNumber();
-
-                        if (AppUtil.isNotNull(blackCaseNumber)){
-                            String[] blackCaseNumAr = blackCaseNumber.split("/");
-                            blackCaseNumNo = blackCaseNumAr[0];
-                            blackCaseNumYear = blackCaseNumAr[1];
-                        }
-
-                        if (AppUtil.isNotNull(documentProgress.getLawSuitSendDate())){
-                            lawSuitSendDate = convertDateToFile("dd/MM/yyyy",documentProgress.getLawSuitSendDate().toString());
-                        }
-
-                        if (AppUtil.isNotNull(documentProgress.getCourt())){
-                            //ศาลชั้นต้น
-                            if (documentProgress.getCourt().equals("1")){
-                                if (AppUtil.isNotNull(redCaseNumber)){
-                                    String[] redCaseNumAr = redCaseNumber.split("/");
-                                    redCaseNumNo1 = redCaseNumAr[0];
-                                    redCaseNumYear1 = redCaseNumAr[1];
-                                }
-                                if (AppUtil.isNotNull(documentProgress.getAdjDate())){
-                                    adjDate1 = convertDateToFile("dd/MM/yyyy",documentProgress.getAdjDate().toString());
-                                }
-                                adjudication1 = documentProgress.getAdjudication();
-                                judgmentAmount1 = document.getPrincipalBalance()+document.getInterest();
-                            }
-
-                            //ศาลอุทธรณ์
-                            if (documentProgress.getCourt().equals("2")){
-                                if (AppUtil.isNotNull(redCaseNumber)){
-                                    String[] redCaseNumAr = redCaseNumber.split("/");
-                                    redCaseNumNo2 = redCaseNumAr[0];
-                                    redCaseNumYear2 = redCaseNumAr[1];
-                                }
-                                if (AppUtil.isNotNull(documentProgress.getAdjDate())){
-                                    adjDate2 = convertDateToFile("dd/MM/yyyy",documentProgress.getAdjDate().toString());
-                                }
-                                adjudication2 = documentProgress.getAdjudication();
-                                judgmentAmount2 = document.getPrincipalBalance()+document.getInterest();
-                            }
-
-                            //ศาลฎีกา
-                            if (documentProgress.getCourt().equals("3")){
-                                if (AppUtil.isNotNull(redCaseNumber)){
-                                    String[] redCaseNumAr = redCaseNumber.split("/");
-                                    redCaseNumNo3 = redCaseNumAr[0];
-                                    redCaseNumYear3 = redCaseNumAr[1];
-                                }
-                                if (AppUtil.isNotNull(documentProgress.getAdjDate())){
-                                    adjDate3 = convertDateToFile("dd/MM/yyyy",documentProgress.getAdjDate().toString());
-                                }
-                                adjudication3 = documentProgress.getAdjudication();
-                                judgmentAmount3 = document.getPrincipalBalance()+document.getInterest();
-                            }
-                        }
-
-                    }
-
-                    resultCVCMap.put("LEGAL_ID",document.getDocNumber());
-                    resultCVCMap.put("ASSIGN_LAWYER_DT",actionTimeLAW);
-                    resultCVCMap.put("JUDGMENT_UNDECIDED_NO",blackCaseNumNo);
-                    resultCVCMap.put("JUDGMENT_UNDECIDED_YEAR",blackCaseNumYear);
-                    resultCVCMap.put("JUDGMENT_SUE_DT",lawSuitSendDate);
-
-                    resultCVCMap.put("JUDGMENT_DECIDED_NO",redCaseNumNo1);
-                    resultCVCMap.put("JUDGMENT_DECIDED_YEAR",redCaseNumYear1);
-                    resultCVCMap.put("JUDGMENT_DT",adjDate1);
-                    resultCVCMap.put("JUDGMENT_RESULT_DESC",adjudication1);
-                    resultCVCMap.put("JUDGMENT_AMOUNT",judgmentAmount1);
-
-                    resultCVCMap.put("APPEAL_DECIDED_NO",redCaseNumNo2);
-                    resultCVCMap.put("APPEAL_DECIDED_YEAR",redCaseNumYear2);
-                    resultCVCMap.put("APPEAL_DT",adjDate2);
-                    resultCVCMap.put("APPEAL_RESULT_DESC",adjudication2);
-                    resultCVCMap.put("APPEAL_AMOUNT",judgmentAmount2);
-
-                    resultCVCMap.put("DEKA_DECIDED_NO",redCaseNumNo3);
-                    resultCVCMap.put("DEKA_DECIDED_YEAR",redCaseNumYear3);
-                    resultCVCMap.put("DEKA_DT",adjDate3);
-                    resultCVCMap.put("DEKA_RESULT_DESC",adjudication3);
-                    resultCVCMap.put("DEKA_AMOUNT",judgmentAmount3);
-                    completeResult.add(resultCVCMap);
-                }
+                resultCVCMap.put("DEKA_DECIDED_NO", redCaseNumNo3);
+                resultCVCMap.put("DEKA_DECIDED_YEAR", redCaseNumYear3);
+                resultCVCMap.put("DEKA_DT", adjDate3);
+                resultCVCMap.put("DEKA_RESULT_DESC", adjudication3);
+                resultCVCMap.put("DEKA_AMOUNT", convertDoubleToString(judgmentAmount3));
+                completeResult.add(resultCVCMap);
             }
         }
+
         return completeResult;
     }
 
     @Override
+    @SneakyThrows
     public void litigationUpdateCVO(String date) {
+
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+        String fileName = "/LitigationUpdate_CVO_" + date + ".csv";
+
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL","01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-            String fileName = "/LitigationUpdate_CVO_" + date + ".csv";
-
-            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
             CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVO_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVO(date);
-            String total = String.format("%010d",listMap.size());
+            String total = String.format("%010d", listMap.size());
 
             for (Map<String, Object> objectMap : listMap) {
                 csvPrinter.printRecord(
@@ -897,15 +839,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                         , objectMap.get(CVO_HEADER.LITIGTION_STATUS.toString())
                 );
             }
-            csvPrinter.printRecord("TOTAL : "+total);
+            csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
+
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bufferedWriter != null) {
+                try {
+                    bufferedWriter.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -915,57 +867,140 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
         String fileDate = DateUtil.convertStringDateToString(date);
         ObjectMapper oMapper = new ObjectMapper();
 
-        List resultCVOtList = findLitigationUpdate("CVO",fileDate);
+        List resultCVOtList = findLitigationUpdateCVO(fileDate);
 
-        for (int i=0 ; i<resultCVOtList.size() ; i++) {
+        for (int i = 0; i < resultCVOtList.size(); i++) {
             Map<String, Object> CVOMap = new HashMap();
             Map dataMap = oMapper.convertValue(resultCVOtList.get(i), Map.class);
-            CVOMap.put(CVO_HEADER.SEQ.toString(),i+1);
-            CVOMap.put(CVO_HEADER.LEGAL_ID.toString(),dataMap.get("LEGAL_ID"));
-            CVOMap.put(CVO_HEADER.WF_TYPE_ID.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.WF_TYPE_DESC.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.ACN.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.COLL_ID.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.COLL_TYPE.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.PLAINTIFF.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DECIDED_NO.toString(),"");
-            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DECIDED_YEAR.toString(),"");
-            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.PT_SEIZE_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.ASSIGN_LAWYER_DT.toString(),dataMap.get("ASSIGN_LAWYER_DT"));
-            CVOMap.put(CVO_HEADER.OFFICER_SENDDOC_DT.toString(),dataMap.get("OFFICER_SENDDOC_DT"));
-            CVOMap.put(CVO_HEADER.PREFERED_DEBT_DT.toString(),dataMap.get("PREFERED_DEBT_DT"));
-            CVOMap.put(CVO_HEADER.PREFERED_DEBT_AMOUNT.toString(),dataMap.get("PREFERED_DEBT_AMOUNT"));
-            CVOMap.put(CVO_HEADER.PREFERED_COURT_DT.toString(),dataMap.get("PREFERED_COURT_DT"));
-            CVOMap.put(CVO_HEADER.PREFERED_COURT_AMOUNT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_UNDECIDED_NO.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_UNDECIDED_YEAR.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_SUE_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DECIDED_NO.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DECIDED_YEAR.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SM_APPEAL_AMOUNT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.APPEAL_DT.toString(),dataMap.get("APPEAL_DT"));
-            CVOMap.put(CVO_HEADER.APPEAL_AMOUNT.toString(),dataMap.get("APPEAL_AMOUNT"));
-            CVOMap.put(CVO_HEADER.APPEAL_COURT_DT.toString(),dataMap.get("APPEAL_COURT_DT"));
-            CVOMap.put(CVO_HEADER.APPEAL_COURT_AMOUNT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_UNDECIDED_NO.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_UNDECIDED_YEAR.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_SUE_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DECIDED_NO.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DECIDED_YEAR.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AP_APPEAL_AMOUNT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AUCTION_TYPE.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.SEIZE_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.LED_APPRAISAL.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.APPROVED_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.APPRAISAL_VAL.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AUCTION_DT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.AUCTION_AMT.toString(),dataMap.get(""));
-            CVOMap.put(CVO_HEADER.LITIGTION_STATUS.toString(),dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SEQ.toString(), i + 1);
+            CVOMap.put(CVO_HEADER.LEGAL_ID.toString(), dataMap.get("LEGAL_ID"));
+            CVOMap.put(CVO_HEADER.WF_TYPE_ID.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.WF_TYPE_DESC.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.ACN.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.COLL_ID.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.COLL_TYPE.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.PLAINTIFF.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DECIDED_NO.toString(), "");
+            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DECIDED_YEAR.toString(), "");
+            CVOMap.put(CVO_HEADER.PT_JUDGMENT_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.PT_SEIZE_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.ASSIGN_LAWYER_DT.toString(), dataMap.get("ASSIGN_LAWYER_DT"));
+            CVOMap.put(CVO_HEADER.OFFICER_SENDDOC_DT.toString(), dataMap.get("OFFICER_SENDDOC_DT"));
+            CVOMap.put(CVO_HEADER.PREFERED_DEBT_DT.toString(), dataMap.get("PREFERED_DEBT_DT"));
+            CVOMap.put(CVO_HEADER.PREFERED_DEBT_AMOUNT.toString(), dataMap.get("PREFERED_DEBT_AMOUNT"));
+            CVOMap.put(CVO_HEADER.PREFERED_COURT_DT.toString(), dataMap.get("PREFERED_COURT_DT"));
+            CVOMap.put(CVO_HEADER.PREFERED_COURT_AMOUNT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_UNDECIDED_NO.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_UNDECIDED_YEAR.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_SUE_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DECIDED_NO.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DECIDED_YEAR.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_JUDGMENT_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SM_APPEAL_AMOUNT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.APPEAL_DT.toString(), dataMap.get("APPEAL_DT"));
+            CVOMap.put(CVO_HEADER.APPEAL_AMOUNT.toString(), dataMap.get("APPEAL_AMOUNT"));
+            CVOMap.put(CVO_HEADER.APPEAL_COURT_DT.toString(), dataMap.get("APPEAL_COURT_DT"));
+            CVOMap.put(CVO_HEADER.APPEAL_COURT_AMOUNT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_UNDECIDED_NO.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_UNDECIDED_YEAR.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_SUE_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DECIDED_NO.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DECIDED_YEAR.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_JUDGMENT_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AP_APPEAL_AMOUNT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AUCTION_TYPE.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.SEIZE_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.LED_APPRAISAL.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.APPROVED_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.APPRAISAL_VAL.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AUCTION_DT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.AUCTION_AMT.toString(), dataMap.get(""));
+            CVOMap.put(CVO_HEADER.LITIGTION_STATUS.toString(), dataMap.get(""));
             listMap.add(CVOMap);
         }
         return listMap;
     }
+
+    @Transactional
+    public List findLitigationUpdateCVO(String curDate) {
+        List completeResult = new ArrayList();
+
+        List<Map> resultDocCurDateList = dcmsRepositoryCustom.litigationUpdateCVO(curDate);
+
+        for (Map map : resultDocCurDateList) {
+            Map<String, Object> resultCVOMap = new HashMap();
+            Object actionTimeLAW = null;
+            Object actionTimeMK2 = null;
+            String prefered_preferentialRequestDate = null;
+            String prefered_amount = null;
+            String prefered_permissDate = null;
+            String appeal_preventRequestDate = null;
+            String appeal_amount = null;
+            String appeal_permissDate = null;
+
+            if (AppUtil.isNotNull(map.get("userRoleTo"))) {
+                String userRoleTo = map.get("userRoleTo").toString();
+                String actionTime = convertDateToFile("dd/MM/yyyy", map.get("actionTime").toString());
+
+                if (userRoleTo.equals("LAW")) {
+                    actionTimeLAW = actionTime;
+                }
+                if (userRoleTo.equals("MK2")) {
+                    actionTimeMK2 = actionTime;
+                }
+
+                String Amount = "";
+                if (AppUtil.isNotNull(map.get("totalAmount"))) {
+                    Amount = map.get("totalAmount").toString();
+                }
+
+                String PermissDate = "";
+                if (AppUtil.isNotNull(map.get("permissDate"))) {
+                    PermissDate = map.get("permissDate").toString();
+                }
+
+                if (AppUtil.isNotNull(map.get("typeProcess")) && AppUtil.isNotNull(map.get("docType"))) {
+                    String typeProcess = map.get("typeProcess").toString();
+                    String docType = map.get("docType").toString();
+
+                    //การยื่นขอชำระหนี้
+                    if (typeProcess.equals("1") && docType.equals("3")) {
+                        if (AppUtil.isNotNull(map.get("preferentialRequestDate"))) {
+                            prefered_preferentialRequestDate = map.get("preferentialRequestDate").toString();
+                        }
+
+                        prefered_amount = Amount;
+
+                        prefered_permissDate = PermissDate;
+
+                    }
+                    //การร้องกันส่วน
+                    if (typeProcess.equals("2") && docType.equals("3")) {
+                        if (AppUtil.isNotNull(map.get("preventRequestDate"))) {
+                            appeal_preventRequestDate = map.get("preventRequestDate").toString();
+                        }
+
+                        appeal_amount = Amount;
+
+                        appeal_permissDate = PermissDate;
+
+                    }
+                }
+            }
+
+            resultCVOMap.put("LEGAL_ID", map.get("docNumber"));
+            resultCVOMap.put("ASSIGN_LAWYER_DT", actionTimeLAW);
+            resultCVOMap.put("OFFICER_SENDDOC_DT", actionTimeMK2);
+            resultCVOMap.put("PREFERED_DEBT_DT", convertDateToFile("dd/MM/yyyy", prefered_preferentialRequestDate));
+            resultCVOMap.put("PREFERED_DEBT_AMOUNT", prefered_amount);
+            resultCVOMap.put("PREFERED_COURT_DT", convertDateToFile("dd/MM/yyyy", prefered_permissDate));
+            resultCVOMap.put("APPEAL_DT", convertDateToFile("dd/MM/yyyy", appeal_preventRequestDate));
+            resultCVOMap.put("APPEAL_AMOUNT", appeal_amount);
+            resultCVOMap.put("APPEAL_COURT_DT", convertDateToFile("dd/MM/yyyy", appeal_permissDate));
+            completeResult.add(resultCVOMap);
+        }
+
+        return completeResult;
+    }
+
 }

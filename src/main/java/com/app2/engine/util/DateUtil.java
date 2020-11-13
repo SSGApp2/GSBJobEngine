@@ -125,6 +125,7 @@ public class DateUtil {
     }
 
     public static String convertStringDateToString(String dateString) {
+        ///20200717 ---> 2020-07-17
         String newDate = "";
         try {
             Date date = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale()).parse(dateString);
@@ -137,6 +138,7 @@ public class DateUtil {
     }
 
     public static String convertStringDateTimeToString(String dateString) {
+        ////2020-07-17 00:00:00 ---> 20200717
         String newDate = "";
         try {
             Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateString);

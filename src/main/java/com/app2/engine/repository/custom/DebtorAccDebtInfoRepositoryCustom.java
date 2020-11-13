@@ -7,6 +7,4 @@ import java.util.Map;
 
 public interface DebtorAccDebtInfoRepositoryCustom {
     DebtorAccDebtInfo findByAccountNo(String accountNo);
-
-    List<Map> findAcnEndLegal();
 }

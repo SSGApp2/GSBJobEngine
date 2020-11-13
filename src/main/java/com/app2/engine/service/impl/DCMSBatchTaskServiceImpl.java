@@ -1,21 +1,15 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.Debtor;
-import com.app2.engine.entity.app.DebtorAccDebtInfo;
-import com.app2.engine.entity.app.Document;
 import com.app2.engine.entity.app.ParameterDetail;
-import com.app2.engine.repository.DebtorAccDebtInfoRepository;
-import com.app2.engine.repository.DocumentRepository;
 import com.app2.engine.repository.ParameterDetailRepository;
+import com.app2.engine.repository.custom.DCMSRepositoryCustom;
 import com.app2.engine.repository.custom.DebtorAccDebtInfoRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.DCMSBatchTaskService;
-import com.app2.engine.service.DocumentService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
 import com.app2.engine.util.FileUtil;
 import lombok.SneakyThrows;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,19 +29,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
     ParameterDetailRepository parameterDetailRepository;
 
     @Autowired
-    DebtorAccDebtInfoRepository debtorAccDebtInfoRepository;
-
-    @Autowired
-    DebtorAccDebtInfoRepositoryCustom debtorAccDebtInfoRepositoryCustom;
-
-    @Autowired
-    DocumentRepository documentRepository;
-
-    @Autowired
-    DocumentService documentService;
-
-    @Value("${sync.interface}")
-    private String syncInterface;
+    DCMSRepositoryCustom dcmsRepositoryCustom;
 
     @Override
     public ResponseEntity<String> ACNStartLegal() {
@@ -56,20 +37,23 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
         return getResultByExchange(url);
     }
 
+    @SneakyThrows
     @Override
     public void ACN_END_LEGAL(String date) {
+
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+        String fileName = "ACN_ENDLEGAL_" + date + ".txt";
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
 
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-            String fileName = "ACN_ENDLEGAL_" + date + ".txt";
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-
-            List<Map> debtorAccDebtInfoList = debtorAccDebtInfoRepositoryCustom.findAcnEndLegal();
+            List<Map> debtorAccDebtInfoList = dcmsRepositoryCustom.findAcnEndLegal();
 
             for (Map debtorAccDebtInfo : debtorAccDebtInfoList) {
                 BigInteger accountNo;
@@ -108,39 +92,58 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
+    @SneakyThrows
     @Override
     public void ACN_END_LEGAL_TOTAL(String date) {
+        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+        String fileName = "ACN_ENDLEGAL_TOTAL_" + date + ".txt";
+        int total = 0;
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
         try {
-            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
-
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-            String fileName = "ACN_ENDLEGAL_TOTAL_" + date + ".txt";
-            int count = 0;
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-
-            List<Map> debtorAccDebtInfoList = debtorAccDebtInfoRepositoryCustom.findAcnEndLegal();
+            List<Map> debtorAccDebtInfoList = dcmsRepositoryCustom.findAcnEndLegal();
 
             if (!debtorAccDebtInfoList.isEmpty()) {
-                count = debtorAccDebtInfoList.size();
+                total = debtorAccDebtInfoList.size();
             }
 
-            writer.write(String.valueOf(count));
+            writer.write(String.valueOf(total));
             writer.close();
 
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 }

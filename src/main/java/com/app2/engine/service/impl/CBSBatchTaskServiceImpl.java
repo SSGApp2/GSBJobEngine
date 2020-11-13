@@ -2,6 +2,7 @@ package com.app2.engine.service.impl;
 
 import com.app2.engine.entity.app.*;
 import com.app2.engine.repository.*;
+import com.app2.engine.repository.custom.CBSRepositoryCustom;
 import com.app2.engine.repository.custom.DocumentRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CBSBatchTaskService;
@@ -54,11 +55,14 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     @Autowired
     BranchRepository branchRepository;
 
+    @Autowired
+    CBSRepositoryCustom cbsRepositoryCustom;
+
     @SneakyThrows
     @Override
     public void LS_COLLECTION_STATUS(String date) {
         //หาข้อมูลจาก database โดยใช้ sql native query ย้ายมากจาก Engine
-        List<Map> documentList = documentRepositoryCustom.findDocumentMovementsCollection();
+        List<Map> documentList = cbsRepositoryCustom.findDocumentMovementsCollection();
         ParameterDetail params;
 
         for (int i = 0; i < 2; i++) {
@@ -75,13 +79,10 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
 
             String fileName = "LS_COLLECTION_STATUS_" + date + ".txt";
             int total = 0;
-            FileWriter writer = null;
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
 
             try {
-                File file = new File(path + "/" + fileName);
-
                 SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-                writer = new FileWriter(file, true);
                 String BATCH_DATE1 = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
                 for (Map document : documentList) {
@@ -156,9 +157,9 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
 
                 //Copy file to FTP Server
                 if (i == 0) {
-                    smbFileService.localFileToRemoteFile(file.getName(), "CBS", date);
+                    smbFileService.localFileToRemoteFile(fileName, "CBS", date);
                 } else {
-                    smbFileService.localFileToRemoteFile(file.getName(), "DCMS", date);
+                    smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
                 }
 
             } catch (IOException e) {
@@ -177,6 +178,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     }
 
     @Override
+    @SneakyThrows
     public void LS_ACCOUNT_LIST(String date) {
         //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
         ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
@@ -184,24 +186,15 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
-
-        File file = new File(path + "/" + fileName);
-
         List<Map> documentList = documentRepositoryCustom.findLsAccountList();
 
-        FileWriter writer = null;
+        String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
+
+        //create new file
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
         int total = 0;
 
         try {
-            //delete old file
-            if (file.exists() && file.isFile()) {
-                file.delete();
-            }
-
-            //create new file
-            writer = new FileWriter(file, true);
-
             if (!documentList.isEmpty()) {
                 total = documentList.size();
                 for (int i = 0; i < documentList.size(); i++) {
@@ -220,10 +213,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            try {
-                // Close the writer regardless of what happens...
-                writer.close();
-            } catch (Exception e) {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
             }
         }
     }
@@ -1670,6 +1666,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         }
     }
 
+    @SneakyThrows
     @Override
     public void ZLE(String date) {
         //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
@@ -1678,23 +1675,15 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        String fileName = "ZLE_" + date + ".txt";
-
-        File file = new File(path + "/" + fileName);
-
         List<Map> debtorList = new ArrayList<>();
 
-        FileWriter writer = null;
+        String fileName = "ZLE_" + date + ".txt";
+
+        //create new file
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
         String total = "0";
 
         try {
-            //delete old file
-            if (file.exists() && file.isFile()) {
-                file.delete();
-            }
-
-            //create new file
-            writer = new FileWriter(file, true);
             writer.write("ID|CUST_TYPE|RESTRICTION\n");
 
             if (!debtorList.isEmpty()) {
@@ -1714,16 +1703,19 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             writer.write("Total " + total + "|\n");
 
             //Copy file to FTP Server
-            smbFileService.localFileToRemoteFile(file.getName(), "CBS", date);
+            smbFileService.localFileToRemoteFile(fileName, "CBS", date);
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(),e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            try {
-                // Close the writer regardless of what happens...
-                writer.close();
-            } catch (Exception e) {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -105,8 +106,14 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            // Close the writer regardless of what happens...
-            writer.close();
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -175,8 +182,14 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            // Close the writer regardless of what happens...
-            writer.close();
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -261,24 +274,14 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        String fileName = "TBL_MT_COURT_" + date + ".txt";
-        File file = new File(path + "/" + fileName);
-
         List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("COURT");
 
-        FileWriter writer = null;
+        String fileName = "TBL_MT_COURT_" + date + ".txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
         String total = "0";
         int i = 0;
 
         try {
-            //delete old file
-            if (file.exists() && file.isFile()) {
-                file.delete();
-            }
-
-            //create new file
-            writer = new FileWriter(file, true);
-
             if (!debtorList.isEmpty()) {
                 total = String.valueOf(debtorList.size());
                 for (ParameterDetail detail : debtorList) {
@@ -301,14 +304,20 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             writer.close();
 
             //Copy file to FTP Server
-            smbFileService.localFileToRemoteFile(file.getName(), "CMS", date);
+            smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            // Close the writer regardless of what happens...
-            writer.close();
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
         }
     }
 
@@ -320,24 +329,14 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        String fileName = "TBL_MT_LED_" + date + ".txt";
-        File file = new File(path + "/" + fileName);
-
         List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("LAGEL");
 
-        FileWriter writer = null;
+        String fileName = "TBL_MT_LED_" + date + ".txt";
+        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
         String total = "0";
         int i = 0;
 
         try {
-            //delete old file
-            if (file.exists() && file.isFile()) {
-                file.delete();
-            }
-
-            //create new file
-            writer = new FileWriter(file, true);
-
             if (!debtorList.isEmpty()) {
                 total = String.valueOf(debtorList.size());
                 for (ParameterDetail detail : debtorList) {
@@ -360,14 +359,20 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             writer.close();
 
             //Copy file to FTP Server
-            smbFileService.localFileToRemoteFile(file.getName(), "CMS", date);
+            smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            // Close the writer regardless of what happens...
-            writer.close();
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    // ignore ... any significant errors should already have been
+                    // reported via an IOException from the final flush.
+                }
+            }
 
         }
     }

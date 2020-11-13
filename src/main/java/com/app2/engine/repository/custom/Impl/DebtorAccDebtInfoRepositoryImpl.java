@@ -35,19 +35,4 @@ public class DebtorAccDebtInfoRepositoryImpl implements DebtorAccDebtInfoReposit
         return null;
 
     }
-
-    @Override
-    public List<Map> findAcnEndLegal() {
-        Session session = (Session) entityManager.getDelegate();
-        StringBuilder querySql = new StringBuilder();
-
-        querySql.append("SELECT dadi.account_no as accountNo,d.doc_type as docType\n" +
-                "FROM debtor_acc_debt_info dadi \n" +
-                "join document d on d.debtor = dadi.debtor");
-
-        LOGGER.debug("SQL Query {}", querySql.toString());
-        SQLQuery query = session.createSQLQuery(querySql.toString());
-        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-        return query.list();
-    }
 }

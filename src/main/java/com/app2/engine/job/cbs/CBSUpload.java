@@ -28,7 +28,7 @@ public class CBSUpload {
     BatchTransactionRepository batchTransactionRepository;
 
     @Transactional
-    @Scheduled(cron = "0 0 21 * * ?")
+    @Scheduled(cron = "0 50 19 * * ?")
     public void LS_COLLECTION_STATUS() {
         //ส่งข้อมูลสถานะการติดตามหนี้
         LOGGER.info("***************************************");
@@ -56,7 +56,7 @@ public class CBSUpload {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 2 * * ?")
+    @Scheduled(cron = "0 50 19 * * ?")
     public void ZLE() {
         //รับข้อมูลลูกหนี้ที่ได้รับจากกรมบังคับคดี ที่มีการ update กลุ่ม Restriction ในแต่ละวัน
         LOGGER.info("***************************************");
