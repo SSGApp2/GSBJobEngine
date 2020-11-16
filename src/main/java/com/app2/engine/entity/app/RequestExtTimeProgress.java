@@ -39,4 +39,3 @@ public class RequestExtTimeProgress extends BaseEntity {
     @JoinColumn(name = "documentProgress")
     private DocumentProgress documentProgress;
 }
-

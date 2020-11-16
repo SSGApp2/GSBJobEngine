@@ -44,4 +44,3 @@ public class ReportCreditor extends BaseEntity {
 
     private String accountNo;
 }
-

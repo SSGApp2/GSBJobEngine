@@ -41,4 +41,3 @@ public class WitnessExamProgress extends BaseEntity {
     @JoinColumn(name = "documentProgress")
     private DocumentProgress documentProgress;
 }
-

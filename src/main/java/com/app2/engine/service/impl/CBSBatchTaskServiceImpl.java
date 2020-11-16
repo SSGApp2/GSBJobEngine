@@ -3,7 +3,6 @@ package com.app2.engine.service.impl;
 import com.app2.engine.entity.app.*;
 import com.app2.engine.repository.*;
 import com.app2.engine.repository.custom.CBSRepositoryCustom;
-import com.app2.engine.repository.custom.DocumentRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CBSBatchTaskService;
 import com.app2.engine.service.SmbFileService;
@@ -43,12 +42,6 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
 
     @Autowired
     ParameterRepository parameterRepository;
-
-    @Autowired
-    DocumentRepositoryCustom documentRepositoryCustom;
-
-    @Autowired
-    DocumentRepository documentRepository;
 
     @Autowired
     DebtorAccDebtInfoRepository debtorAccDebtInfoRepository;
@@ -187,7 +180,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
 
-        List<Map> documentList = documentRepositoryCustom.findLsAccountList();
+        List<Map> documentList = cbsRepositoryCustom.findLsAccountList();
 
         String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
 

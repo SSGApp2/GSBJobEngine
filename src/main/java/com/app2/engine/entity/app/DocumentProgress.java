@@ -216,6 +216,10 @@ public class DocumentProgress extends BaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     private Date datePalliative;
 
+    private String palliativeFileName;
+
+    private String palliativeRealFileName;
+
     private String adjudicateFileName;
 
     private String adjudicateRealFileName;
@@ -224,28 +228,6 @@ public class DocumentProgress extends BaseEntity {
     private String resultAdjudication;
 
     @Column(length = 4)
-//    @Comment(desc = " คำพิพากษา" +
-//            "        A1:ถอนฟ้อง" +
-//            "        A2:พิพากษาฝ่ายเดียวเต็มจำนวนคำขอ" +
-//            "        A3:พิพากษาฝ่ายเดียวไม่เต็นจำนวนคำขอ" +
-//            "        A4:พิพากษาตามสัญญาประนีประนอมยอมความ" +
-//            "        A5:ยกฟ้อง (ทั้งคดี)" +
-//            "        A6:ยกฟ้อง(ไม่มีหนี้อยู่จริง)" +
-//            "        A7:ยกฟ้อง(บางจำเลย)" +
-//            "        A8:ยกฟ้อง(คดีขาดอายุความ)" +
-//            "    --------------------------------" +
-//            "        B1: ไม่รับอุทธรณ์" +
-//            "        B2:ยืนตามศาลชั้นต้น" +
-//            "        B3:กลับคำพิพากษาชั้นต้น" +
-//            "        B4:แก้คำพิพากษาชั้นต้น" +
-//            "    --------------------------------" +
-//            "        C1:ไม่รับฎีกา" +
-//            "        C2:พิพากษายืนตามศาลชั้นต้น" +
-//            "        C3:กลับคำพิพากษาศาลชั้นต้น" +
-//            "    ---------------------------------" +
-//            "        D1: พิทักษ์ทรัพย์เด็ดขาด" +
-//            "        D2: ให้ล้มละลาย" +
-//            "        D3: ไม่ให้ล้มละลาย")
     private String adjudication;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "th", timezone = "UTC")
@@ -578,7 +560,6 @@ public class DocumentProgress extends BaseEntity {
 
     private String afterNoRestoreRealFileName;
 
-
     private String afterReportFileName;
 
     private String afterReportRealFileName;
@@ -859,4 +840,3 @@ public class DocumentProgress extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "documentProgress")
     private List<Arguer> arguers = new ArrayList<>();
 }
-

@@ -5,4 +5,5 @@ import java.util.Map;
 
 public interface CBSRepositoryCustom {
     List<Map> findDocumentMovementsCollection();
+    List<Map> findLsAccountList();
 }

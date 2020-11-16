@@ -39,4 +39,3 @@ public class ScheduleEditExtTimeProgress extends BaseEntity {
     @JoinColumn(name = "documentProgress")
     private DocumentProgress documentProgress;
 }
-

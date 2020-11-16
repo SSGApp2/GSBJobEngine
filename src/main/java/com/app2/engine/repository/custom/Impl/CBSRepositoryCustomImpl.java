@@ -16,7 +16,7 @@ import java.util.Map;
 @Repository
 public class CBSRepositoryCustomImpl implements CBSRepositoryCustom {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DocumentRepositoryImpl.class);
+    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -41,6 +41,22 @@ public class CBSRepositoryCustomImpl implements CBSRepositoryCustom {
                 "left join witness_exam_progress wep on wep.document_progress = dpo.id\n" +
                 "where d.doc_status <> 'A1' and dma.active = 'Y' \n" +
                 "order by d.updated_date asc");
+        LOGGER.debug("SQL Query {}", querySql.toString());
+        SQLQuery query = session.createSQLQuery(querySql.toString());
+        query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);
+        return query.list();
+    }
+
+    @Override
+    public List<Map> findLsAccountList() {
+        Session session = (Session) entityManager.getDelegate();
+        StringBuilder querySql = new StringBuilder();
+
+        querySql.append("SELECT distinct value  \n" +
+                "FROM document  \n" +
+                "   CROSS APPLY STRING_SPLIT(credit_account_number, ',')\n" +
+                "   order by value ASC; ");
+
         LOGGER.debug("SQL Query {}", querySql.toString());
         SQLQuery query = session.createSQLQuery(querySql.toString());
         query.setResultTransformer(AliasToEntityMapResultTransformer.INSTANCE);

@@ -13,6 +13,4 @@ public interface DebtorAccDebtInfoRepository extends JpaRepository<DebtorAccDebt
 
     @Query("select dad from DebtorAccDebtInfo dad where dad.accountNo = :accountNo")
     DebtorAccDebtInfo findByAccountNo(@Param("accountNo")String accountNo);
-
-    List<DebtorAccDebtInfo> findByDebtor(@Param("debtor") Debtor debtor);
 }

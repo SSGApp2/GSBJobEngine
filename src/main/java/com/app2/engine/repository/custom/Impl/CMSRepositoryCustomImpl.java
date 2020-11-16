@@ -1,8 +1,6 @@
 package com.app2.engine.repository.custom.Impl;
 
-import com.app2.engine.entity.app.GuaranteeInfo;
 import com.app2.engine.repository.custom.CMSRepositoryCustom;
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
