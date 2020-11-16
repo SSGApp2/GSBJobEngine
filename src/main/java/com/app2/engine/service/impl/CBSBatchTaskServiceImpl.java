@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1236,34 +1237,36 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             String variable8 = (map.get("variable8") == null ? null : map.get("variable8").toString());
             String variable9 = (map.get("variable9") == null ? null : map.get("variable9").toString());
 
-            Parameter parameter = parameterRepository.findByCode(parameterCode);
-            List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+            if (AppUtil.isNotNull(variable1)) {
+                Parameter parameter = parameterRepository.findByCode(parameterCode);
+                List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
 
-            List detailCode = parameterDetails.stream()
-                    .filter(value -> value.getCode().equals(code))
-                    .collect(Collectors.toList());
+                List detailCode = parameterDetails.stream()
+                        .filter(value -> value.getCode().equals(code))
+                        .collect(Collectors.toList());
 
-            ParameterDetail newParameterDetail;
-            if (detailCode.isEmpty()) {
-                newParameterDetail = new ParameterDetail();
-                newParameterDetail.setCode(code);
-            } else {
-                newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+                ParameterDetail newParameterDetail;
+                if (detailCode.isEmpty()) {
+                    newParameterDetail = new ParameterDetail();
+                    newParameterDetail.setCode(code);
+                } else {
+                    newParameterDetail = parameterDetailRepository.findByPCodeAndPdCode(parameterCode, code);
+                }
+
+                newParameterDetail.setDescription(variable1);
+                newParameterDetail.setDescriptionEng(variable2);
+                newParameterDetail.setVariable1(variable3);
+                newParameterDetail.setVariable2(variable4);
+                newParameterDetail.setVariable3(variable5);
+                newParameterDetail.setVariable4(variable6);
+                newParameterDetail.setVariable5(variable7);
+                newParameterDetail.setVariable6(variable8);
+                newParameterDetail.setVariable7(variable9);
+
+                newParameterDetail.setParameter(parameter);
+
+                parameterDetailRepository.saveAndFlush(newParameterDetail);
             }
-
-            newParameterDetail.setDescription(variable1);
-            newParameterDetail.setDescriptionEng(variable2);
-            newParameterDetail.setVariable1(variable3);
-            newParameterDetail.setVariable2(variable4);
-            newParameterDetail.setVariable3(variable5);
-            newParameterDetail.setVariable4(variable6);
-            newParameterDetail.setVariable5(variable7);
-            newParameterDetail.setVariable6(variable8);
-            newParameterDetail.setVariable7(variable9);
-
-            newParameterDetail.setParameter(parameter);
-
-            parameterDetailRepository.saveAndFlush(newParameterDetail);
         }
     }
 
