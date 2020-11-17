@@ -211,19 +211,7 @@ public class Debtor extends BaseEntity {
 
     @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "debtor")
-    private List<DebtorCardInfo> debtorCardInfos = new ArrayList<>();
-
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "debtor")
     private List<DebtorAccDebtInfo> debtorAccDebtInfos = new ArrayList<>();
-
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "debtor")
-    private List<DebtorGuaranteeInfo> debtorGuaranteeInfos = new ArrayList<>();
-
-    @ToString.Exclude
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "debtor")
-    private List<DebtorFileAttach> debtorFileAttaches = new ArrayList<>();
 
     @ToString.Exclude
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "debtor")

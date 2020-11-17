@@ -50,6 +50,11 @@ public class JobController {
         return documentTaskService.assignedDocAuto();
     }
 
+    @GetMapping("/sendDemandBook")
+    public ResponseEntity<String> sendDemandBook() {
+        return documentTaskService.sendDemandBook();
+    }
+
     @GetMapping("/houseKeeping")
     public void deleteDataByDay() {
         houseKeepingService.deleteDataByDay();

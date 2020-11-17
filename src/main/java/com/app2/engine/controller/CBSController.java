@@ -72,8 +72,8 @@ public class CBSController {
         LOGGER.debug("Batch : MASTER_DATA_WORKING_DAYS is completed.");
 
         // วันหยุดธนาคาร
-//        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null?date:DateUtil.codeCurrentDate());
-//        LOGGER.debug("Batch : MASTER_DATA_HOLIDAY is completed.");
+        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null?date:DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_HOLIDAY is completed.");
 
         // OU
         cbsBatchTaskService.MASTER_DATA_OU(date != null ? date : DateUtil.codeCurrentDate());

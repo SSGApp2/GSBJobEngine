@@ -40,7 +40,7 @@ public class DCMSDownload {
     @Autowired
     WRNService wrnService;
 
-    @Transactional ///ยังแก้ไม่เสร็จ
+    @Transactional
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
     public void ACN_START_LEGAL() {
         // ส่งข้อมูล Account และ CIF ที่ต้องการดำเนินคดี (AccountStartLegal)
