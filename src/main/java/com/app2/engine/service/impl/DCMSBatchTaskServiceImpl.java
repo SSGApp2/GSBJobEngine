@@ -99,8 +99,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -140,8 +139,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }

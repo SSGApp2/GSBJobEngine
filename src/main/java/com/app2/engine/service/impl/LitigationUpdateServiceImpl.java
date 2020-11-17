@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,29 +67,22 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
 
     private char delimiterPipe = '|';
 
+    @SneakyThrows
     public String convertDateToFile(String pattern, String dateTime) {
         String newDate = "";
-        try {
-            if (AppUtil.isNotNull(dateTime)) {
-                Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateTime);
-                SimpleDateFormat newformat = new SimpleDateFormat(pattern, Locale.US);
-                newDate = newformat.format(date);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (AppUtil.isNotNull(dateTime)) {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateTime);
+            SimpleDateFormat newformat = new SimpleDateFormat(pattern, Locale.US);
+            newDate = newformat.format(date);
         }
         return newDate;
     }
 
     public String convertDoubleToString(Double value) {
         String newValue = "";
-        try {
-            if (AppUtil.isNotNull(value)) {
-                DecimalFormat df = new DecimalFormat("#.00");
-                newValue = df.format(value);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (AppUtil.isNotNull(value)) {
+            DecimalFormat df = new DecimalFormat("#.00");
+            newValue = df.format(value);
         }
         return newValue;
     }
@@ -168,8 +162,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 try {
                     bufferedWriter.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -345,8 +338,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 try {
                     bufferedWriter.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -498,8 +490,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 try {
                     bufferedWriter.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -585,8 +576,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 try {
                     bufferedWriter.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -854,8 +844,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 try {
                     bufferedWriter.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }

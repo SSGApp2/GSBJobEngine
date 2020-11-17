@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -56,6 +57,7 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
     @Override
     @Transactional
     public void WRN_CONSENT(String date) {
+        BufferedReader bfReader = null;
         try {
             // --- Copy File WRN_CONSENT_YYYYMMDD.txt ---
             String fileName = "WRN_CONSENT_" + date + ".txt";
@@ -68,16 +70,14 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
                 // --- WRN_CONSENT_YYYYMMDD.txt ---
                 if (Files.exists(Paths.get(pathFile))) {
                     LOGGER.info("  WRN_CONSENT Path File : {}", pathFile);
-                    InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathFile), "UTF-8");
-                    BufferedReader bfReader = new BufferedReader(streamReader);
+                    bfReader = new BufferedReader(new InputStreamReader(new FileInputStream(pathFile), "UTF-8"));
                     List<Map<String, Object>> listMap = new ArrayList<>();
 
                     String delimeter = "\\|";
                     int length = 7;
                     int rowNumber = 0;
                     String line;
-                    while (bfReader.ready()) {
-                        line = bfReader.readLine();
+                    while ((line = bfReader.readLine()) != null) {
                         String lineArr[] = line.split(delimeter);
                         if (lineArr.length >= length && rowNumber > 0) {
                             Map<String, Object> objectMap = new HashMap<>();
@@ -104,12 +104,21 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
     @Override
     @Transactional
     public void WRN_TDR(String date) {
+        BufferedReader bfReader = null;
         try {
             // --- Copy File WRN_TDR_YYYYMMDD.txt ---
             String fileName = "WRN_TDR_" + date + ".txt";
@@ -122,16 +131,14 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
                 // --- WRN_TDR_YYYYMMDD.txt ---
                 if(Files.exists(Paths.get(pathFile))) {
                     LOGGER.info("  WRN_TDR Path File : {}", pathFile);
-                    InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathFile), "UTF-8");
-                    BufferedReader bfReader = new BufferedReader(streamReader);
+                    bfReader = new BufferedReader(new InputStreamReader(new FileInputStream(pathFile), "UTF-8"));
                     List<Map<String, Object>> listMap = new ArrayList<>();
 
                     String delimeter = "\\|";
                     int length = 7;
                     int rowNumber = 0;
                     String line;
-                    while (bfReader.ready()) {
-                        line = bfReader.readLine();
+                    while ((line = bfReader.readLine()) != null) {
                         String lineArr[] = line.split(delimeter);
                         if (lineArr.length >= length && rowNumber > 0) {
                             Map<String, Object> objectMap = new HashMap<>();
@@ -159,6 +166,14 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (bfReader != null) {
+                try {
+                    bfReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 

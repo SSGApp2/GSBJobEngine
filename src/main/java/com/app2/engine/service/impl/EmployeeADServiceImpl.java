@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,12 +69,15 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     public void InsertOrUpdateEmp(String date) {
         Date currentDate = DateUtil.getCurrentDate();
         LOGGER.debug("Start InsertOrUpdateEmp {}", currentDate);
+
+        InputStreamReader streamReader = null;
+
         try {
             String fileName = "AD_" + date + ".csv";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD",date);
             LOGGER.debug("pathName File {}", pathName);
 
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
 
             Iterable<CSVRecord> records = CSVFormat.DEFAULT
                     .withHeader(ADEmployee.class).parse(streamReader);
@@ -210,6 +214,14 @@ public class EmployeeADServiceImpl implements EmployeeADService {
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
+        } finally {
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
 
     }

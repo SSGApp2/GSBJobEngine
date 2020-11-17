@@ -163,8 +163,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                     try {
                         writer.close();
                     } catch (IOException ex) {
-                        // ignore ... any significant errors should already have been
-                        // reported via an IOException from the final flush.
+                        LOGGER.error("Error {}", ex.getMessage(), ex);
                     }
                 }
             }
@@ -194,8 +193,8 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 for (int i = 0; i < documentList.size(); i++) {
                     String CreditAccountNumber = documentList.get(i).get("value").toString();
 
-                        ///write data in file
-                        writer.write( CreditAccountNumber+"\n");
+                    ///write data in file
+                    writer.write(CreditAccountNumber + "\n");
                 }
             }
             writer.write("Total " + total);
@@ -204,15 +203,14 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             smbFileService.localFileToRemoteFile(fileName, "CBS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -234,11 +232,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -267,9 +267,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -335,11 +343,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -368,9 +378,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -435,11 +453,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile() && fileName.equals(fileName)) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -468,9 +488,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -544,11 +572,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -577,9 +607,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -664,12 +702,14 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -698,9 +738,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -764,11 +812,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -797,9 +847,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -865,11 +923,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -898,9 +958,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -966,11 +1034,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1012,9 +1082,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1063,11 +1141,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค File วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1096,9 +1176,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1164,11 +1252,12 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1197,9 +1286,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1267,11 +1364,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1300,9 +1399,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1368,11 +1475,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1401,9 +1510,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1469,11 +1586,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1503,9 +1622,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1571,11 +1698,13 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
 
             if (file.isFile()) {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 List<Map> list = new ArrayList<>();
                 List<Map> dataList = new ArrayList<>();
@@ -1604,9 +1733,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
@@ -1635,7 +1772,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
             newParameterDetail.setCode(code);
-            if (variable1 != null  && variable1.equals("0")) {///desc TH
+            if (variable1 != null && variable1.equals("0")) {///desc TH
                 newParameterDetail.setDescription(variable2);
                 newParameterDetail.setVariable1(variable3);
                 newParameterDetail.setVariable2(variable4);
@@ -1690,15 +1827,14 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             smbFileService.localFileToRemoteFile(fileName, "CBS", date);
 
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    // ignore ... any significant errors should already have been
-                    // reported via an IOException from the final flush.
+                    LOGGER.error("Error {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -1717,13 +1853,15 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
         String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
 
+        BufferedReader reader = null;
+
         try {
             File file = new File(path + "/" + fileName);
             if (file.exists() && !file.isDirectory()) {
                 List<String> linesList = new ArrayList<>();
                 Scanner fileReader = new Scanner(file);
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "TIS-620"));
 
                 String readLine;
                 while ((readLine = reader.readLine()) != null) {
@@ -1814,9 +1952,17 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 fileReader.close();
             }
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(),e);
+            LOGGER.error("Error {}", e.getMessage(), e);
             LOGGER.error("Error save file {}", fileName);
             throw new RuntimeException(fileName);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    LOGGER.error("Error {}", e.getMessage(), e);
+                }
+            }
         }
     }
 }
