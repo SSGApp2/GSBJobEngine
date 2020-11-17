@@ -218,18 +218,6 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
         }
     }
 
-    @Override
-    public ResponseEntity<String> accountEndLegalUpdateTask() {
-        return getResultByExchange("");
-    }
-
-    @Override
-    public ResponseEntity<String> createFileTXTRestrictionZLE() {
-        String url = "/jobs/createFileTXTRestrictionZLE";
-        return getResultByExchange(url);
-    }
-
-    //    -------------------------  ย้ายมาจาก Engine
     @SneakyThrows
     @Transactional
     @Override

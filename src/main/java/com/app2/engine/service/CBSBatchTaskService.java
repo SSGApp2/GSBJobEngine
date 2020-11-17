@@ -1,15 +1,9 @@
 package com.app2.engine.service;
 
-import org.springframework.http.ResponseEntity;
-
 public interface CBSBatchTaskService {
     void LS_COLLECTION_STATUS(String date);
 
     void LS_ACCOUNT_LIST(String date);
-
-    ResponseEntity<String> accountEndLegalUpdateTask();
-
-    ResponseEntity<String> createFileTXTRestrictionZLE();
 
     void MASTER_DATA_COUNTRY(String date);
 
