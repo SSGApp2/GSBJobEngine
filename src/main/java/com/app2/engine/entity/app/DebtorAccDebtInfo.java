@@ -53,8 +53,4 @@ public class DebtorAccDebtInfo extends BaseEntity {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastPaidDate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "debtor")
-    private Debtor debtor;
 }

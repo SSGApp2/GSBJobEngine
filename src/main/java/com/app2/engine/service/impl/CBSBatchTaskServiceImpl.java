@@ -1635,7 +1635,7 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
             }
 
             newParameterDetail.setCode(code);
-            if (variable1.equals("0")) {///desc TH
+            if (variable1 != null  && variable1.equals("0")) {///desc TH
                 newParameterDetail.setDescription(variable2);
                 newParameterDetail.setVariable1(variable3);
                 newParameterDetail.setVariable2(variable4);

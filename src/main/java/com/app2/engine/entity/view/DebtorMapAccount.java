@@ -1,6 +1,5 @@
 package com.app2.engine.entity.view;
 
-import com.app2.engine.entity.app.Debtor;
 import com.app2.engine.entity.app.DebtorAccDebtInfo;
 import com.app2.engine.entity.base.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -23,10 +22,6 @@ public class DebtorMapAccount extends BaseEntity{
     private String accountNo;
 
     private String loanType;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "debtor")
-    private Debtor debtor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "debtorAccDebtInfo")
