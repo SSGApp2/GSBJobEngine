@@ -81,10 +81,8 @@ public class HRDataServiceImpl implements HRDataService {
         //update รหัสภาค/ฝ่าย
         try {
             String fileName = "HRREGION.TXT";
-//            smbFileService.remoteFileToLocalFile(fileName,"HR");
-//            String pathName = "/home/thongchai/Documents/GSB/HRDATA/HRREGION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -141,7 +139,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRSECTION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -190,7 +188,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRPOSITION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -231,7 +229,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRBRANCH.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -266,7 +264,6 @@ public class HRDataServiceImpl implements HRDataService {
                             branchRepository.save(branch);
                         }
                     }
-                    LOGGER.debug(line);
                 }
             }
 
@@ -287,7 +284,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRDIV.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -341,7 +338,7 @@ public class HRDataServiceImpl implements HRDataService {
                     fileName = "HRUNIT.TXT"; // หน่วยย่อย
                 }
                 String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-                InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+                InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
                 BufferedReader bfReader = new BufferedReader(streamReader);
 
                 String delimeter = "\\|";
@@ -388,7 +385,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRBUSILINE.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -435,7 +432,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRMAINSTR.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -482,8 +479,7 @@ public class HRDataServiceImpl implements HRDataService {
         try {
             String fileName = "HRCOMPANYREL.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName,"HR");
-//            String pathName = "C:\\Users\\thongchai_s\\Documents\\SoftsquareDoc\\GSB\\HRDATA\\" + fileName;
-            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
+            InputStreamReader streamReader = new InputStreamReader(new FileInputStream(pathName), "TIS-620");
             BufferedReader bfReader = new BufferedReader(streamReader);
 
             Date currentDate = DateUtil.getCurrentDate();
@@ -634,7 +630,7 @@ public class HRDataServiceImpl implements HRDataService {
                         hrInterface.setBoundary(boundary);
                         hrInterface.setSubBoundary(subBoundary);
                         hrInterface.setOldDept(oldDept);
-                        hrInterfaceRepository.save(hrInterface);
+                        hrInterfaceRepository.saveAndFlush(hrInterface);
                     } else {
                         for (HrInterface hrInterface : hrInterfaces) {
                             hrInterface.setCompany(company);
@@ -669,7 +665,7 @@ public class HRDataServiceImpl implements HRDataService {
                             hrInterface.setBoundary(boundary);
                             hrInterface.setSubBoundary(subBoundary);
                             hrInterface.setOldDept(oldDept);
-                            hrInterfaceRepository.save(hrInterface);
+                            hrInterfaceRepository.saveAndFlush(hrInterface);
                         }
                     }
                     LOGGER.debug(line);
@@ -731,7 +727,7 @@ public class HRDataServiceImpl implements HRDataService {
                     // set LineBusiness of zone
                     if (AppUtil.isNotNull(zone1)) {
                         zone1.setLineBusiness(lineBusiness1);
-                        zoneRepository.save(zone1);
+                        zoneRepository.saveAndFlush(zone1);
                     }
 
                     // set zone map area
@@ -741,7 +737,7 @@ public class HRDataServiceImpl implements HRDataService {
                             ZoneMapArea zoneMapArea = new ZoneMapArea();
                             zoneMapArea.setZone(zone1);
                             zoneMapArea.setArea(area1);
-                            zoneMapAreaRepository.save(zoneMapArea);
+                            zoneMapAreaRepository.saveAndFlush(zoneMapArea);
                         }
                     }
 
@@ -752,7 +748,7 @@ public class HRDataServiceImpl implements HRDataService {
                             AreaMapBranch areaMapBranch = new AreaMapBranch();
                             areaMapBranch.setArea(area1);
                             areaMapBranch.setBranch(branch1);
-                            areaMapBranchRepository.save(areaMapBranch);
+                            areaMapBranchRepository.saveAndFlush(areaMapBranch);
                         }
                     }
 
@@ -760,20 +756,20 @@ public class HRDataServiceImpl implements HRDataService {
                     if (AppUtil.isNotEmpty(branch1)) {
                         branch1.setPhoneNumber(telephoneNumber);
                         branch1.setCenterCost(String.valueOf(Long.valueOf(costCenter)));
-                        branchRepository.save(branch1);
+                        branchRepository.saveAndFlush(branch1);
                     }
 
                     // set branch of unit
                     if (AppUtil.isNotEmpty(unit1)) {
                         unit1.setBranch(branch1);
-                        unitRepository.save(unit1);
+                        unitRepository.saveAndFlush(unit1);
                     }
 
                     // set parent of unit
                     if (AppUtil.isNotEmpty(subUnit1)) {
                         if (AppUtil.isNotNull(unit1)) {
                             subUnit1.setUnitParent(unit1.getId());
-                            unitRepository.save(subUnit1);
+                            unitRepository.saveAndFlush(subUnit1);
                         }
 
                     }
