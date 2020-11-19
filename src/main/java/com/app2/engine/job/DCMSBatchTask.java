@@ -268,6 +268,9 @@ public class DCMSBatchTask {
         BatchTransaction batchTransaction = null;
 
         try {
+            String fileName = "WRN_CONSENT_"+DateUtil.codeCurrentDate()+".txt";
+            smbFileService.remoteFileToLocalFile(fileName,"DCMS");
+
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMSBatchTask.WRNConsent");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
@@ -298,19 +301,19 @@ public class DCMSBatchTask {
         BatchTransaction batchTransaction = null;
 
         try {
+            String fileName = "WRN_TDR_"+DateUtil.codeCurrentDate()+".txt";
+            smbFileService.remoteFileToLocalFile(fileName,"DCMS");
+
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DCMSBatchTask.wrnTdr");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("WRN_TDR_YYYYMMDD.txt");
-
             wrnService.wrnTDR();
-
             batchTransaction.setStatus("S");
-
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(),e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
