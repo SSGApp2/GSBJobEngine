@@ -61,16 +61,35 @@ public class SmbFileServiceImpl implements SmbFileService {
             localDir =  pathLocalDir(topic,"download");
             remoteDir =  pathRemoteDir(topic,"download");
 
+            String ipAddress = "";
+            String username = "";
+            String password = "";
+            Integer port = null;
+
+            LOGGER.debug("topic : {}", topic);
             LOGGER.debug("localDir : {}", localDir);
             LOGGER.debug("remoteDir : {}", remoteDir);
 
+            if(topic.equals("HR") || topic.equals("AD")){
+                ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("FTP_CONNECTION", "FTP_HR");
+                ipAddress = parameter_DL.getVariable3();
+                username = parameter_DL.getVariable1();
+                password = parameter_DL.getVariable2();
+                port = Integer.valueOf(parameter_DL.getVariable4());
+            }else{
+                ipAddress = LEAD_SERVER_ADDRESS;
+                username = LEAD_USERNAME;
+                password = LEAD_PASSWORD;
+                port = LEAD_SERVER_PORT;
+            }
+
             JSch jsch = new JSch();
-            session = jsch.getSession(LEAD_USERNAME, LEAD_SERVER_ADDRESS, LEAD_SERVER_PORT);
-            session.setPassword(LEAD_PASSWORD);
-            LOGGER.debug("LEAD_USERNAME : {}", LEAD_USERNAME);
-            LOGGER.debug("LEAD_SERVER_ADDRESS : {}", LEAD_SERVER_ADDRESS);
-            LOGGER.debug("LEAD_SERVER_PORT : {}", LEAD_SERVER_PORT);
-            LOGGER.debug("LEAD_PASSWORD : {}", LEAD_PASSWORD);
+            session = jsch.getSession(username, ipAddress, port);
+            session.setPassword(password);
+            LOGGER.debug("LEAD_USERNAME : {}", username);
+            LOGGER.debug("LEAD_SERVER_ADDRESS : {}", ipAddress);
+            LOGGER.debug("LEAD_SERVER_PORT : {}", port);
+            LOGGER.debug("LEAD_PASSWORD : {}", password);
 
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
