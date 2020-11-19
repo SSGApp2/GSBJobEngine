@@ -586,7 +586,7 @@ public class CBSBatchTask {
     }
 
     @Transactional
-    @Scheduled(cron = "0 30 0 * * ?")
+    @Scheduled(cron = "0 50 23 * * ?")
     public void lsAcnTask(){
         //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
@@ -597,7 +597,6 @@ public class CBSBatchTask {
         try {
             String fileName = "LS_ACN_"+DateUtil.codeCurrentDate()+".txt";
             smbFileService.remoteFileToLocalFile(fileName,"CBS");
-
             ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
 
             batchTransaction = new BatchTransaction();
