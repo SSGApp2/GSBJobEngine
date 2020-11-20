@@ -97,7 +97,7 @@ public class SmbFileServiceImpl implements SmbFileService {
             LOGGER.debug("channelSftp.connect  !!");
 
             String src = remoteDir + "/" + fileName;
-            LOGGER.debug("src {}", src);
+            LOGGER.debug("src : {}", src);
             channelSftp.get(src, localDir);
 
             channelSftp.disconnect();
@@ -108,6 +108,7 @@ public class SmbFileServiceImpl implements SmbFileService {
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
         } finally {
             if (channelSftp != null && channelSftp.isConnected()) {
                 channelSftp.disconnect();
@@ -175,6 +176,7 @@ public class SmbFileServiceImpl implements SmbFileService {
 
         } catch (Exception e) {
             LOGGER.error("Error {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
         } finally {
             if (channelSftp != null && channelSftp.isConnected()) {
                 channelSftp.disconnect();
@@ -220,7 +222,7 @@ public class SmbFileServiceImpl implements SmbFileService {
                 paramDL = parameter_DL.getVariable2();
             }
             if (AppUtil.isNotNull(paramDL)) {
-                File directory = new File(paramDL + "/" + DateUtil.codeCurrentDate());
+                File directory = new File(paramDL + "\\" + DateUtil.codeCurrentDate());
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
