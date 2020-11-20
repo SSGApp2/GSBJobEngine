@@ -18,9 +18,7 @@ import javax.transaction.Transactional;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +55,9 @@ public class EmployeeADServiceImpl implements EmployeeADService {
     @Autowired
     AppUserRepositoryCustom appUserRepositoryCustom;
 
+    @Autowired
+    BatchTransactionRepository batchTransactionRepository;
+
     enum ADEmployee {
         employeeID, givenName, sn, displayName, description, title, employeeNumber, employeeType, postOfficeBox, mail, department, l, st, postalCode, division, otherPager, otherhomephone, otherIpPhone, streetAddress, userAccountControl, sAMAccountName, otherTelephone
     }
@@ -72,9 +73,14 @@ public class EmployeeADServiceImpl implements EmployeeADService {
 
         InputStreamReader streamReader = null;
 
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("AD.Download.InsertOrUpdateEmp");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("AD_YYYYMMDD.CSV");
+
         try {
             String fileName = "AD_" + date + ".csv";
-            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD",date);
+            String pathName = smbFileService.remoteFileToLocalFile(fileName, "AD", date);
             LOGGER.debug("pathName File {}", pathName);
 
             streamReader = new InputStreamReader(new FileInputStream(pathName), "UTF-8");
@@ -210,11 +216,16 @@ public class EmployeeADServiceImpl implements EmployeeADService {
                 Integer userNotActive = appUserRepositoryCustom.updateUserInternalToReject(removeTime);
                 LOGGER.debug("userNotActive Size {}", userNotActive);
             }
+            batchTransaction.setStatus("S");
             LOGGER.debug("Success update Employee !!");
         } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (streamReader != null) {
                 try {
                     streamReader.close();

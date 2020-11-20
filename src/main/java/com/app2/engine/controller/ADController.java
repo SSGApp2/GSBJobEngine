@@ -18,14 +18,6 @@ public class ADController {
     @Autowired
     EmployeeADService employeeADService;
 
-    @GetMapping("/downloadAll")
-    public void downloadAll(@RequestParam(value = "date", required = false) String date) {
-
-        employeeADService.InsertOrUpdateEmp(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : InsertOrUpdateEmp is completed.");
-
-    }
-
     @GetMapping("/InsertOrUpdateEmp")
     public void InsertOrUpdateEmp(@RequestParam(value = "date", required = false) String date) {
         employeeADService.InsertOrUpdateEmp(date != null ? date : DateUtil.codeCurrentDate());

@@ -6,7 +6,6 @@ import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,19 +48,19 @@ public class CMSController {
     }
 
     @GetMapping("seizeInfo")
-    public void seizeInfo(@RequestParam(value = "date", required = false) String date){
+    public void seizeInfo(@RequestParam(value = "date", required = false) String date) {
         cmsBatchTaskService.SEIZE_INFO(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : SEIZE_INFO is completed.");
     }
 
     @GetMapping("tblMtCourtTask")
-    public void tblMtCourtTask(@RequestParam(value = "date", required = false) String date){
+    public void tblMtCourtTask(@RequestParam(value = "date", required = false) String date) {
         cmsBatchTaskService.TBL_MT_COURT(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : TBL_MT_COURT is completed.");
     }
 
     @GetMapping("tblMtLedTask")
-    public void tblMtLedTask(@RequestParam(value = "date", required = false) String date){
+    public void tblMtLedTask(@RequestParam(value = "date", required = false) String date) {
         cmsBatchTaskService.TBL_MT_LED(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : TBL_MT_LED is completed.");
     }

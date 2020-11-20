@@ -37,7 +37,7 @@ public class CBSDownload {
 
     @Transactional
     @Scheduled(cron = "0 50 23 * * ?")
-    public void LS_ACN(){
+    public void LS_ACN() {
         //ส่ง Account Data Synchronization : ส่งให้ระบบ LEAD
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));

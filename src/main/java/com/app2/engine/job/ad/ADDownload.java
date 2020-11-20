@@ -1,9 +1,6 @@
 package com.app2.engine.job.ad;
 
-import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
-import com.app2.engine.repository.ParameterDetailRepository;
-import com.app2.engine.service.CBSBatchTaskService;
 import com.app2.engine.service.EmployeeADService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.DateUtil;
@@ -35,28 +32,14 @@ public class ADDownload {
 
     @Transactional
     @Scheduled(cron = "0 30 5 * * ?")
-    public void InsertOrUpdateEmp(){
+    public void InsertOrUpdateEmp() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("Download from FTP Server.");
         LOGGER.info("File name : AD_YYYYMMDD.CSV");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("AD.Download.InsertOrUpdateEmp");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("AD_YYYYMMDD.CSV");
+        employeeADService.InsertOrUpdateEmp(DateUtil.codeCurrentDate());
 
-        try {
-            employeeADService.InsertOrUpdateEmp(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
         LOGGER.info("***************************************");
     }
 }

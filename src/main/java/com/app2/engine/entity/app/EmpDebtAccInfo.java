@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of={"id"})
+@EqualsAndHashCode(of = {"id"})
 public class EmpDebtAccInfo extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

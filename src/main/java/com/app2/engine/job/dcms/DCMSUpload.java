@@ -1,6 +1,5 @@
 package com.app2.engine.job.dcms;
 
-import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.service.DCMSBatchTaskService;
 import com.app2.engine.service.LitigationUpdateService;
 import com.app2.engine.service.SmbFileService;

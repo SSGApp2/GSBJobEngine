@@ -1,6 +1,5 @@
 package com.app2.engine.job.dcms;
 
-import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.service.DCMSBatchTaskService;
 import com.app2.engine.service.LitigationUpdateService;
@@ -49,7 +48,7 @@ public class DCMSDownload {
         LOGGER.info("Download from FTP Server.");
         LOGGER.info("File name : ACN_STARTLEGAL_YYYYMMDD.txt");
 
-        dcmsBatchTaskService.ACN_STARTLEGAL(DateUtil.codeCurrentDate(),"Y");
+        dcmsBatchTaskService.ACN_STARTLEGAL(DateUtil.codeCurrentDate(), "Y");
 
         LOGGER.info("**************************************************************************");
     }

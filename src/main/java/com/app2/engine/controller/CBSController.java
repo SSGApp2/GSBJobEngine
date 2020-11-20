@@ -7,7 +7,6 @@ import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,7 +71,7 @@ public class CBSController {
         LOGGER.debug("Batch : MASTER_DATA_WORKING_DAYS is completed.");
 
         // วันหยุดธนาคาร
-        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null?date:DateUtil.codeCurrentDate());
+        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : MASTER_DATA_HOLIDAY is completed.");
 
         // OU

@@ -36,11 +36,11 @@ public class HRDownload {
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Download to FTP Server.");
         LOGGER.info("Batch HR All");
-        
+
         BatchTransaction batchTransaction = null;
         ///////////////////////////////////////////////////////////////////////////////////
         try {
-            batchTransaction=new BatchTransaction();
+            batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("position");

@@ -1,10 +1,9 @@
 package com.app2.engine.controller;
 
 
-import com.app2.engine.repository.BatchTransactionRepository;
-import com.app2.engine.service.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.app2.engine.service.DocumentTaskService;
+import com.app2.engine.service.HouseKeepingService;
+import com.app2.engine.service.NotificationTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,21 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.SimpleDateFormat;
-
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-    @Autowired
-    HRDataService hrDataService;
-
-    @Autowired
-    SmbFileService smbFileService;
-
     @Autowired
     DocumentTaskService documentTaskService;
 
@@ -35,13 +22,6 @@ public class JobController {
 
     @Autowired
     NotificationTaskService notificationTaskService;
-
-    @Autowired
-    EmployeeADService employeeADService;
-
-
-    @Autowired
-    BatchTransactionRepository batchTransactionRepository;
 
     @GetMapping("/assignedDocAuto")
     public ResponseEntity<String> assignedDocAuto() {

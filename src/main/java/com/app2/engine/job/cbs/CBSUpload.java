@@ -1,7 +1,5 @@
 package com.app2.engine.job.cbs;
 
-import com.app2.engine.entity.app.BatchTransaction;
-import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.service.CBSBatchTaskService;
 import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
@@ -12,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 @Component
 public class CBSUpload {
@@ -23,7 +21,6 @@ public class CBSUpload {
 
     @Autowired
     CBSBatchTaskService cbsBatchTaskService;
-
 
 
     @Transactional
