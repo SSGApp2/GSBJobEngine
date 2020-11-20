@@ -60,22 +60,15 @@ public class DCMSDownload {
         LOGGER.info("Download to FTP Server.");
         LOGGER.info("File name : WRN_CONSENT_YYYYMMDD.txt");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("DCMS.Download.WRN_CONSENT");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("WRN_CONSENT_YYYYMMDD.txt");
 
         try {
             wrnService.WRN_CONSENT(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
 
         } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
+
             LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
+
         }
         LOGGER.info("**************************************************************************");
     }

@@ -1,9 +1,7 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.DebtorAccDebtInfo;
-import com.app2.engine.entity.app.Document;
-import com.app2.engine.entity.app.DocumentProgress;
-import com.app2.engine.entity.app.EmpDebtAccInfo;
+import com.app2.engine.entity.app.*;
+import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.repository.DebtorAccDebtInfoRepository;
 import com.app2.engine.repository.custom.DebtorAccDebtInfoRepositoryCustom;
 import com.app2.engine.repository.DocumentProgressRepository;
@@ -14,6 +12,7 @@ import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.service.WRNService;
 import com.app2.engine.util.AppUtil;
+import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +53,19 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
     @Autowired
     private DocumentProgressRepository documentProgressRepository;
 
+    @Autowired
+    private BatchTransactionRepository batchTransactionRepository;
+
     @Override
     @Transactional
     public void WRN_CONSENT(String date) {
         BufferedReader bfReader = null;
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Download.WRN_CONSENT");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("WRN_CONSENT_YYYYMMDD.txt");
+
         try {
             // --- Copy File WRN_CONSENT_YYYYMMDD.txt ---
             String fileName = "WRN_CONSENT_" + date + ".txt";
@@ -101,15 +109,20 @@ public class WRNServiceImpl extends AbstractEngineService implements WRNService 
                     LOGGER.error(" WRN_CONSENT Not find file from path : {}", pathFile);
                 }
             }
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (bfReader != null) {
                 try {
                     bfReader.close();
                 } catch (IOException e) {
-                    LOGGER.error("Error {}", e.getMessage(), e);
+                    LOGGER.error("Error : {}", e.getMessage(), e);
                 }
             }
         }
