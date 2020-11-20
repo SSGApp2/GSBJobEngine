@@ -5,6 +5,7 @@ import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.repository.ParameterRepository;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
+import com.app2.engine.util.DateUtil;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -219,7 +220,7 @@ public class SmbFileServiceImpl implements SmbFileService {
                 paramDL = parameter_DL.getVariable2();
             }
             if (AppUtil.isNotNull(paramDL)) {
-                File directory = new File(paramDL + "/" + date);
+                File directory = new File(paramDL + "/" + DateUtil.codeCurrentDate());
                 if (!directory.exists()) {
                     directory.mkdirs();
                 }
@@ -252,21 +253,6 @@ public class SmbFileServiceImpl implements SmbFileService {
             case "WRN":
                 parameter_UL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_REMOTE", "06");
                 break;
-        }
-
-        if (AppUtil.isNotNull(parameter_UL)) {
-            String paramUL = null;
-            if (type.equals("download")) {
-                paramUL = parameter_UL.getVariable1();
-            } else if (type.equals("upload")) {
-                paramUL = parameter_UL.getVariable2();
-            }
-            if (AppUtil.isNotNull(paramUL)) {
-                File directory = new File(paramUL + "/" + date);
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-            }
         }
 
         return this.getPath(parameter_UL, type, date);

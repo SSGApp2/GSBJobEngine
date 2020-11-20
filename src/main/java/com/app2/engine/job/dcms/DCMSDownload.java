@@ -46,9 +46,11 @@ public class DCMSDownload {
         // ส่งข้อมูล Account และ CIF ที่ต้องการดำเนินคดี (AccountStartLegal)
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("Download from FTP Server.");
         LOGGER.info("File name : ACN_STARTLEGAL_YYYYMMDD.txt");
+
         dcmsBatchTaskService.ACN_STARTLEGAL(DateUtil.codeCurrentDate(),"Y");
+
         LOGGER.info("**************************************************************************");
     }
 
@@ -56,20 +58,13 @@ public class DCMSDownload {
     @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
     public void WRN_CONSENT() {
         // ส่งข้อมูลบัญชีที่มีรายการแจ้งเตือนกรณีที่ลูกหนี้ที่ศาลมีคำพิพากษาตามยอมทั้งหมด : ส่งให้ระบบ LEAD
+        LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("Download from FTP Server.");
         LOGGER.info("File name : WRN_CONSENT_YYYYMMDD.txt");
 
+        wrnService.WRN_CONSENT(DateUtil.codeCurrentDate());
 
-        try {
-            wrnService.WRN_CONSENT(DateUtil.codeCurrentDate());
-
-        } catch (Exception e) {
-
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-
-        }
         LOGGER.info("**************************************************************************");
     }
 
@@ -77,27 +72,13 @@ public class DCMSDownload {
     @Scheduled(cron = "0 0 2 * * ?") //ss mm hh every day
     public void WRN_TDR() {
         // ส่งข้อมูลรายการแจ้งเตือนบัญชีปรับปรุงโครงสร้างหนี้หลังคำพิพากษาผิดนัดชำระหนี้ทั้งหมด : ส่งให้ระบบ LEAD
+        LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("Download from FTP Server.");
         LOGGER.info("File name : WRN_TDR_YYYYMMDD.txt");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("DCMS.Download.WRN_TDR");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("WRN_TDR_YYYYMMDD.txt");
+        wrnService.WRN_TDR(DateUtil.codeCurrentDate());
 
-        try {
-            wrnService.WRN_TDR(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
         LOGGER.info("**************************************************************************");
     }
 }
