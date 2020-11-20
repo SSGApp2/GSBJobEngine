@@ -42,29 +42,13 @@ public class DCMSDownload {
 
     @Transactional
     @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void ACN_START_LEGAL() {
+    public void ACN_STARTLEGAL() {
         // ส่งข้อมูล Account และ CIF ที่ต้องการดำเนินคดี (AccountStartLegal)
         LOGGER.info("**************************************************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
         LOGGER.info("Download to FTP Server.");
         LOGGER.info("File name : ACN_STARTLEGAL_YYYYMMDD.txt");
-
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("DCMS.Download.ACN_START_LEGAL");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("ACN_STARTLEGAL_YYYYMMDD.txt");
-        try {
-            dcmsBatchTaskService.ACNStartLegal();
-            batchTransaction.setStatus("S");
-
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
+        dcmsBatchTaskService.ACN_STARTLEGAL(DateUtil.codeCurrentDate(),"Y");
         LOGGER.info("**************************************************************************");
     }
 

@@ -228,14 +228,28 @@ public class DateUtil {
         return date.getDate() + " " + monthThai[date.getMonth()] + " " + (date.getYear() + 1900 + 543);
     }
 
-    public static String codeCurrentDate(){
+    public static String codeCurrentDate() {
         String pattern = "yyyy-MM-dd";
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
         String currentDate = dateFormat.format(date);
         String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
+        return currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
+    }
+
+    public static String codeCurrentDateBeforeOneDay() {
+        String pattern = "yyyy-MM-dd";
+
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+
+        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
+        String beforeOneDay = dateFormat.format(yesterday);
+        String[] currentDateAr = beforeOneDay.split("-");
+        return currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
     }
 }
 

@@ -36,7 +36,7 @@ public class CBSController {
         cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : ZLE is completed.");
 
-        cbsBatchTaskService.LS_ACCOUNT_LIST(date != null ? date : DateUtil.codeCurrentDate());
+        cbsBatchTaskService.LS_ACCOUNTLIST(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : LS_ACCOUNT_LIST is completed.");
 
     }
@@ -120,8 +120,8 @@ public class CBSController {
 
     @GetMapping("lsAccountList")
     public void lsAccountList(@RequestParam(value = "date", required = false) String date) {
-        cbsBatchTaskService.LS_ACCOUNT_LIST(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : LS_ACCOUNT_LIST is completed.");
+        cbsBatchTaskService.LS_ACCOUNTLIST(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACCOUNTLIST is completed.");
     }
 
     @GetMapping("stblcntry")

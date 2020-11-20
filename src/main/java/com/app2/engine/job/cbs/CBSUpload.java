@@ -24,8 +24,7 @@ public class CBSUpload {
     @Autowired
     CBSBatchTaskService cbsBatchTaskService;
 
-    @Autowired
-    BatchTransactionRepository batchTransactionRepository;
+
 
     @Transactional
     @Scheduled(cron = "0 50 19 * * ?")
@@ -36,21 +35,7 @@ public class CBSUpload {
         LOGGER.info("Upload to FTP Server.");
         LOGGER.info("File name : LS_COLLECTION_STATUS_YYYYMMDD.txt");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("CBS.Upload.LS_COLLECTION_STATUS");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("LS_COLLECTION_STATUS_YYYYMMDD.txt");
-        try {
-            cbsBatchTaskService.LS_COLLECTION_STATUS(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
+        cbsBatchTaskService.LS_COLLECTION_STATUS(DateUtil.codeCurrentDate());
 
         LOGGER.info("***************************************");
     }
@@ -64,49 +49,21 @@ public class CBSUpload {
         LOGGER.info("Upload to FTP Server.");
         LOGGER.info("File name : ZLE_YYYYMMDD.txt");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("CBS.Upload.ZLE");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("ZLE_YYYYMMDD.txt");
+        cbsBatchTaskService.ZLE(DateUtil.codeCurrentDate());
 
-        try {
-            cbsBatchTaskService.ZLE(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
         LOGGER.info("***************************************");
     }
 
     @Transactional
     @Scheduled(cron = "0 50 19 * * ?")
-    public void LS_ACCOUNT_LIST() {
+    public void LS_ACCOUNTLIST() {
         //รับข้อมูลบัญชีทั้งหมดที่ถูกดำเนินคดี
         LOGGER.info("***************************************");
         LOGGER.info("The time is now : {}", dateFormat.format(new Date()));
         LOGGER.info("Upload to FTP Server.");
         LOGGER.info("File name : LS_ACCOUNTLIST_YYYYMMDD.txt");
 
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("CBS.Upload.LS_ACCOUNT_LIST");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("LS_ACCOUNTLIST_YYYYMMDD.txt");
-        try {
-            cbsBatchTaskService.LS_ACCOUNT_LIST(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
+        cbsBatchTaskService.LS_ACCOUNTLIST(DateUtil.codeCurrentDate());
 
         LOGGER.info("***************************************");
     }

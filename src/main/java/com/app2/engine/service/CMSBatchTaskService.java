@@ -4,7 +4,7 @@ public interface CMSBatchTaskService {
 
     void SEIZE_INFO(String date);
 
-    void LEGAL_STATUS(String date);
+    void LEGALSTATUS(String date);
 
     void TBL_MT_COURT(String date);
 
