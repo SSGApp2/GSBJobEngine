@@ -84,11 +84,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRREGION.txt";
+            String fileName = "HRREGION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -171,11 +171,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRSECTION.txt";
+            String fileName = "HRSECTION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -250,11 +250,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRPOSITION.txt";
+            String fileName = "HRPOSITION.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -321,11 +321,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRBRANCH.txt";
+            String fileName = "HRBRANCH.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -408,11 +408,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRDIV.txt";
+            String fileName = "HRDIV.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
             List<String> codeList = new ArrayList<>();
 
@@ -486,14 +486,14 @@ public class HRDataServiceImpl implements HRDataService {
             for (int i = 0; i < 2; i++) {
                 String fileName;
                 if (i == 0) {
-                    fileName = "HRDEPT.txt"; // หน่วย
+                    fileName = "HRDEPT.TXT"; // หน่วย
                 } else {
-                    fileName = "HRUNIT.txt"; // หน่วยย่อย
+                    fileName = "HRUNIT.TXT"; // หน่วยย่อย
                 }
                 String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
                 File file = new File(pathName);
-                List<String> lines = FileUtils.readLines(file, "UTF-8");
+                List<String> lines = FileUtils.readLines(file, "TIS-620");
 
                 String delimeter = "\\|";
                 int length = 2;
@@ -540,11 +540,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRBUSILINE.txt";
+            String fileName = "HRBUSILINE.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -617,11 +617,11 @@ public class HRDataServiceImpl implements HRDataService {
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRMAINSTR.txt";
+            String fileName = "HRMAINSTR.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
 
             String delimeter = "\\|";
@@ -687,18 +687,17 @@ public class HRDataServiceImpl implements HRDataService {
     }
 
     @Override
-    @Transactional
     public void hrInterface(String date) {
         FileInputStream fileInputStream = null;
         InputStreamReader streamReader = null;
         BufferedReader bfReader = null;
 
         try {
-            String fileName = "HRCOMPANYREL.txt";
+            String fileName = "HRCOMPANYREL.TXT";
             String pathName = smbFileService.remoteFileToLocalFile(fileName, "HR", date);
 
             fileInputStream = new FileInputStream(pathName);
-            streamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);
+            streamReader = new InputStreamReader(fileInputStream, "TIS-620");
             bfReader = new BufferedReader(streamReader);
 
             Date currentDate = DateUtil.getCurrentDate();

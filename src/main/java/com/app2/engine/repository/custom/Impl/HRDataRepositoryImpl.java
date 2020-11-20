@@ -5,6 +5,7 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,6 +21,7 @@ public class HRDataRepositoryImpl implements HRDataRepository {
 
 
     @Override
+    @Transactional
     public int updateDepartmentInActive(Date date) {
         String hql = "update Department o set o.status='I' where o.activeDate <:date "; //update status to inactive
         int row = ((Session) entityManager.getDelegate()).createQuery(hql).setParameter("date", date).executeUpdate();
