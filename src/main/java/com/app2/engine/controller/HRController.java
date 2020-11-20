@@ -37,7 +37,7 @@ public class HRController {
         LOGGER.debug("Batch : HRDIV.TXT is completed.");
 
         hrDataService.unit(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : HrUnit is completed.");
+        LOGGER.debug("Batch : HRUNIT.txt is completed.");
 
         hrDataService.orgGroup(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : HrOrgGroup is completed.");

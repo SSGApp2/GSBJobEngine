@@ -63,7 +63,7 @@ public class NotificationTask {
     public void setNotiTimeFromDatabase() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start set noti time from db");
+        LOGGER.info("Start set notification time from db");
 
         //ขั้นตอนอนุมัติดำเนินคดี : ส่งคืนแฟ้มคดีจากสำนักงานทนายความ
         ApplicationConstant.notifyTimeGSB02 = notificationSettingRepository.findByProcessType("2").getNotiTime();

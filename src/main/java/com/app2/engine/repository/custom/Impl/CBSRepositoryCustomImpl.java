@@ -30,10 +30,16 @@ public class CBSRepositoryCustomImpl implements CBSRepositoryCustom {
                 ",d.doc_status \n" +
                 ",d.doc_number \n" +
                 ",d.process_status\n" +
+                ",d.case_black_no --เลขคดีดำ\n" +
                 ",case when d.cur_username is null then d.requester else d.cur_username end cur_username -- ถ้าเป็นค่าว่างใช้ requester\n" +
                 ",dpo.adj_red_case_number\n" +
                 ",dpo.adjudication\n" +
+                ",convert(varchar,dpo.notic_doc_send_date ,103) as notic_doc_send_date --ยื่นคำฟ้องวันที่\n" +
+                ",convert(varchar,dpo.law_suit_send_date ,103) as law_suit_send_date --ยื่นคำฟ้องวันที่\n" +
+                ",convert(varchar, dpo.regulatory_date , 103) as regulatory_date\t--วันที่ออกคำบังคับ\n" +
+                ",convert(varchar, dpo.execute_date , 103) as execute_date\t--วันนที่ออกหมายบังคับ\n" +
                 ",wep.type_witness\n" +
+                ",convert(varchar,wep.exam_date, 103) as exam_date --วันที่นัดสืบพยาน\n" +
                 "from document d\n" +
                 "JOIN emp_debt_acc_info e on d.id = e.document\n" +
                 "JOIN debtor_map_account dma on e.debtor_map_account = dma.id\n" +

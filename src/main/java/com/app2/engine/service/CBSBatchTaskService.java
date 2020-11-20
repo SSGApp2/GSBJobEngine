@@ -3,7 +3,7 @@ package com.app2.engine.service;
 public interface CBSBatchTaskService {
     void LS_COLLECTION_STATUS(String date);
 
-    void LS_ACCOUNT_LIST(String date);
+    void LS_ACCOUNTLIST(String date);
 
     void MASTER_DATA_COUNTRY(String date);
 

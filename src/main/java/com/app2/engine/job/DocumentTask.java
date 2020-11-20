@@ -29,27 +29,26 @@ public class DocumentTask {
 
     @Transactional
     @Scheduled(cron = "0 30 0 * * *") //ss mm hh every day
-    public void task1() {
+    public void assignedDocAuto() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start task1");
+        LOGGER.info("Start job assignedDocAuto");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DocumentTask.task1");
+            batchTransaction.setControllerMethod("DocumentTask.assignedDocAuto");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("assignedDocAuto");
+            batchTransaction.setName("Job กระจายงาน");
             batchTransaction.setStatus("S");
             ResponseEntity<String> response = documentTaskService.assignedDocAuto();
             if (!response.getStatusCode().is2xxSuccessful()) {
                 batchTransaction.setStatus("E");
                 batchTransaction.setReason(response.getBody());
             }
-
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
+            LOGGER.error("Error : {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -64,13 +63,13 @@ public class DocumentTask {
     public void sendDemandBook() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Start sendDemandBook");
+        LOGGER.info("Start job sendDemandBook");
         BatchTransaction batchTransaction = null;
         try {
             batchTransaction = new BatchTransaction();
             batchTransaction.setControllerMethod("DocumentTask.sendDemandBook");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("sendDemandBook Update DocStatus");
+            batchTransaction.setName("Job เปลี่ยนสถานะเอกสาร");
             batchTransaction.setStatus("S");
             ResponseEntity<String> response = documentTaskService.sendDemandBook();
             if (!response.getStatusCode().is2xxSuccessful()) {

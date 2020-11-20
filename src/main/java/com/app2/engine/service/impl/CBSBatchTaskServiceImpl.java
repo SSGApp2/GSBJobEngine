@@ -7,6 +7,7 @@ import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CBSBatchTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.AppUtil;
+import com.app2.engine.util.DateUtil;
 import com.app2.engine.util.FileUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -52,30 +53,41 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     @Autowired
     CBSRepositoryCustom cbsRepositoryCustom;
 
+    @Autowired
+    BatchTransactionRepository batchTransactionRepository;
+
     @SneakyThrows
     @Override
     public void LS_COLLECTION_STATUS(String date) {
-        //หาข้อมูลจาก database โดยใช้ sql native query ย้ายมากจาก Engine
-        List<Map> documentList = cbsRepositoryCustom.findDocumentMovementsCollection();
         ParameterDetail params;
+        BufferedWriter writer = null;
 
-        for (int i = 0; i < 2; i++) {
-            //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
-            if (i == 0) {
-                //CBS
-                params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
-            } else {
-                //DCMS
-                params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
-            }
-            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Upload.LS_COLLECTION_STATUS");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LS_COLLECTION_STATUS_YYYYMMDD.txt");
 
-            String fileName = "LS_COLLECTION_STATUS_" + date + ".txt";
-            int total = 0;
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+        try {
+            //หาข้อมูลจาก database โดยใช้ sql native query ย้ายมากจาก Engine
+            List<Map> documentList = cbsRepositoryCustom.findDocumentMovementsCollection();
+            Date currentDate = DateUtil.getCurrentDate();
 
-            try {
+            for (int i = 0; i < 2; i++) {
+                //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
+                if (i == 0) {
+                    //CBS
+                    params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+                } else {
+                    //DCMS
+                    params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+                }
+                //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+                String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+                String fileName = "LS_COLLECTION_STATUS_" + date + ".txt";
+                int total = 0;
+                writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
                 SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
                 String BATCH_DATE1 = new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
 
@@ -96,44 +108,57 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                     String adjRedCaseNumber = (String) document.get("adj_red_case_number");
                     String adjudication = (String) document.get("adjudication");
                     String typeWitness = (String) document.get("type_witness");
+                    String noticDocSendDate = (String) document.get("notic_doc_send_date");   //วันที่ส่งหนังสือบอกกล่าว
+                    String lawSuitSendDate = (String) document.get("law_suit_send_date");   //ยื่นคำฟ้องวันที่
+                    String examDate = (String) document.get("exam_date");                   //วันที่นัดสืบพยาน
+                    String regulatoryDate = (String) document.get("regulatory_date");       //วันที่ออกคำบังคับ
+                    String executeDate = (String) document.get("execute_date");          //วันที่ออกหมายบังคับ
 
-                    String checkCase = String.valueOf(docStatus) + "#" + String.valueOf(processStatus);
-                    Map<String, String> mapCase1 = new HashMap<String, String>() {{
-                        put("D2#D2-1", "432");      //docStatus + processStatus
-                        put("E3#E3-10", "612");     //docStatus + processStatus
-                        put("E3#E3-11", "613");     //docStatus + processStatus
-                        put("E3#E3-5#1", "513");    //docStatus + processStatus + typeWitness
-                        put("E3#E3-5#2", "514");    //docStatus + processStatus + typeWitness
-                    }};
 
                     String ZCOLLST = "";
 
-                    if (mapCase1.containsKey(checkCase)) {
+                    String checkCase = String.valueOf(docStatus) + "#" + String.valueOf(processStatus);
+                    Map<String, String> mapCase1 = new HashMap<String, String>() {{
+                        put("E3#E3-5#1", "513");    //docStatus + processStatus + typeWitness + exam_date
+                        put("E3#E3-5#2", "514");    //docStatus + processStatus + typeWitness + exam_date
+                    }};
+
+                    if (AppUtil.isNull(ZCOLLST) && checkCase.equals("D2#D2-1") && AppUtil.isNotNull(noticDocSendDate)) {
+                        //432-บอกเลิกสัญญาหรือบอกกล่าวบังคับคดี = บันทึก ยื่นคำฟ้องวันที่
+                        Date dateLaw = new SimpleDateFormat("dd/MM/yyyy", DateUtil.getSystemLocale()).parse(noticDocSendDate);
+                        if (DateUtil.getDateWithRemoveTime(dateLaw).compareTo(DateUtil.getDateWithRemoveTime(currentDate)) <= 0) {
+                            ZCOLLST = "432"; //เช็คว่าถึงวันที่กำหนดหรือยัง
+                        }
+                    }
+                    if (AppUtil.isNotEmpty(ZCOLLST) && checkCase.equals("E3#E3-10") && AppUtil.isNotNull(regulatoryDate)) {
+                        //612-ออกคำบังคับ = บันทึกวันที่ออกคำบังคับ
+                        ZCOLLST = "612";
+                    }
+                    if (AppUtil.isNotEmpty(ZCOLLST) && checkCase.equals("E3#E3-10") && AppUtil.isNotNull(executeDate)) {
+                        //613-ออกหมายบังคับ = บันทึกวันที่ออกหมายบังคับ
+                        ZCOLLST = "613";
+                    }
+                    if (AppUtil.isNotEmpty(ZCOLLST) && mapCase1.containsKey(checkCase)) {
                         ZCOLLST = mapCase1.get(checkCase);
                     }
+                    //=========================================================================================================================
                     checkCase = String.valueOf(docStatus) + "#" + String.valueOf(processStatus) + "#" + String.valueOf(typeWitness);
-                    if (AppUtil.isEmpty(ZCOLLST) && mapCase1.containsKey(checkCase)) {
+                    if (AppUtil.isNotEmpty(ZCOLLST) && mapCase1.containsKey(checkCase) && AppUtil.isNotNull(examDate)) {
+//                            513-สืบพยานโจทย์ = บันทึกนัดสืบพยานโจทก์+บันทึกนัดสืบพยานวันที่
+//                            514-สืบพยานจำเลย = บันทึกนัดสืบพยานจำเลย+บันทึกนัดสืบพยานวันที่
                         ZCOLLST = mapCase1.get(checkCase);
                     }
-                    if (AppUtil.isEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && String.valueOf(adjudication).equals("A4")) {
-                        ZCOLLST = "614";
+                    //=========================================================================================================================
+                    if (AppUtil.isNotEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && String.valueOf(adjudication).equals("A4")) { //
+                        ZCOLLST = "615";
                     }
 
-                    if (AppUtil.isEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && AppUtil.isNotEmpty(adjRedCaseNumber) && AppUtil.isNotEmpty(adjudication)) {
+                    if (AppUtil.isNotEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && AppUtil.isNotEmpty(adjRedCaseNumber) && AppUtil.isNotEmpty(adjudication)) {
                         ZCOLLST = "611";
                     }
 
-                    if (AppUtil.isEmpty(ZCOLLST)) {
-                        Parameter parameter = parameterRepository.findByCode("COLLECTION_STATUS");
-                        List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
-
-                        for (ParameterDetail detail : parameterDetails) {
-                            if (AppUtil.isNotNull(docStatus) && docStatus.equals(detail.getCode())) {
-                                ZCOLLST = detail.getVariable1();
-                            } else if (AppUtil.isNotNull(processStatus) && processStatus.equals(detail.getCode())) {
-                                ZCOLLST = detail.getVariable1();
-                            }
-                        }
+                    if (AppUtil.isNotEmpty(ZCOLLST)) {
+                        ZCOLLST = mapParameter("COLLECTION_STATUS", docStatus, processStatus);
                     }
 
                     if (AppUtil.isNotEmpty(ZCOLLST)) {
@@ -155,57 +180,98 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                 } else {
                     smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
                 }
+            }
 
-            } catch (IOException e) {
-                LOGGER.error("Error : {}", e.getMessage(), e);
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException ex) {
-                        LOGGER.error("Error {}", ex.getMessage(), ex);
-                    }
+            batchTransaction.setStatus("S");
+        } catch (IOException e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
+        } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ex) {
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
+
+    }
+
+    @SneakyThrows
+    @Transactional
+    public String mapParameter(String parameterCode, String status, String process) {
+        Parameter parameter = parameterRepository.findByCode(parameterCode);
+        List<ParameterDetail> parameterDetails = parameterDetailRepository.findByParameter(parameter);
+
+        Map map = new HashMap();
+        String mapVariable = null;
+        String mapDesc = null;
+        for (ParameterDetail detail : parameterDetails) {
+            if (AppUtil.isNotNull(status) && status.equals(detail.getCode())) {
+                mapVariable = detail.getVariable1();
+                mapDesc = detail.getVariable2();
+            } else if (AppUtil.isNotNull(process) && process.equals(detail.getCode())) {
+                mapVariable = detail.getVariable1();
+                mapDesc = detail.getVariable2();
+            }
+        }
+
+        map.put("mapVariable", mapVariable);
+        map.put("mapDesc", mapDesc);
+
+        return mapVariable;
     }
 
     @Override
     @SneakyThrows
-    public void LS_ACCOUNT_LIST(String date) {
-        //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+    public void LS_ACCOUNTLIST(String date) {
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-        List<Map> documentList = cbsRepositoryCustom.findLsAccountList();
-
-        String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
-
-        //create new file
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-        int total = 0;
-
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Upload.LS_ACCOUNT_LIST");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LS_ACCOUNTLIST_YYYYMMDD.txt");
         try {
+            //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+            List<Map> documentList = cbsRepositoryCustom.findLsAccountList();
+
+            String fileName = "LS_ACCOUNTLIST_" + date + ".txt";
+
+            //create new file
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+            int total = 0;
+
             if (!documentList.isEmpty()) {
                 total = documentList.size();
-                for (int i = 0; i < documentList.size(); i++) {
-                    String CreditAccountNumber = documentList.get(i).get("value").toString();
-
+                for (Map aDocumentList : documentList) {
+                    String CreditAccountNumber = aDocumentList.get("value").toString();
                     ///write data in file
                     writer.write(CreditAccountNumber + "\n");
                 }
             }
+
             writer.write("Total " + total);
 
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CBS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage());
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();
@@ -1790,21 +1856,29 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
     @SneakyThrows
     @Override
     public void ZLE(String date) {
-        //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-        List<Map> debtorList = new ArrayList<>();
-
-        String fileName = "ZLE_" + date + ".txt";
-
-        //create new file
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-        String total = "0";
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CBS.Upload.ZLE");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("ZLE_YYYYMMDD.txt");
 
         try {
+            //หา path local เพื่อสร้างไฟล์ไว้ที่นี่ก่อนแล้วค่อย copy ไปยัง ftp server
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "02");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+            List<Map> debtorList = new ArrayList<>();
+
+            String fileName = "ZLE_" + date + ".txt";
+
+            //create new file
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+            String total = "0";
+
+
             writer.write("ID|CUST_TYPE|RESTRICTION\n");
 
             if (!debtorList.isEmpty()) {
@@ -1825,11 +1899,14 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
 
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CBS", date);
-
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage());
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();

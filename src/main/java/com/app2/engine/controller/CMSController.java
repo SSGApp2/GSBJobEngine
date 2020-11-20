@@ -26,8 +26,8 @@ public class CMSController {
     @GetMapping("uploadAll")
     public void uploadAll(@RequestParam(value = "date", required = false) String date) {
         // รับข้อมูลสถานะ Litigation (LitigationStatus) : รับจากระบบ LEAD
-        cmsBatchTaskService.LEGAL_STATUS(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : LEGAL_STATUS is completed.");
+        cmsBatchTaskService.LEGALSTATUS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LEGALSTATUS is completed.");
 
         // รับข้อมูลการยึดทรัพย์ (CollSeizeDetail) : รับจากระบบ LEAD
         cmsBatchTaskService.SEIZE_INFO(date != null ? date : DateUtil.codeCurrentDate());
@@ -44,8 +44,8 @@ public class CMSController {
 
     @GetMapping("legalStatus")
     public void legalStatus(@RequestParam(value = "date", required = false) String date) {
-        cmsBatchTaskService.LEGAL_STATUS(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : LEGAL_STATUS is completed.");
+        cmsBatchTaskService.LEGALSTATUS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LEGALSTATUS is completed.");
     }
 
     @GetMapping("seizeInfo")

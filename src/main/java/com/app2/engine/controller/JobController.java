@@ -2,17 +2,15 @@ package com.app2.engine.controller;
 
 
 import com.app2.engine.repository.BatchTransactionRepository;
-import com.app2.engine.service.DocumentTaskService;
-import com.app2.engine.service.EmployeeADService;
-import com.app2.engine.service.HRDataService;
-import com.app2.engine.service.HouseKeepingService;
-import com.app2.engine.service.NotificationTaskService;
 import com.app2.engine.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
 
@@ -61,7 +59,7 @@ public class JobController {
     }
 
     @GetMapping("/notification")
-    public void notification(@RequestParam("processType")String processType) {
+    public void notification(@RequestParam("processType") String processType) {
         notificationTaskService.notification(processType);
     }
 }

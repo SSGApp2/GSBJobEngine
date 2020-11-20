@@ -1,7 +1,11 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.*;
-import com.app2.engine.repository.*;
+import com.app2.engine.entity.app.BatchTransaction;
+import com.app2.engine.entity.app.Parameter;
+import com.app2.engine.entity.app.ParameterDetail;
+import com.app2.engine.repository.BatchTransactionRepository;
+import com.app2.engine.repository.ParameterDetailRepository;
+import com.app2.engine.repository.ParameterRepository;
 import com.app2.engine.repository.custom.DCMSRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.LitigationUpdateService;
@@ -17,13 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,6 +48,9 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
 
     @Autowired
     DCMSRepositoryCustom dcmsRepositoryCustom;
+
+    @Autowired
+    BatchTransactionRepository batchTransactionRepository;
 
     private enum BKC_HEADER {
         SEQ, LEGAL_ID, WF_TYPE_ID, WF_TYPE_DESC, ACN, COLL_ID, COLL_TYPE, ASSIGN_LAWYER_DT, NOTICE_DT, JUDGMENT_UNDECIDED_NO, JUDGMENT_UNDECIDED_YEAR, JUDGMENT_SUE_DT, JUDGMENT_DT, JUDGMENT_DECIDED_NO, JUDGMENT_DECIDED_YEAR, JUDGMENT_RESULT_DESC, BANKRUPT_DT, GAZETTE_DT, DUE_DT, SETTLEMENT_DT, SETTLEMENT_SEQ, PRINCIPAL_AMT, INTEREST_AMT, COURT_DT, COURT_SEQ, COURT_PRINCIPAL_AMT, COURT_INTEREST_AMT, SEIZE_DT, LED_APPRAISAL, APPROVED_DT, APPRAISAL_VAL, AUCTION_DT, AUCTION_AMT, LITIGTION_STATUS
@@ -90,19 +97,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @SneakyThrows
     @Override
     public void litigationUpdateBKC(String date) {
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-        String fileName = "LitigationUpdate_BKC_" + date + ".csv";
-
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
-
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateBKC");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LitigationUpdate_BKC_YYYYMMDD.csv");
         try {
-            bufferedWriter.write('\ufeff'); ///รองรับภาษาไทย
-            CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+            String fileName = "LitigationUpdate_BKC_" + date + ".csv";
+
+            writer = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
+            writer.write('\ufeff'); ///รองรับภาษาไทย
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(BKC_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForBKC(date);
@@ -151,18 +164,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             csvPrinter.flush();
             csvPrinter.close();
 
+            writer.close();
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bufferedWriter != null) {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+
+            if (writer != null) {
                 try {
-                    bufferedWriter.close();
+                    writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -265,20 +286,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Override
     @SneakyThrows
     public void litigationUpdateBKO(String date) {
+        BufferedWriter writer = null;
 
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
-
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-        String fileName = "LitigationUpdate_BKO_" + date + ".csv";
-
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
-
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateBKO");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LitigationUpdate_BKO_YYYYMMDD.csv");
         try {
-            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
-            CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+            String fileName = "LitigationUpdate_BKO_" + date + ".csv";
+
+            writer = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
+            writer.write('\ufeff');/// รองรับภาษาไทย
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(BKO_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForBKO(date);
@@ -327,18 +353,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             csvPrinter.flush();
             csvPrinter.close();
 
+            writer.close();
+
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bufferedWriter != null) {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            if (writer != null) {
                 try {
-                    bufferedWriter.close();
+                    writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -429,19 +462,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Override
     @SneakyThrows
     public void litigationUpdateCVA(String date) {
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-
-        String fileName = "LitigationUpdate_CVA_" + date + ".csv";
-
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVA");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LitigationUpdate_CVA_YYYYMMDD.csv");
 
         try {
-            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
-            CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+            String fileName = "LitigationUpdate_CVA_" + date + ".csv";
+
+            writer = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
+            writer.write('\ufeff');/// รองรับภาษาไทย
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVA_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVA();
@@ -476,21 +516,30 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                         , objectMap.get(CVA_HEADER.LITIGTION_STATUS.toString())
                 );
             }
+
             csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
+            writer.close();
+
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
+
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bufferedWriter != null) {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            if (writer != null) {
                 try {
-                    bufferedWriter.close();
+                    writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -506,19 +555,27 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @SneakyThrows
     @Override
     public void litigationUpdateCVC(String date) {
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+        BufferedWriter writer = null;
 
-        String fileName = "LitigationUpdate_CVC_" + date + ".csv";
-
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.LitigationUpdateCVC");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LitigationUpdate_CVC_YYYYMMDD.csv");
 
         try {
-            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
-            CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+
+            String fileName = "LitigationUpdate_CVC_" + date + ".csv";
+
+            writer = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
+            writer.write('\ufeff');/// รองรับภาษาไทย
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVC_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVC(date);
@@ -561,22 +618,30 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                         , objectMap.get(CVC_HEADER.LITIGTION_STATUS.toString())
                 );
             }
+
             csvPrinter.printRecord("TOTAL : " + total);
             csvPrinter.flush();
             csvPrinter.close();
 
+            writer.close();
+
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bufferedWriter != null) {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            if (writer != null) {
                 try {
-                    bufferedWriter.close();
+                    writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -763,19 +828,25 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     @Override
     @SneakyThrows
     public void litigationUpdateCVO(String date) {
+        BufferedWriter writer = null;
 
-        // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
-        ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
-
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
-        String fileName = "/LitigationUpdate_CVO_" + date + ".csv";
-
-        BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
-
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("DCMS.Upload.batchLitigationUpdateCVO");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LitigationUpdate_CVO_YYYYMMDD.csv");
         try {
-            bufferedWriter.write('\ufeff');/// รองรับภาษาไทย
-            CSVPrinter csvPrinter = new CSVPrinter(bufferedWriter, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
+            // BATCH_PATH_LOCAL : path LEAD , 01 : code of DCMS
+            ParameterDetail parameter_DL = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String pathFile = FileUtil.isNotExistsDirCreated(parameter_DL.getVariable2(), date);
+            String fileName = "/LitigationUpdate_CVO_" + date + ".csv";
+
+            writer = Files.newBufferedWriter(Paths.get(pathFile + "/" + fileName));
+
+
+            writer.write('\ufeff');/// รองรับภาษาไทย
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.newFormat(delimiterPipe).withRecordSeparator('\n')
                     .withHeader(CVO_HEADER.class));
 
             List<Map<String, Object>> listMap = dataForCVO(date);
@@ -833,18 +904,26 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             csvPrinter.flush();
             csvPrinter.close();
 
+            writer.close();
+
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "DCMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e);
         } finally {
-            if (bufferedWriter != null) {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
+            if (writer != null) {
                 try {
-                    bufferedWriter.close();
+                    writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }

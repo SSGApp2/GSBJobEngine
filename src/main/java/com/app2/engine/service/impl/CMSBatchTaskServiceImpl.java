@@ -1,7 +1,9 @@
 package com.app2.engine.service.impl;
 
-import com.app2.engine.entity.app.*;
-import com.app2.engine.repository.*;
+import com.app2.engine.entity.app.BatchTransaction;
+import com.app2.engine.entity.app.ParameterDetail;
+import com.app2.engine.repository.BatchTransactionRepository;
+import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.repository.custom.CMSRepositoryCustom;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.CMSBatchTaskService;
@@ -14,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CMSBatchTaskService {
@@ -31,18 +33,29 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     @Autowired
     SmbFileService smbFileService;
 
+    @Autowired
+    BatchTransactionRepository batchTransactionRepository;
+
     @Override
     @SneakyThrows
     public void SEIZE_INFO(String date) {
+        BufferedWriter writer = null;
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CMS.Upload.SEIZE_INFO");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("SEIZEINFO_YYYYMMDD.txt");
+
         String fileName = "SEIZEINFO_" + date + ".txt";
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
-
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-
         try {
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
+
             List<Map> guaranteeList = cmsRepositoryCustom.findSeizeInfoGuarantee();
             int total = guaranteeList.size();
 
@@ -79,10 +92,10 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                 List<Map> confiscateList = cmsRepositoryCustom.findSeizeInfoConfiscate(guarantee);
 
                 if (!confiscateList.isEmpty()) { ///confiscate เรียงลำดับวันที่อัพเดตล่าสุด
-                    if (AppUtil.isNotNull(confiscateList.get(0).get("confiscateDate") )) {
+                    if (AppUtil.isNotNull(confiscateList.get(0).get("confiscateDate"))) {
                         seizeDate = DateUtil.convertStringDateTimeToString(confiscateList.get(0).get("confiscateDate").toString());
                     }
-                    if (AppUtil.isNotNull(confiscateList.get(0).get("courtAdjudicate") )) {
+                    if (AppUtil.isNotNull(confiscateList.get(0).get("courtAdjudicate"))) {
                         seizeLawCourt = confiscateList.get(0).get("courtAdjudicate").toString();
                     }
                 }
@@ -102,15 +115,20 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -118,17 +136,26 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
 
     @Override
     @SneakyThrows
-    public void LEGAL_STATUS(String date) {
+    public void LEGALSTATUS(String date) {
+        BufferedWriter writer = null;
+
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CMS.Upload.LEGAL_STATUS");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("LEGALSTATUS_YYYMMDD.txt");
+
         String fileName = "LEGALSTATUS_" + date + ".txt";
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
-
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-        String dataHeaderStr = "collID|legalID|legalStatusCode|legalStatusDesc|";
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
 
         try {
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+            String dataHeaderStr = "collID|legalID|legalStatusCode|legalStatusDesc|";
+
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
+
             writer.write(dataHeaderStr);
             writer.newLine();
 
@@ -177,15 +204,21 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
+            batchTransaction.setStatus("S");
+
         } catch (Exception e) {
-            LOGGER.error("Error {}", e.getMessage(), e);
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();
                 } catch (IOException ex) {
-                    LOGGER.error("Error {}", ex.getMessage(), ex);
+                    LOGGER.error("Error : {}", ex.getMessage(), ex);
                 }
             }
         }
@@ -267,23 +300,31 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     @Override
     @SneakyThrows
     public void TBL_MT_COURT(String date) {
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-        List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("COURT");
-
-        String fileName = "TBL_MT_COURT_" + date + ".txt";
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-        String total = "0";
-        int i = 0;
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CMS.Upload.TBL_MT_COURT");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("TBL_MT_COURT_YYYYMMDD.txt");
 
         try {
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+            List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("COURT");
+
+            String fileName = "TBL_MT_COURT_" + date + ".txt";
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+
+            String total = "0";
+            int seq = 0;
+
             if (!debtorList.isEmpty()) {
                 total = String.valueOf(debtorList.size());
                 for (ParameterDetail detail : debtorList) {
-                    i++;
+                    seq++;
 
                     String description = AppUtil.checkEmpty(detail.getDescription());
                     String status = AppUtil.checkEmpty(detail.getStatus());
@@ -294,7 +335,7 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                     }
 
                     ///write data in file
-                    writer.write(i + "|" + description + "|" + flag + "\n");
+                    writer.write(seq + "|" + description + "|" + flag + "\n");
                 }
             }
 
@@ -304,10 +345,15 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();
@@ -321,23 +367,29 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
     @Override
     @SneakyThrows
     public void TBL_MT_LED(String date) {
-        ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+        BufferedWriter writer = null;
 
-        //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
-        String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
-
-        List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("LAGEL");
-
-        String fileName = "TBL_MT_LED_" + date + ".txt";
-        BufferedWriter writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
-        String total = "0";
-        int i = 0;
-
+        BatchTransaction batchTransaction = new BatchTransaction();
+        batchTransaction.setControllerMethod("CMS.Upload.TBL_MT_LED");
+        batchTransaction.setStartDate(DateUtil.getCurrentDate());
+        batchTransaction.setName("TBL_MT_LED_YYYYMMDD.txt");
         try {
+            ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "03");
+
+            //เช็ค folder วันที่ ถ้ายังไม่มีให้สร้างขึ้นมาใหม่
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable2(), date);
+
+            List<ParameterDetail> debtorList = parameterDetailRepository.findByPCode("LAGEL");
+
+            String fileName = "TBL_MT_LED_" + date + ".txt";
+            writer = new BufferedWriter(new FileWriter(path + "/" + fileName));
+            String total = "0";
+            int seq = 0;
+
             if (!debtorList.isEmpty()) {
                 total = String.valueOf(debtorList.size());
                 for (ParameterDetail detail : debtorList) {
-                    i++;
+                    seq++;
 
                     String description = AppUtil.checkEmpty(detail.getDescription());
                     String status = AppUtil.checkEmpty(detail.getStatus());
@@ -348,7 +400,7 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                     }
 
                     ///write data in file
-                    writer.write(i + "|" + description + "|" + flag + "\n");
+                    writer.write(seq + "|" + description + "|" + flag + "\n");
                 }
             }
 
@@ -358,10 +410,15 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
             //Copy file to FTP Server
             smbFileService.localFileToRemoteFile(fileName, "CMS", date);
 
+            batchTransaction.setStatus("S");
         } catch (Exception e) {
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
             LOGGER.error("Error {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
             if (writer != null) {
                 try {
                     writer.close();
