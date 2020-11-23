@@ -22,8 +22,8 @@ public abstract class AbstractEngineService {
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.add("Content-Type", "application/json; charset=utf-8");
         HttpEntity<String> entity = new HttpEntity<String>("", headers);
-//        String url = ApplicationConstant.GSBEngine + urlParam;
-        String url = ApplicationConstant.GSBEngineLocal + urlParam;
+        String url = ApplicationConstant.GSBEngine + urlParam;
+//        String url = ApplicationConstant.GSBEngineLocal + urlParam;
         LOGGER.info(" request :{}", url);
         return restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
     }
@@ -43,6 +43,7 @@ public abstract class AbstractEngineService {
     public ResponseEntity<String> postWithJsonCustom(String parameterMap, HttpMethod httpMethod, String urlParam) {
         RestTemplate restTemplate = new RestTemplate();
         String url = ApplicationConstant.GSBEngine + urlParam;
+//        String url = ApplicationConstant.GSBEngineLocal + urlParam;
 
         LOGGER.info("postWithJsonCustom url :{}", url);
 

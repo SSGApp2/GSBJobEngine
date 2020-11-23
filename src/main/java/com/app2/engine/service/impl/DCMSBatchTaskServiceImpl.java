@@ -52,7 +52,7 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
         try {
 
             ParameterDetail params = parameterDetailRepository.findByParameterAndCode("BATCH_PATH_LOCAL", "01");
-            String path = FileUtil.isNotExistsDirCreated(params.getVariable1(), date);
+            String path = FileUtil.isNotExistsDirCreated(params.getVariable3(), date);
 
             String filename = "ACN_STARTLEGAL_" + date + ".txt";
 
@@ -124,7 +124,6 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-
             LOGGER.error("Error : {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
