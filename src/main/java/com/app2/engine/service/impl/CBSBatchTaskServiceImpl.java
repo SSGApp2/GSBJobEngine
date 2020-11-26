@@ -123,45 +123,43 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                         put("E3#E3-5#2", "514");    //docStatus + processStatus + typeWitness + exam_date
                     }};
 
-                    if (AppUtil.isNull(ZCOLLST) && checkCase.equals("D2#D2-1") && AppUtil.isNotNull(noticDocSendDate)) {
+                    if (checkCase.equals("D2#D2-1") && AppUtil.isNotNull(noticDocSendDate)) {
                         //432-บอกเลิกสัญญาหรือบอกกล่าวบังคับคดี = บันทึก ยื่นคำฟ้องวันที่
                         Date dateLaw = new SimpleDateFormat("dd/MM/yyyy", DateUtil.getSystemLocale()).parse(noticDocSendDate);
                         if (DateUtil.getDateWithRemoveTime(dateLaw).compareTo(DateUtil.getDateWithRemoveTime(currentDate)) <= 0) {
                             ZCOLLST = "432"; //เช็คว่าถึงวันที่กำหนดหรือยัง
                         }
                     }
-                    if (AppUtil.isNotEmpty(ZCOLLST) && checkCase.equals("E3#E3-10") && AppUtil.isNotNull(regulatoryDate)) {
+                    if (checkCase.equals("E3#E3-10") && AppUtil.isNotNull(regulatoryDate)) {
                         //612-ออกคำบังคับ = บันทึกวันที่ออกคำบังคับ
                         ZCOLLST = "612";
                     }
-                    if (AppUtil.isNotEmpty(ZCOLLST) && checkCase.equals("E3#E3-10") && AppUtil.isNotNull(executeDate)) {
+                    if (checkCase.equals("E3#E3-10") && AppUtil.isNotNull(executeDate)) {
                         //613-ออกหมายบังคับ = บันทึกวันที่ออกหมายบังคับ
                         ZCOLLST = "613";
                     }
-                    if (AppUtil.isNotEmpty(ZCOLLST) && mapCase1.containsKey(checkCase)) {
+                    if (mapCase1.containsKey(checkCase)) {
                         ZCOLLST = mapCase1.get(checkCase);
                     }
                     //=========================================================================================================================
                     checkCase = String.valueOf(docStatus) + "#" + String.valueOf(processStatus) + "#" + String.valueOf(typeWitness);
-                    if (AppUtil.isNotEmpty(ZCOLLST) && mapCase1.containsKey(checkCase) && AppUtil.isNotNull(examDate)) {
+                    if (mapCase1.containsKey(checkCase) && AppUtil.isNotNull(examDate)) {
 //                            513-สืบพยานโจทย์ = บันทึกนัดสืบพยานโจทก์+บันทึกนัดสืบพยานวันที่
 //                            514-สืบพยานจำเลย = บันทึกนัดสืบพยานจำเลย+บันทึกนัดสืบพยานวันที่
                         ZCOLLST = mapCase1.get(checkCase);
                     }
                     //=========================================================================================================================
-                    if (AppUtil.isNotEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && String.valueOf(adjudication).equals("A4")) { //
+                    if (String.valueOf(docStatus).equals("E3") && String.valueOf(adjudication).equals("A4")) { //
                         ZCOLLST = "615";
                     }
 
-                    if (AppUtil.isNotEmpty(ZCOLLST) && String.valueOf(docStatus).equals("E3") && AppUtil.isNotEmpty(adjRedCaseNumber) && AppUtil.isNotEmpty(adjudication)) {
+                    if (String.valueOf(docStatus).equals("E3") && AppUtil.isNotEmpty(adjRedCaseNumber) && AppUtil.isNotEmpty(adjudication)) {
                         ZCOLLST = "611";
                     }
 
-                    if (AppUtil.isNotEmpty(ZCOLLST)) {
-                        ZCOLLST = mapParameter("COLLECTION_STATUS", docStatus, processStatus);
-                    }
+                    ZCOLLST = mapParameter("COLLECTION_STATUS", docStatus, processStatus);
 
-                    if (AppUtil.isNotEmpty(ZCOLLST)) {
+                    if (AppUtil.isNotEmpty(ZCOLLST) && AppUtil.isNotNull(ZCOLLST)) {
                         String line = CID + "|" + BATCH_DATE1 + "|" + BATCH_DATE2 + "|||" + ZCOLLST + "||" + LEGAL_ID + "|" + USER_CODE + "\n";
                         writer.write(line);
                         // ข้อมูลที่ออกมาในไฟล์จะไม่มีค่า NULL ต้องเป็นค่าว่างเท่านั้น
