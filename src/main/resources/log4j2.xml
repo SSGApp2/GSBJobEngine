@@ -8,7 +8,7 @@
 
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
         </Console>
         <RollingFile name="ENGINE" fileName="${sys:java.io.tmpdir}/GSBJobEngine.log"
                      filePattern="${sys:java.io.tmpdir}/$${date:yyyy-MM}/GSBJobEngine-%d{yyyy-MM-dd}-%i.log.gz">
