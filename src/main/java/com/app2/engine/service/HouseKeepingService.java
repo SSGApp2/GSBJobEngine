@@ -8,5 +8,6 @@ import java.util.Map;
 
 
 public interface HouseKeepingService {
-    public  void deleteDataByDay();
+    public void deleteDataByDay();
+    public void setAppUserLoginWrong();
 }

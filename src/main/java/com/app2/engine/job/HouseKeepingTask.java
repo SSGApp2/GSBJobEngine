@@ -64,18 +64,25 @@ public class HouseKeepingTask {
     @Transactional
     @Scheduled(cron = "0 1 0 * * *") //ss mm hh every day
     public void setAppUserLoginWrongTask() {
-//        LOGGER.info("***************************************");
-//        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-//        LOGGER.info("Start task1 ");
-//        houseKeepingService.UpdateLoginWrong();
-        Date currentDate = DateUtil.getCurrentDate();
-        Session session = (Session) entityManager.getDelegate();
-        StringBuilder querySql = new StringBuilder();
-        querySql.append("UPDATE app_user  SET login_wrong = 0 ,updated_by = 'GSBJobEngine',updated_date=:updated_date");
-        LOGGER.debug("SQL Query {}", querySql.toString());
-        SQLQuery query = session.createSQLQuery(querySql.toString());
-        query.setParameter("updated_date",currentDate);
-        query.executeUpdate();
-
+        LOGGER.info("***************************************");
+        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Start setAppUserLoginWrongTask");
+        BatchTransaction batchTransaction = null;
+        try{
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("HouseKeepingTask.setAppUserLoginWrongTask");
+            batchTransaction.setStartDate(DateUtil.getCurrentDate());
+            batchTransaction.setName("setAppUserLoginWrong");
+            batchTransaction.setStatus("S");
+            houseKeepingService.setAppUserLoginWrong();
+        }catch (Exception e){
+            batchTransaction.setStatus("E");
+            batchTransaction.setReason(e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
+        }finally {
+            batchTransaction.setEndDate(DateUtil.getCurrentDate());
+            batchTransactionRepository.saveAndFlush(batchTransaction);
         }
+        LOGGER.info("***************************************");
+    }
 }

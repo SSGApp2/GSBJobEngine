@@ -5,6 +5,7 @@ import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.AbstractEngineService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.util.AppUtil;
+import com.app2.engine.util.DateUtil;
 import com.app2.engine.util.JSONUtil;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -88,5 +90,19 @@ public class HouseKeepingServiceImpl extends AbstractEngineService implements Ho
 
             }
         }
+    }
+
+    @Override
+    public void setAppUserLoginWrong(){
+        Session session = (Session) entityManager.getDelegate();
+
+        StringBuilder querySql = new StringBuilder();
+        querySql.append("update app_user  set login_wrong = 0 ,updated_by = 'GSBJobEngine',updated_date =:updated_date");
+
+        LOGGER.debug("SQL Query {}", querySql.toString());
+
+        SQLQuery query = session.createSQLQuery(querySql.toString());
+        query.setParameter("updated_date", DateUtil.getCurrentDate());
+        query.executeUpdate();
     }
 }
