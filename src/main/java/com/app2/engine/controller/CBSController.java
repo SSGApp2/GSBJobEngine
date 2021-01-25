@@ -1,24 +1,16 @@
 package com.app2.engine.controller;
 
-import com.app2.engine.entity.app.ParameterDetail;
 import com.app2.engine.repository.ParameterDetailRepository;
 import com.app2.engine.service.CBSBatchTaskService;
-import com.app2.engine.service.CMSBatchTaskService;
 import com.app2.engine.service.SmbFileService;
 import com.app2.engine.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/jobs/cbs/")
@@ -34,179 +26,185 @@ public class CBSController {
     @Autowired
     ParameterDetailRepository parameterDetailRepository;
 
+    @GetMapping("uploadAll")
+    public void uploadAll(@RequestParam(value = "date", required = false) String date) {
 
+        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
+
+        cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ZLE is completed.");
+
+        cbsBatchTaskService.LS_ACCOUNTLIST(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACCOUNT_LIST is completed.");
+
+    }
+
+    @GetMapping("downloadAll")
+    public void downloadAll(@RequestParam(value = "date", required = false) String date) {
+        // ประเทศ
+        cbsBatchTaskService.MASTER_DATA_COUNTRY(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_COUNTRY is completed.");
+
+        // จังหวัด
+        cbsBatchTaskService.MASTER_DATA_PROVINCE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PROVINCE is completed.");
+
+        // อำเภอ
+        cbsBatchTaskService.MASTER_DATA_DISTRICT(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_DISTRICT is completed.");
+
+        // ตำบล
+        cbsBatchTaskService.MASTER_DATA_SUB_DISTRICT(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_SUB_DISTRICT is completed.");
+
+        // สาขา
+        cbsBatchTaskService.MASTER_DATA_BRANCH(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_BRANCH is completed.");
+
+        // CostCenter
+        cbsBatchTaskService.MASTER_DATA_COST_CENTER(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_COST_CENTER is completed.");
+
+        // วันทำการธนาคาร
+        cbsBatchTaskService.MASTER_DATA_WORKING_DAYS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_WORKING_DAYS is completed.");
+
+        // วันหยุดธนาคาร
+        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_HOLIDAY is completed.");
+
+        // OU
+        cbsBatchTaskService.MASTER_DATA_OU(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_OU is completed.");
+
+        // Market Code
+        cbsBatchTaskService.MASTER_DATA_MARKET_CODE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_MARKET_CODE is completed.");
+
+        // Product Group
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_GROUP(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_GROUP is completed.");
+
+        // Product Subtype
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_SUBTYPE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_GROUP is completed.");
+
+        // Product Type
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_TYPE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_TYPE is completed.");
+
+        // คำนำหน้า (แบบใหม่)
+        cbsBatchTaskService.MASTER_DATA_TITLE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_TITLE is completed.");
+    }
 
     @GetMapping("lsCollectionStatus")
-    public void lsCollectionStatus(){
-        ResponseEntity<String> response = cbsBatchTaskService.lsCollectionStatusTask();
-        String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CBS");
+    public void lsCollectionStatus(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.LS_COLLECTION_STATUS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_COLLECTION_STATUS is completed.");
     }
 
     @GetMapping("zle")
-    public void zle(){
-        ResponseEntity<String> response = cbsBatchTaskService.batchZLETask();
-        String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CBS");
+    public void zle(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.ZLE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : ZLE is completed.");
     }
 
     @GetMapping("lsAcn")
-    public void lsAcnTask(){
-        String fileName = "LS_ACN_"+ DateUtil.codeCurrentDate()+".txt";
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.lsAcn();
+    public void lsAcnTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.LS_ACN(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACN is completed.");
+    }
+
+    @GetMapping("lsAccountList")
+    public void lsAccountList(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.LS_ACCOUNTLIST(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : LS_ACCOUNTLIST is completed.");
     }
 
     @GetMapping("stblcntry")
-    public void stblcntryTask(){
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "01");
-        String fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        cbsBatchTaskService.stblcntryTask(fileName);
+    public void stblcntryTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_COUNTRY(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_COUNTRY is completed.");
     }
 
     @GetMapping("province")
-    public void masterDataProvinceTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "02");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataProvinceTask(fileName);
+    public void masterDataProvinceTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_PROVINCE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PROVINCE is completed.");
     }
 
     @GetMapping("district")
-    public void masterDataDistrictTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "03");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataDistrictTask(fileName);
+    public void masterDataDistrictTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_DISTRICT(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_DISTRICT is completed.");
     }
 
     @GetMapping("ditrictCd")
-    public void masterDataDistrictCdTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "04");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataSubDistrictTask(fileName);
+    public void masterDataDistrictCdTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_SUB_DISTRICT(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_SUB_DISTRICT is completed.");
     }
 
     @GetMapping("utblBrcd")
-    public void masterDataBranchTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "05");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataBranchTask(fileName);
+    public void masterDataBranchTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_BRANCH(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_BRANCH is completed.");
     }
 
     @GetMapping("utblcCntr")
-    public void masterDataCostCenterTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "06");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataCostCenterTask(fileName);
+    public void masterDataCostCenterTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_COST_CENTER(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_COST_CENTER is completed.");
     }
 
     @GetMapping("utblNbd")
-    public void masterDataWorkingDaysTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "07");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataWorkingDaysTask(fileName);
+    public void masterDataWorkingDaysTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_WORKING_DAYS(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_WORKING_DAYS is completed.");
     }
 
     @GetMapping("utblNbd1")
-    public void masterDataHolidayTask(){
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "08");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataHolidayTask(fileName);
+    public void masterDataHolidayTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_HOLIDAY(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_HOLIDAY is completed.");
     }
+
     @GetMapping("zutblOuBrcd")
-    public void masterDataOUTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "09");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataOUTask(fileName);
+    public void masterDataOUTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_OU(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_OU is completed.");
     }
 
     @GetMapping("mtMarketCode")
-    public void masterDataMarketCodeTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "10");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataMarketCodeTask(fileName);
+    public void masterDataMarketCodeTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_MARKET_CODE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_MARKET_CODE is completed.");
     }
 
     @GetMapping("mtProductGroup")
-    public void masterDataProductGroupTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "11");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataProductGroupTask(fileName);
+    public void masterDataProductGroupTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_GROUP(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_GROUP is completed.");
     }
 
     @GetMapping("mtProductSubType")
-    public void masterDataProductSubtypeTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "12");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataProductSubtypeTask(fileName);
+    public void masterDataProductSubtypeTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_SUBTYPE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_GROUP is completed.");
     }
 
     @GetMapping("mtProductType")
-    public void masterDataProductTypeTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "13");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataProductTypeTask(fileName);
+    public void masterDataProductTypeTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_PRODUCT_TYPE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_PRODUCT_TYPE is completed.");
     }
 
     @GetMapping("zutblTitle")
-    public void masterDataTitleTask() {
-        String fileName = null;
-        String timeLog = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-        String today = timeLog + ".txt";
-        ParameterDetail file = parameterDetailRepository.findByParameterAndCode("MASTERDATA_FILE", "16");
-        fileName = file.getVariable1() + today;
-        smbFileService.remoteFileToLocalFile(fileName,"CBS");
-        ResponseEntity<String> response = cbsBatchTaskService.masterDataTitleTask(fileName);
+    public void masterDataTitleTask(@RequestParam(value = "date", required = false) String date) {
+        cbsBatchTaskService.MASTER_DATA_TITLE(date != null ? date : DateUtil.codeCurrentDate());
+        LOGGER.debug("Batch : MASTER_DATA_TITLE is completed.");
     }
 
 }

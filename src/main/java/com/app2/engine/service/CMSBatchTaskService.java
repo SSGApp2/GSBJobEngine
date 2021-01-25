@@ -1,11 +1,12 @@
 package com.app2.engine.service;
 
-import org.springframework.http.ResponseEntity;
-
 public interface CMSBatchTaskService {
-    ResponseEntity<String> createFileCSVLitigationCVA();
-    ResponseEntity<String> seizeInfo();
-    ResponseEntity<String> legalStatus();
-    ResponseEntity<String> tblMtLedTask();
-    ResponseEntity<String> tblMtCourtTask();
+
+    void SEIZE_INFO(String date);
+
+    void LEGALSTATUS(String date);
+
+    void TBL_MT_COURT(String date);
+
+    void TBL_MT_LED(String date);
 }

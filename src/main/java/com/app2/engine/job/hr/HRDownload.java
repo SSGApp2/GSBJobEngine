@@ -1,4 +1,4 @@
-package com.app2.engine.job;
+package com.app2.engine.job.hr;
 
 import com.app2.engine.entity.app.BatchTransaction;
 import com.app2.engine.repository.BatchTransactionRepository;
@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Component
-public class DataHRTask {
+public class HRDownload {
     private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -34,19 +34,22 @@ public class DataHRTask {
     public void hrDataTask() {
         LOGGER.info("***************************************");
         LOGGER.info("The time is now {}", dateFormat.format(new Date()));
+        LOGGER.info("Download to FTP Server.");
+        LOGGER.info("Batch HR All");
+
         BatchTransaction batchTransaction = null;
         ///////////////////////////////////////////////////////////////////////////////////
         try {
-            batchTransaction=new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction = new BatchTransaction();
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("position");
             batchTransaction.setStatus("S");
-            hrDataService.position();
+            hrDataService.position(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -54,15 +57,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("region");
             batchTransaction.setStatus("S");
-            hrDataService.region();
+            hrDataService.region(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -70,15 +73,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("section");
             batchTransaction.setStatus("S");
-            hrDataService.section();
+            hrDataService.section(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -86,15 +89,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("branch");
             batchTransaction.setStatus("S");
-            hrDataService.branch();
+            hrDataService.branch(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -102,15 +105,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("lineBusiness");
             batchTransaction.setStatus("S");
-            hrDataService.lineBusiness();
+            hrDataService.lineBusiness(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -118,15 +121,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("unit");
             batchTransaction.setStatus("S");
-            hrDataService.unit();
+            hrDataService.unit(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -134,15 +137,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("orgGroup");
             batchTransaction.setStatus("S");
-            hrDataService.orgGroup();
+            hrDataService.orgGroup(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -150,15 +153,15 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("company");
             batchTransaction.setStatus("S");
-            hrDataService.company();
+            hrDataService.company(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
@@ -166,35 +169,20 @@ public class DataHRTask {
         ///////////////////////////////////////////////////////////////////////////////////
         try {
             batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("DataHRTask.hrDataTask");
+            batchTransaction.setControllerMethod("HR.Download.hrDataTask");
             batchTransaction.setStartDate(DateUtil.getCurrentDate());
             batchTransaction.setName("hrInterface");
             batchTransaction.setStatus("S");
-            hrDataService.hrInterface();
+            hrDataService.hrInterface(DateUtil.codeCurrentDate());
         } catch (Exception e) {
             batchTransaction.setStatus("E");
             batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
+            LOGGER.error("Error {}", e.getMessage(), e);
         } finally {
             batchTransaction.setEndDate(DateUtil.getCurrentDate());
             batchTransactionRepository.saveAndFlush(batchTransaction);
         }
         ///////////////////////////////////////////////////////////////////////////////////
         LOGGER.info("***************************************");
-        try {
-            batchTransaction = new BatchTransaction();
-            batchTransaction.setControllerMethod("EmployeeADService.InsertOrUpdateEmp");
-            batchTransaction.setStartDate(DateUtil.getCurrentDate());
-            batchTransaction.setName("InsertOrUpdateEmp");
-            batchTransaction.setStatus("S");
-            employeeADService.InsertOrUpdateEmp();
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage());
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
     }
 }

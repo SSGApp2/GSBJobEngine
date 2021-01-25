@@ -1,25 +1,39 @@
 package com.app2.engine.service;
 
-import org.springframework.http.ResponseEntity;
-
 public interface CBSBatchTaskService {
-    ResponseEntity<String> lsCollectionStatusTask();
-    ResponseEntity<String> accountEndLegalUpdateTask();
-    ResponseEntity<String> createFileTXTRestrictionZLE();
-    ResponseEntity<String> stblcntryTask(String fileName);
-    ResponseEntity<String> masterDataProvinceTask(String fileName);
-    ResponseEntity<String> masterDataDistrictTask(String fileName);
-    ResponseEntity<String> masterDataSubDistrictTask(String fileName);
-    ResponseEntity<String> masterDataBranchTask(String fileName);
-    ResponseEntity<String> masterDataCostCenterTask(String fileName);
-    ResponseEntity<String> masterDataWorkingDaysTask(String fileName);
-    ResponseEntity<String> masterDataHolidayTask(String fileName);
-    ResponseEntity<String> masterDataOUTask(String fileName);
-    ResponseEntity<String> masterDataMarketCodeTask(String fileName);
-    ResponseEntity<String> masterDataProductGroupTask(String fileName);
-    ResponseEntity<String> masterDataProductSubtypeTask(String fileName);
-    ResponseEntity<String> masterDataProductTypeTask(String fileName);
-    ResponseEntity<String> masterDataTitleTask(String fileName);
-    ResponseEntity<String> batchZLETask();
-    ResponseEntity<String> lsAcn();
+    void LS_COLLECTION_STATUS(String date);
+
+    void LS_ACCOUNTLIST(String date);
+
+    void MASTER_DATA_COUNTRY(String date);
+
+    void MASTER_DATA_PROVINCE(String date);
+
+    void MASTER_DATA_DISTRICT(String date);
+
+    void MASTER_DATA_SUB_DISTRICT(String date);
+
+    void MASTER_DATA_BRANCH(String date);
+
+    void MASTER_DATA_COST_CENTER(String date);
+
+    void MASTER_DATA_WORKING_DAYS(String date);
+
+    void MASTER_DATA_HOLIDAY(String date);
+
+    void MASTER_DATA_OU(String date);
+
+    void MASTER_DATA_MARKET_CODE(String date);
+
+    void MASTER_DATA_PRODUCT_GROUP(String date);
+
+    void MASTER_DATA_PRODUCT_SUBTYPE(String date);
+
+    void MASTER_DATA_PRODUCT_TYPE(String date);
+
+    void MASTER_DATA_TITLE(String date);
+
+    void ZLE(String date);
+
+    void LS_ACN(String date);
 }

@@ -1,38 +1,19 @@
 package com.app2.engine.controller;
 
 
-import com.app2.engine.entity.app.BatchTransaction;
-import com.app2.engine.repository.BatchTransactionRepository;
 import com.app2.engine.service.DocumentTaskService;
-import com.app2.engine.service.EmployeeADService;
-import com.app2.engine.service.HRDataService;
 import com.app2.engine.service.HouseKeepingService;
 import com.app2.engine.service.NotificationTaskService;
-import com.app2.engine.service.*;
-import com.app2.engine.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-    @Autowired
-    HRDataService hrDataService;
-
-    @Autowired
-    SmbFileService smbFileService;
-
     @Autowired
     DocumentTaskService documentTaskService;
 
@@ -42,79 +23,14 @@ public class JobController {
     @Autowired
     NotificationTaskService notificationTaskService;
 
-    @Autowired
-    EmployeeADService employeeADService;
-
-
-    @Autowired
-    BatchTransactionRepository batchTransactionRepository;
-
-    @Autowired
-    CBSBatchTaskService cbsBatchTaskService;
-
-    @Autowired
-    CMSBatchTaskService cmsBatchTaskService;
-
-    @Autowired
-    DCMSBatchTaskService dcmsBatchTaskService;
-
-    @Autowired
-    LitigationUpdateService litigationUpdateService;
-
-    @Autowired
-    private WRNService wrnService;
-
-
-
-    @GetMapping("/HrRegion")
-    public void HrRegion() {
-        hrDataService.region();
-    }
-
-    @GetMapping("/HrSection")
-    public void HrSection() {
-        hrDataService.section();
-    }
-
-    @GetMapping("/HrPosition")
-    public void HrPosition() {
-        hrDataService.position();
-    }
-
-    @GetMapping("/HrBranch")
-    public void HrBranch() {
-        hrDataService.branch();
-    }
-
-    @GetMapping("/HrLineBusiness")
-    public void HrLineBusiness() {
-        hrDataService.lineBusiness();
-    }
-
-    @GetMapping("/HrUnit")
-    public void HrUnit() {
-        hrDataService.unit();
-    }
-
-    @GetMapping("/HrOrgGroup")
-    public void HrOrgGroup() {
-        hrDataService.orgGroup();
-    }
-
-    @GetMapping("/HrCompany")
-    public void HrCompany() {
-        hrDataService.company();
-    }
-
-    @GetMapping("/HrInterface")
-    public void HrInterface() {
-        hrDataService.hrInterface();
-    }
-
-
     @GetMapping("/assignedDocAuto")
     public ResponseEntity<String> assignedDocAuto() {
         return documentTaskService.assignedDocAuto();
+    }
+
+    @GetMapping("/sendDemandBook")
+    public ResponseEntity<String> sendDemandBook() {
+        return documentTaskService.sendDemandBook();
     }
 
     @GetMapping("/houseKeeping")
@@ -122,78 +38,8 @@ public class JobController {
         houseKeepingService.deleteDataByDay();
     }
 
-    @GetMapping("/InsertOrUpdateEmp")
-    public void InsertOrUpdateEmp() {
-        employeeADService.InsertOrUpdateEmp();
-    }
-
     @GetMapping("/notification")
-    public void notification(@RequestParam("processType")String processType) {
+    public void notification(@RequestParam("processType") String processType) {
         notificationTaskService.notification(processType);
     }
-
-    @GetMapping("/wrnConsent")
-    public void wrnConsent(){
-        wrnService.wrnConsent();
-    }
-
-    @GetMapping("/wrnTDR")
-    public void wrnTDR(){
-        wrnService.wrnTDR();
-    }
-
-    @GetMapping("allUpload")
-    public void allUpload(){
-
-        LOGGER.debug("Start Manual Upload All");
-        LOGGER.debug(">>============= CBS =============");
-        ResponseEntity<String> lsCollectionStatus = cbsBatchTaskService.lsCollectionStatusTask();
-        smbFileService.localFileToRemoteFile(lsCollectionStatus.getBody(),"CBS");
-        smbFileService.localFileToRemoteFile(lsCollectionStatus.getBody(),"DCMS");
-        LOGGER.debug("LS_COLLECTION_STATUS Completed.");
-
-        ResponseEntity<String> zle = cbsBatchTaskService.batchZLETask();
-        smbFileService.localFileToRemoteFile(zle.getBody(),"CBS");
-        LOGGER.debug("ZLE Completed.");
-
-        LOGGER.debug(">>============= CMS =============");
-        ResponseEntity<String> legalStatus = cmsBatchTaskService.legalStatus();
-        smbFileService.localFileToRemoteFile(legalStatus.getBody(),"CMS");
-        LOGGER.debug("LEGAL_STATUS Completed.");
-
-        ResponseEntity<String> response = cmsBatchTaskService.seizeInfo();
-        String fileName = response.getBody();
-        smbFileService.localFileToRemoteFile(fileName,"CMS");
-        LOGGER.debug("SEIZE_INFO Completed.");
-
-        ResponseEntity<String> tblMtCourt = cmsBatchTaskService.tblMtCourtTask();
-        smbFileService.localFileToRemoteFile(tblMtCourt.getBody(),"CMS");
-        LOGGER.debug("TBL_MT_LED Completed.");
-
-        ResponseEntity<String> tblMtLed = cmsBatchTaskService.tblMtLedTask();
-        smbFileService.localFileToRemoteFile(tblMtLed.getBody(),"CMS");
-        LOGGER.debug("TBL_MT_COURT Completed.");
-
-        LOGGER.debug(">>============= DCMS =============");
-        ResponseEntity<String> acnEndLegal = dcmsBatchTaskService.ACNEndLegal();
-        smbFileService.localFileToRemoteFile(acnEndLegal.getBody(),"DCMS");
-        LOGGER.debug("ACN_ENDLEGAL Completed.");
-
-        litigationUpdateService.litigationUpdateBKC();
-        LOGGER.debug("LITIGATION_UPDATE_BKC Completed.");
-
-        litigationUpdateService.litigationUpdateBKO();
-        LOGGER.debug("LITIGATION_UPDATE_BKO Completed.");
-
-        litigationUpdateService.litigationUpdateCVA();
-        LOGGER.debug("LITIGATION_UPDATE_CVA Completed.");
-
-        litigationUpdateService.litigationUpdateCVC();
-        LOGGER.debug("LITIGATION_UPDATE_CVC Completed.");
-
-        litigationUpdateService.litigationUpdateCVO();
-        LOGGER.debug("LITIGATION_UPDATE_CVO Completed.");
-
-    }
-
 }

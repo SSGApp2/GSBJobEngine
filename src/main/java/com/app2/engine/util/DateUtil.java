@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-
 @Component
 public class DateUtil {
     private static Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
@@ -27,7 +26,6 @@ public class DateUtil {
             "กรกฎาคม", "สิงหาคม", "กันยายน",
             "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
     };
-
 
     public static Timestamp getCurrentDate() {
         Timestamp today = null;
@@ -54,8 +52,6 @@ public class DateUtil {
     }
 
     public static Timestamp getTimeStampGetMaxTime(String stringDate) {
-
-//        LOGGER.info()
         Timestamp today = null;
         try {
             today = getTimeMax(DATE_FORMAT.parse(stringDate));
@@ -63,13 +59,11 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return today;
     }
 
 
     public static Locale getSystemLocale() {
-//        LOGGER.info("getSystemLocale  Locale.US");
         return Locale.US;
     }
 
@@ -84,7 +78,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return maxTimeDate;
     }
 
@@ -100,7 +93,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return maxTimeDate;
     }
 
@@ -116,7 +108,6 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
         return minTimeDate;
     }
 
@@ -133,20 +124,30 @@ public class DateUtil {
         return newDate;
     }
 
-
-    public static String convertStringToDate(String dateString1) {
+    public static String convertStringDateToString(String dateString) {
+        ///20200717 ---> 2020-07-17
         String newDate = "";
         try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd", DateUtil.getSystemLocale()).parse(dateString1);
-            SimpleDateFormat newformat = new SimpleDateFormat("dd-MM-yyyy", DateUtil.getSystemLocale());
+            Date date = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale()).parse(dateString);
+            SimpleDateFormat newformat = new SimpleDateFormat("yyyy-MM-dd", DateUtil.getSystemLocale());
             newDate = newformat.format(date);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return newDate;
+    }
 
-
+    public static String convertStringDateTimeToString(String dateString) {
+        ////2020-07-17 00:00:00 ---> 20200717
+        String newDate = "";
+        try {
+            Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", DateUtil.getSystemLocale()).parse(dateString);
+            SimpleDateFormat newformat = new SimpleDateFormat("yyyyMMdd", DateUtil.getSystemLocale());
+            newDate = newformat.format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return newDate;
     }
 
     public static String convertDateToString(Date dateIn) {
@@ -183,7 +184,6 @@ public class DateUtil {
 
 
     public static String ConvertDateExcelDateFormat(String stringDate) {
-
         try {
             String dateStr = stringDate;
             DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
@@ -199,14 +199,9 @@ public class DateUtil {
             LOGGER.error("error msg : {} ", e);
             throw new RuntimeException(e);
         }
-
-
     }
 
-
     public static String checkDateFormat(String str) {
-
-
         if (str.length() > 10) {
             String itemSplit[] = str.split("\\-");
 
@@ -227,22 +222,34 @@ public class DateUtil {
         } else {
             return str;
         }
-
-
     }
 
     public static String getDateStringThai(Date date) {
         return date.getDate() + " " + monthThai[date.getMonth()] + " " + (date.getYear() + 1900 + 543);
     }
 
-    public static String codeCurrentDate(){
+    public static String codeCurrentDate() {
         String pattern = "yyyy-MM-dd";
         Date date = new Date();
         DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
         String currentDate = dateFormat.format(date);
         String[] currentDateAr = currentDate.split("-");
-        String codeDate = currentDateAr[0]+currentDateAr[1]+currentDateAr[2];
-        return codeDate;
+        return currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
+    }
+
+    public static String codeCurrentDateBeforeOneDay() {
+        String pattern = "yyyy-MM-dd";
+
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -1);
+        Date yesterday = calendar.getTime();
+
+        DateFormat dateFormat = new SimpleDateFormat(pattern, Locale.US);
+        String beforeOneDay = dateFormat.format(yesterday);
+        String[] currentDateAr = beforeOneDay.split("-");
+        return currentDateAr[0] + currentDateAr[1] + currentDateAr[2];
     }
 }
 
