@@ -458,33 +458,4 @@ public class CBSDownload {
         }
         LOGGER.info("***************************************");
     }
-
-    @Transactional
-    @Scheduled(cron = "0 50 23 * * ?") //ss mm hh every day
-    public void MASTER_DATA_ZUTBLMKTDFT() {
-        ///Map Market Code กับ Product Subtype
-        LOGGER.info("***************************************");
-        LOGGER.info("The time is now {}", dateFormat.format(new Date()));
-        LOGGER.info("Download to FTP Server.");
-        LOGGER.info("File name : ZUTBLMKTDFT_YYYYMMDD.txt");
-
-        BatchTransaction batchTransaction = new BatchTransaction();
-        batchTransaction.setControllerMethod("CBS.Download.MASTER_DATA_ZUTBLMKTDFT");
-        batchTransaction.setStartDate(DateUtil.getCurrentDate());
-        batchTransaction.setName("ZUTBLMKTDFT_YYYYMMDD.txt");
-
-        try {
-            cbsBatchTaskService.MASTER_DATA_ZUTBLMKTDFT(DateUtil.codeCurrentDate());
-            batchTransaction.setStatus("S");
-
-        } catch (Exception e) {
-            batchTransaction.setStatus("E");
-            batchTransaction.setReason(e.getMessage());
-            LOGGER.error("Error {}", e.getMessage(), e);
-        } finally {
-            batchTransaction.setEndDate(DateUtil.getCurrentDate());
-            batchTransactionRepository.saveAndFlush(batchTransaction);
-        }
-        LOGGER.info("***************************************");
-    }
 }

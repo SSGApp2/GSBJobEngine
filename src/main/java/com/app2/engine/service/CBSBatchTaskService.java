@@ -33,8 +33,6 @@ public interface CBSBatchTaskService {
 
     void MASTER_DATA_TITLE(String date);
 
-    void MASTER_DATA_ZUTBLMKTDFT(String date);
-
     void ZLE(String date);
 
     void LS_ACN(String date);

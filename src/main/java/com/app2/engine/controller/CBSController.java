@@ -97,10 +97,6 @@ public class CBSController {
         // คำนำหน้า (แบบใหม่)
         cbsBatchTaskService.MASTER_DATA_TITLE(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : MASTER_DATA_TITLE is completed.");
-
-        // Map Market Code กับ Product Subtype
-        cbsBatchTaskService.MASTER_DATA_ZUTBLMKTDFT(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : MASTER_DATA_ZUTBLMKTDFT is completed.");
     }
 
     @GetMapping("lsCollectionStatus")
@@ -209,12 +205,6 @@ public class CBSController {
     public void masterDataTitleTask(@RequestParam(value = "date", required = false) String date) {
         cbsBatchTaskService.MASTER_DATA_TITLE(date != null ? date : DateUtil.codeCurrentDate());
         LOGGER.debug("Batch : MASTER_DATA_TITLE is completed.");
-    }
-
-    @GetMapping("mapMarketProductSubtype")
-    public void masterDataZutblmktdftTask(@RequestParam(value = "date", required = false) String date) {
-        cbsBatchTaskService.MASTER_DATA_ZUTBLMKTDFT(date != null ? date : DateUtil.codeCurrentDate());
-        LOGGER.debug("Batch : MASTER_DATA_ZUTBLMKTDFT is completed.");
     }
 
 }
