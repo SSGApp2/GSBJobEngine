@@ -2018,6 +2018,8 @@ public class CBSBatchTaskServiceImpl extends AbstractEngineService implements CB
                                 debtorAccDebtInfo.setLegalStatusDesc(AppUtil.checkEmptyStr(LEGAL_DESC));
                                 debtorAccDebtInfo.setCollectionStatus(AppUtil.checkEmptyStr(COLLECTION_STATUS_CD));
                                 debtorAccDebtInfo.setCollectionStatusDesc(AppUtil.checkEmptyStr(COLLECTION_STATUS_DESC));
+                                debtorAccDebtInfo.setProductSubtypeCode(AppUtil.checkEmptyStr(PRODUCT_SUBTYPE));
+                                debtorAccDebtInfo.setProductSubtypeDesc(AppUtil.checkEmptyStr(PRODUCT_SUBTYPE_DESC));
                                 LOGGER.info("accountNo : {}", debtorAccDebtInfo.getAccountNo());
                                 debtorAccDebtInfoRepository.saveAndFlush(debtorAccDebtInfo);
                             }

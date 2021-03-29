@@ -50,6 +50,10 @@ public class DebtorAccDebtInfo extends BaseEntity {
 
     private String productGroup;
 
+    private String productSubtypeCode;
+
+    private String productSubtypeDesc;
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastPaidDate;
