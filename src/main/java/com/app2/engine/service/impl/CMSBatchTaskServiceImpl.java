@@ -64,9 +64,13 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                 String isSeizeCancel = "0";
                 String seizeDecidedCaseNo = "";
                 String seizeDate = "";
-                String seizeLawCourt = "";
+                String seizeBy = "";
                 String seizeJudgeDate = "";
+                String seizeLawCourt = "";
+                String seizeComplaintant ="";
                 String seizeExecution = "";
+                String seizeCancelDate = "";
+                String isSeize = "";
 
                 if (AppUtil.isNotNull(guaranteeMap.get("docNumber"))) {
                     collID = guaranteeMap.get("docNumber").toString();
@@ -85,6 +89,12 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                         } else if (AppUtil.isNotNull(documentProgressList.get(0).get("blackCaseNumber"))) {
                             seizeDecidedCaseNo = documentProgressList.get(0).get("blackCaseNumber").toString();
                         }
+                        if(AppUtil.isNotNull(documentProgressList.get(0).get("adjDate"))){
+                            seizeJudgeDate = documentProgressList.get(0).get("adjDate").toString();
+                        }
+                        if(AppUtil.isNotNull(documentProgressList.get(0).get("courtName"))){
+                            seizeLawCourt = documentProgressList.get(0).get("courtName").toString();
+                        }
                     }
                 }
 
@@ -96,16 +106,22 @@ public class CMSBatchTaskServiceImpl extends AbstractEngineService implements CM
                         seizeDate = DateUtil.convertStringDateTimeToString(confiscateList.get(0).get("confiscateDate").toString());
                     }
                     if (AppUtil.isNotNull(confiscateList.get(0).get("courtAdjudicate"))) {
-                        seizeLawCourt = confiscateList.get(0).get("courtAdjudicate").toString();
+                        seizeExecution = confiscateList.get(0).get("courtAdjudicate").toString();
+                    }
+                    if (AppUtil.isNotNull(confiscateList.get(0).get("seizeComplainTant"))) {
+                        seizeComplaintant = confiscateList.get(0).get("seizeComplainTant").toString();
+                    }
+                    if (AppUtil.isNotNull(confiscateList.get(0).get("seizeCancelDate"))) {
+                        seizeCancelDate = confiscateList.get(0).get("seizeCancelDate").toString();
+                    }
+                    if (AppUtil.isNotNull(confiscateList.get(0).get("isSeize"))) {
+                        isSeize = confiscateList.get(0).get("isSeize").toString();
                     }
                 }
 
-                if (AppUtil.isNotNull(guaranteeMap.get("officeLegal"))) {
-//                seizeJudgeDate = guaranteeInfo.getDocument().toString();
-                    seizeExecution = guaranteeMap.get("officeLegal").toString();
-                }
 
-                String dataStr = collID + "|" + isSeizeCancel + "|" + seizeDecidedCaseNo + "|" + seizeDate + "||" + seizeLawCourt + "|" + seizeJudgeDate + "||" + seizeExecution + "|||";
+//                String dataStr = collID + "|" + isSeizeCancel + "|" + seizeDecidedCaseNo + "|" + seizeDate + "||" + seizeLawCourt + "|" + seizeJudgeDate + "||" + seizeExecution + "|||"; version เก่า
+                String dataStr = collID + "|" + isSeizeCancel + "|" + seizeDecidedCaseNo + "|" + seizeDate + "|"+seizeBy+"|" + seizeJudgeDate + "|" + seizeLawCourt + "|"+seizeComplaintant+"|"+seizeExecution+"|"+seizeCancelDate+"|"+isSeize;
                 writer.write(dataStr);
                 writer.newLine();
             }

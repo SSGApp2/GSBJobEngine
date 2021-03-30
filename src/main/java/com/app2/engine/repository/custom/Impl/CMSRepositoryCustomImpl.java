@@ -105,6 +105,8 @@ public class CMSRepositoryCustomImpl implements CMSRepositoryCustom {
 
         querySql.append("SELECT dp.red_case_number as redCaseNumber\n" +
                 ",dp.black_case_number as blackCaseNumber\n" +
+                ",dp.adj_date as adjDate\n" +
+                ",dp.court_name as courtName\n" +
                 "FROM  document_progress dp \n" +
                 "where dp.document = :document\n" +
                 "and (dp.red_case_number <>'' or (black_case_number <>'' and black_case_number <>'/'))\n" +
@@ -123,7 +125,10 @@ public class CMSRepositoryCustomImpl implements CMSRepositoryCustom {
         StringBuilder querySql = new StringBuilder();
 
         querySql.append("SELECT c.confiscate_date as confiscateDate\n" +
+                ",c.seize_complain_tant as seizeComplainTant \n" +
                 ",c.court_adjudicate as courtAdjudicate \n" +
+                ",c.seize_cancel_date as seizeCancelDate \n" +
+                ",c.is_seize as isSeize \n" +
                 "FROM confiscate c \n" +
                 "where c.guarantee_info = :guarantee\n" +
                 "order by c.updated_date DESC");
