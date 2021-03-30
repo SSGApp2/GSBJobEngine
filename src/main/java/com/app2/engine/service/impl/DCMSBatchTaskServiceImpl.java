@@ -179,20 +179,28 @@ public class DCMSBatchTaskServiceImpl extends AbstractEngineService implements D
                     switch (docType) {
                         case "1":
                             wfTypeID = "1";
+                            wfTypeDesc = "แฟ้มคดีแพ่ง";
                             break;
                         case "2":
                             wfTypeID = "3";
+                            wfTypeDesc = "แฟ้มคดีล้มละลาย";
                             break;
                         case "3":
                             wfTypeID = "4";
+                            wfTypeDesc = "แฟ้มคดีเจ้าหนี้นอกฟ้องแพ่ง";
                             break;
                         case "4":
                             wfTypeID = "5";
+                            wfTypeDesc = "แฟ้มคดีเจ้าหนี้นอกฟ้องล้มละลาย";
                             break;
                         case "5":
                             wfTypeID = "6";
+                            wfTypeDesc = "แฟ้มคดีลูกหนี้ฟื้นฟูกิจการ";
                             break;
                     }
+                }
+                if (AppUtil.isNotNull(debtorAccDebtInfo.get("selectReasonClose"))) {
+                    endStepReasonID = String.valueOf(debtorAccDebtInfo.get("selectReasonClose"));
                 }
 
                 if (AppUtil.isNotNull(accountNo)) {

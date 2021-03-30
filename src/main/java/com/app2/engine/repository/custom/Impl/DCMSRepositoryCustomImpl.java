@@ -26,6 +26,8 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
         StringBuilder querySql = new StringBuilder();
 
         querySql.append("SELECT dadi.account_no as accountNo,d.doc_type as docType\n" +
+                ",d.select_reason_close as selectReasonClose \n" +
+                ",d.reason_close as reasonClose \n" +
                 "FROM debtor_acc_debt_info dadi \n" +
                 "join document d on d.debtor = dadi.debtor");
 
