@@ -246,15 +246,15 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 BKCMap.put(BKC_HEADER.LEGAL_ID.toString(), dataMap.get("doc_number").toString());
                 BKCMap.put(BKC_HEADER.WF_TYPE_ID.toString(), "");
                 BKCMap.put(BKC_HEADER.WF_TYPE_DESC.toString(), "");
-                BKCMap.put(BKC_HEADER.ACN.toString(), "");
-                BKCMap.put(BKC_HEADER.COLL_ID.toString(), "");
-                BKCMap.put(BKC_HEADER.COLL_TYPE.toString(), "");
-                BKCMap.put(BKC_HEADER.ASSIGN_LAWYER_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("action_time").toString()));
+                BKCMap.put(BKC_HEADER.ACN.toString(), dataMap.get("CreditAccountNumber").toString());//
+                BKCMap.put(BKC_HEADER.COLL_ID.toString(), dataMap.get("DocNumber").toString());
+                BKCMap.put(BKC_HEADER.COLL_TYPE.toString(), dataMap.get("Type").toString());
+                BKCMap.put(BKC_HEADER.ASSIGN_LAWYER_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("action_time").toString()));//ยังไม่แน่ใจ
                 BKCMap.put(BKC_HEADER.NOTICE_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("notic_doc_send_date").toString()));
                 BKCMap.put(BKC_HEADER.JUDGMENT_UNDECIDED_NO.toString(), blackCaseNumberOne);
                 BKCMap.put(BKC_HEADER.JUDGMENT_UNDECIDED_YEAR.toString(), blackCaseNumberTwo);
                 BKCMap.put(BKC_HEADER.JUDGMENT_SUE_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("law_suit_send_date").toString()));
-                BKCMap.put(BKC_HEADER.JUDGMENT_DT.toString(), "");
+                BKCMap.put(BKC_HEADER.JUDGMENT_DT.toString(), "");//AdjDate
                 BKCMap.put(BKC_HEADER.JUDGMENT_DECIDED_NO.toString(), redCaseNumberOne);
                 BKCMap.put(BKC_HEADER.JUDGMENT_DECIDED_YEAR.toString(), redCaseNumberTwo);
                 BKCMap.put(BKC_HEADER.JUDGMENT_RESULT_DESC.toString(), adjudication);
@@ -262,20 +262,21 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 BKCMap.put(BKC_HEADER.GAZETTE_DT.toString(), dataMap.get("gazette_date").toString());
                 BKCMap.put(BKC_HEADER.DUE_DT.toString(), "");
                 BKCMap.put(BKC_HEADER.SETTLEMENT_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("account_payment_date").toString()));
-                BKCMap.put(BKC_HEADER.SETTLEMENT_SEQ.toString(), "");
+                BKCMap.put(BKC_HEADER.SETTLEMENT_SEQ.toString(), dataMap.get("LegalName").toString());//LegalName
                 BKCMap.put(BKC_HEADER.PRINCIPAL_AMT.toString(), String.format("%.2f", dataMap.get("debt_amount")));
                 BKCMap.put(BKC_HEADER.INTEREST_AMT.toString(), String.format("%.2f", dataMap.get("amount")));
-                BKCMap.put(BKC_HEADER.COURT_DT.toString(), "");
-                BKCMap.put(BKC_HEADER.COURT_SEQ.toString(), "");
-                BKCMap.put(BKC_HEADER.COURT_PRINCIPAL_AMT.toString(), "");
-                BKCMap.put(BKC_HEADER.COURT_INTEREST_AMT.toString(), "");
+                BKCMap.put(BKC_HEADER.COURT_DT.toString(), dataMap.get("AccountPaymentDate").toString());//AccountPaymentDate
+                BKCMap.put(BKC_HEADER.COURT_SEQ.toString(), dataMap.get("LegalName").toString());//LegalName
+                BKCMap.put(BKC_HEADER.COURT_PRINCIPAL_AMT.toString(), dataMap.get("Amount").toString());//Amount
+                BKCMap.put(BKC_HEADER.COURT_INTEREST_AMT.toString(), dataMap.get("InterestAmount").toString());//InterestAmount
                 BKCMap.put(BKC_HEADER.SEIZE_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("confiscate_date").toString()));
                 BKCMap.put(BKC_HEADER.LED_APPRAISAL.toString(), dataMap.get("cost_est_legal_ex_office").toString());
                 BKCMap.put(BKC_HEADER.APPROVED_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("cost_est_legal_bank_date").toString()));
                 BKCMap.put(BKC_HEADER.APPRAISAL_VAL.toString(), "");
                 BKCMap.put(BKC_HEADER.AUCTION_DT.toString(), "");
                 BKCMap.put(BKC_HEADER.AUCTION_AMT.toString(), String.format("%.2f", dataMap.get("amount_buy")));
-                BKCMap.put(BKC_HEADER.LITIGTION_STATUS.toString(), dataMap.get("doc_status").toString());
+                BKCMap.put(BKC_HEADER.LITIGTION_STATUS.toString(), dataMap.get("StatusName").toString());//ชื่่อของ status
+
 
                 listMap.add(BKCMap);
             }
@@ -438,13 +439,13 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 BKOMap.put(BKO_HEADER.GAZETTE_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("gazette_date").toString()));
                 BKOMap.put(BKO_HEADER.DUE_DT.toString(), "0");
                 BKOMap.put(BKO_HEADER.SETTLEMENT_DT.toString(), convertDateToFile("dd/MM/yyyy", dataMap.get("account_payment_date").toString()));
-                BKOMap.put(BKO_HEADER.SETTLEMENT_SEQ.toString(), "0");
+                BKOMap.put(BKO_HEADER.SETTLEMENT_SEQ.toString(), dataMap.get("LegalName").toString());//LegalName
                 BKOMap.put(BKO_HEADER.PRINCIPAL_AMT.toString(), String.format("%.2f", dataMap.get("debt_amount")));
                 BKOMap.put(BKO_HEADER.INTEREST_AMT.toString(), String.format("%.2f", dataMap.get("amount")));
-                BKOMap.put(BKO_HEADER.COURT_DT.toString(), "0");
-                BKOMap.put(BKO_HEADER.COURT_SEQ.toString(), "0");
-                BKOMap.put(BKO_HEADER.COURT_PRINCIPAL_AMT.toString(), "0");
-                BKOMap.put(BKO_HEADER.COURT_INTEREST_AMT.toString(), "0");
+                BKOMap.put(BKO_HEADER.COURT_DT.toString(), dataMap.get("AccountPaymentDate").toString());//AccountPaymentDate
+                BKOMap.put(BKO_HEADER.COURT_SEQ.toString(), dataMap.get("LegalName").toString());//LegalName
+                BKOMap.put(BKO_HEADER.COURT_PRINCIPAL_AMT.toString(), dataMap.get("Amount").toString());//Amount
+                BKOMap.put(BKO_HEADER.COURT_INTEREST_AMT.toString(), dataMap.get("InterestAmount").toString());//InterestAmount
                 BKOMap.put(BKO_HEADER.SEIZE_DT.toString(), "0");
                 BKOMap.put(BKO_HEADER.LED_APPRAISAL.toString(), "0");
                 BKOMap.put(BKO_HEADER.APPROVED_DT.toString(), "0");

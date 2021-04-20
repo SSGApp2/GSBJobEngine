@@ -51,6 +51,7 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
                 ",con.updated_date as con_up\n" +
                 ",dh.[sequence]\n" +
                 ",d.doc_number\n" +
+                ",d.credit_account_number as CreditAccountNumber\n" +
                 ",dh.action_time\n" +
                 ",dp.notic_doc_send_date\n" +
                 ",dp.black_case_number\n" +
@@ -59,21 +60,28 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
                 ",dp.adjudication\n" +
                 ",dp.adj_date\n" +
                 ",dp.gazette_date\n" +
-                ",ap.account_payment_date\n" +
+                ",ap.account_payment_date as AccountPaymentDate\n" +
                 ",ap.debt_amount\n" +
-                ",ap.amount\n" +
+                ",ap.amount as Amount\n" +
+                ",ap.legal_name as LegalName\n" +
+                ",ap.interest_amount as InterestAmount\n" +
                 ",con.confiscate_date\n" +
                 ",con.cost_est_legal_ex_office\n" +
                 ",con.cost_est_legal_bank_date\n" +
                 ",ass.amount_buy\n" +
                 ",d.doc_status \n" +
+                ",dgi.doc_number as DocNumber \n" +
+                ",dgi.type as Type \n" +
+                ",pd.variable2 as StatusName \n" +
                 "FROM document d \n" +
                 "JOIN document_history dh on d.id = dh.document \n" +
                 "JOIN confiscate con on d.id = con.document \n" +
+                "JOIN debtor_guarantee_info dgi on d.debtor = dgi.debtor \n" +
                 "join document_progress dp on d.id = dp.document \n" +
                 "join account_payment ap on dp.id = ap.document_progress \n" +
                 "join asset_group ag on d.id = ag.document \n" +
                 "join asset_sale ass on ag.id = ass.asset_group \n" +
+                "join parameter_detail pd on d.doc_status = pd.code \n" +
                 "where d.doc_type = 2\n" +
                 "and datediff(day, d.updated_date , '" + date + "') = 0 \n" +
                 "and dh.user_role_to = 'LAW'\n" +
@@ -106,9 +114,11 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
                 ",document_progress.red_case_number \n" +
                 ",document_progress.date_adjudicate_out \n" +
                 ",document_progress.gazette_date \n" +
-                ",account_payment.account_payment_date \n" +
+                ",account_payment.account_payment_date as AccountPaymentDate\n" +
                 ",account_payment.debt_amount \n" +
-                ",account_payment.amount \n" +
+                ",account_payment.amount as Amount \n" +
+                ",account_payment.legal_name as LegalName \n" +
+                ",account_payment.interest_amount as InterestAmount \n" +
                 "from document d\n" +
                 "join document_history on d.id = document_history.document\n" +
                 "join document_progress on d.id = document_progress.document\n" +
