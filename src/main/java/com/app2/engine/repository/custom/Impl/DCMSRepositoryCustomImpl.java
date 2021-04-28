@@ -143,6 +143,7 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
         querySql.append("WITH CTE AS (\n" + "SELECT d.id as docID\n" +
                 ",d.doc_number as docNumber\n" + ",d.doc_type as docType\n" +
                 ",d.principal_balance as principalBalance\n" +
+                ",d.credit_account_number as creditAccountNumber\n" +
                 ",d.interest \n" + ",dh.[sequence] as sequence\n" +
                 ",dh.user_role_to as userRoleTo\n" + ",dh.action_time as actionTime\n" +
                 ",dp.black_case_number as blackCaseNumber\n" +
@@ -151,13 +152,28 @@ public class DCMSRepositoryCustomImpl implements DCMSRepositoryCustom {
                 ",dp.court \n" +
                 ",dp.adj_date as adjDate\n" +
                 ",dp.adjudication \n" +
+                ",dp.notic_doc_send_date as noticeDocSendDate\n" +
+                ",dp.notic_news_date as noticeNewDate\n" +
                 ",ROW_NUMBER() OVER(PARTITION BY d.id \n" +
                 "ORDER BY d.id ASC\n" +
                 ",dh.[sequence] DESC\n" +
                 ",dp.updated_date DESC) as RowNumber \n" +
+                ",dgi.doc_number as dgiDocNumber\n" +
+                ",dgi.[type] as dgiType\n" +
+                ",con.confiscate_date as confiscateDate\n" +
+                ",con.cost_est_legal_ex_office as costEstLegalExOffice\n" +
+                ",con.cost_est_legal_ex_office_date as costEstLegalExOfficeDate\n" +
+                ",con.cost_est_legal_bank_date as costEstLegalBankDate\n" +
+                ",ass.amount_buy as amountBuy \n" +
+                ",pd.variable2 as StatusName \n" +
                 "FROM document d \n" +
                 "left join document_history dh on d.id = dh.document\n" +
                 "LEFT JOIN document_progress dp on d.id = dp.document \n" +
+                "LEFT JOIN debtor_guarantee_info dgi on d.debtor = dgi.debtor \n" +
+                "JOIN confiscate con on d.id = con.document \n" +
+                "join parameter_detail pd on d.doc_status = pd.code \n" +
+                "join asset_group ag on d.id = ag.document \n" +
+                "join asset_sale ass on ag.id = ass.asset_group \n" +
                 "WHERE datediff(day, d.updated_date , '" + date + "') = 0\n" +
                 "and d.doc_type = 1\n" +
                 "and dh.user_role_to = 'LAW')\n" +
