@@ -65,7 +65,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
     }
 
     private enum CVC_HEADER {
-        SEQ, LEGAL_ID, WF_TYPE_ID, WF_TYPE_DESC, ACN, COLL_ID, COLL_TYPE, ASSIGN_LAWYER_DT, NOTICE_DT, JUDGMENT_UNDECIDED_NO, JUDGMENT_UNDECIDED_YEAR, JUDGMENT_SUE_DT, JUDGMENT_DECIDED_NO, JUDGMENT_DECIDED_YEAR, JUDGMENT_RESULT_DESC, JUDGMENT_AMOUNT, APPEAL_DECIDED_NO, APPEAL_DECIDED_YEAR, APPEAL_DT, APPEAL_RESULT_DESC, APPEAL_AMOUNT, DEKA_DECIDED_NO, DEKA_DECIDED_YEAR, DEKA_DT, DEKA_RESULT_DESC, DEKA_AMOUNT, SEIZE_DT, LED_APPRAISAL, APPROVED_DT, APPRAISAL_VAL, AUCTION_DT, AUCTION_AMT, LITIGTION_STATUS
+        SEQ, LEGAL_ID, WF_TYPE_ID, WF_TYPE_DESC, ACN, COLL_ID, COLL_TYPE, ASSIGN_LAWYER_DT, NOTICE_DT, JUDGMENT_UNDECIDED_NO, JUDGMENT_UNDECIDED_YEAR, JUDGMENT_SUE_DT, JUDGMENT_DECIDED_NO, JUDGMENT_DECIDED_YEAR, JUDGMENT_DT, JUDGMENT_RESULT_DESC, JUDGMENT_AMOUNT, APPEAL_DECIDED_NO, APPEAL_DECIDED_YEAR, APPEAL_DT, APPEAL_RESULT_DESC, APPEAL_AMOUNT, DEKA_DECIDED_NO, DEKA_DECIDED_YEAR, DEKA_DT, DEKA_RESULT_DESC, DEKA_AMOUNT, SEIZE_DT, LED_APPRAISAL, APPROVED_DT, APPRAISAL_VAL, AUCTION_DT, AUCTION_AMT, LITIGTION_STATUS
     }
 
     private enum CVO_HEADER {
@@ -663,16 +663,17 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             CVCMap.put(CVC_HEADER.LEGAL_ID.toString(), dataMap.get("LEGAL_ID"));
             CVCMap.put(CVC_HEADER.WF_TYPE_ID.toString(), "");
             CVCMap.put(CVC_HEADER.WF_TYPE_DESC.toString(), "");
-            CVCMap.put(CVC_HEADER.ACN.toString(), "");
-            CVCMap.put(CVC_HEADER.COLL_ID.toString(), "");
-            CVCMap.put(CVC_HEADER.COLL_TYPE.toString(), "");
+            CVCMap.put(CVC_HEADER.ACN.toString(), dataMap.get("ACN"));
+            CVCMap.put(CVC_HEADER.COLL_ID.toString(), dataMap.get("COLL_ID"));
+            CVCMap.put(CVC_HEADER.COLL_TYPE.toString(), dataMap.get("COLL_TYPE"));
             CVCMap.put(CVC_HEADER.ASSIGN_LAWYER_DT.toString(), dataMap.get("ASSIGN_LAWYER_DT"));
-            CVCMap.put(CVC_HEADER.NOTICE_DT.toString(), "");
+            CVCMap.put(CVC_HEADER.NOTICE_DT.toString(), dataMap.get("NOTICE_DT"));
             CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_NO.toString(), dataMap.get("JUDGMENT_UNDECIDED_NO"));
             CVCMap.put(CVC_HEADER.JUDGMENT_UNDECIDED_YEAR.toString(), dataMap.get("JUDGMENT_UNDECIDED_YEAR"));
             CVCMap.put(CVC_HEADER.JUDGMENT_SUE_DT.toString(), dataMap.get("JUDGMENT_SUE_DT"));
             CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_NO.toString(), dataMap.get("JUDGMENT_DECIDED_NO"));
             CVCMap.put(CVC_HEADER.JUDGMENT_DECIDED_YEAR.toString(), dataMap.get("JUDGMENT_DECIDED_YEAR"));
+            CVCMap.put(CVC_HEADER.JUDGMENT_DT.toString(), dataMap.get("JUDGMENT_DT"));
             CVCMap.put(CVC_HEADER.JUDGMENT_RESULT_DESC.toString(), dataMap.get("JUDGMENT_RESULT_DESC"));
             CVCMap.put(CVC_HEADER.JUDGMENT_AMOUNT.toString(), dataMap.get("JUDGMENT_AMOUNT"));
             CVCMap.put(CVC_HEADER.APPEAL_DECIDED_NO.toString(), dataMap.get("APPEAL_DECIDED_NO"));
@@ -685,13 +686,13 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             CVCMap.put(CVC_HEADER.DEKA_DT.toString(), dataMap.get("DEKA_DT"));
             CVCMap.put(CVC_HEADER.DEKA_RESULT_DESC.toString(), dataMap.get("DEKA_RESULT_DESC"));
             CVCMap.put(CVC_HEADER.DEKA_AMOUNT.toString(), dataMap.get("DEKA_AMOUNT"));
-            CVCMap.put(CVC_HEADER.SEIZE_DT.toString(), "");
-            CVCMap.put(CVC_HEADER.LED_APPRAISAL.toString(), "");
-            CVCMap.put(CVC_HEADER.APPROVED_DT.toString(), "");
-            CVCMap.put(CVC_HEADER.APPRAISAL_VAL.toString(), "");
-            CVCMap.put(CVC_HEADER.AUCTION_DT.toString(), "");
-            CVCMap.put(CVC_HEADER.AUCTION_AMT.toString(), "");
-            CVCMap.put(CVC_HEADER.LITIGTION_STATUS.toString(), "");
+            CVCMap.put(CVC_HEADER.SEIZE_DT.toString(), dataMap.get("SEIZE_DT"));
+            CVCMap.put(CVC_HEADER.LED_APPRAISAL.toString(), dataMap.get("LED_APPRAISAL"));
+            CVCMap.put(CVC_HEADER.APPROVED_DT.toString(), dataMap.get("APPROVED_DT"));
+            CVCMap.put(CVC_HEADER.APPRAISAL_VAL.toString(), dataMap.get("APPRAISAL_VAL"));
+            CVCMap.put(CVC_HEADER.AUCTION_DT.toString(), dataMap.get("AUCTION_DT"));
+            CVCMap.put(CVC_HEADER.AUCTION_AMT.toString(), dataMap.get("AUCTION_AMT"));
+            CVCMap.put(CVC_HEADER.LITIGTION_STATUS.toString(), dataMap.get("LITIGTION_STATUS"));
             listMap.add(CVCMap);
         }
         return listMap;
@@ -726,6 +727,7 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
             Double judgmentAmount3 = null;
 
             String docType = map.get("docType").toString();
+            String noticeDate = map.get("noticeDocSendDate").toString()+"/"+map.get("noticeNewDate").toString();
             Double principalBalance = (Double) map.get("principalBalance");
             Double interest = (Double) map.get("interest");
 
@@ -797,6 +799,10 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 }
 
                 resultCVCMap.put("LEGAL_ID", map.get("docNumber"));
+                resultCVCMap.put("ACN", map.get("creditAccountNumber"));
+                resultCVCMap.put("COLL_ID", map.get("dgiDocNumber"));
+                resultCVCMap.put("COLL_TYPE", map.get("dgiType"));
+                resultCVCMap.put("NOTICE_DT", noticeDate);
                 resultCVCMap.put("ASSIGN_LAWYER_DT", actionTimeLAW);
                 resultCVCMap.put("JUDGMENT_UNDECIDED_NO", blackCaseNumNo);
                 resultCVCMap.put("JUDGMENT_UNDECIDED_YEAR", blackCaseNumYear);
@@ -819,6 +825,15 @@ public class LitigationUpdateServiceImpl extends AbstractEngineService implement
                 resultCVCMap.put("DEKA_DT", adjDate3);
                 resultCVCMap.put("DEKA_RESULT_DESC", adjudication3);
                 resultCVCMap.put("DEKA_AMOUNT", convertDoubleToString(judgmentAmount3));
+
+                resultCVCMap.put("SEIZE_DT", map.get("confiscateDate"));
+                resultCVCMap.put("LED_APPRAISAL", map.get("costEstLegalExOffice"));
+                resultCVCMap.put("APPROVED_DT", map.get("costEstLegalExOfficeDate"));
+                resultCVCMap.put("APPRAISAL_VAL", map.get("costEstLegalExOffice"));
+                resultCVCMap.put("AUCTION_DT", map.get("costEstLegalBankDate"));
+                resultCVCMap.put("AUCTION_AMT", map.get("amountBuy"));
+
+                resultCVCMap.put("LITIGTION_STATUS", map.get("StatusName"));
                 completeResult.add(resultCVCMap);
             }
         }
